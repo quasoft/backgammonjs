@@ -1,0 +1,171 @@
+/* Reset & compatibility */
+.cf:before,
+.cf:after {
+  content:"";
+  display:table;
+}
+
+.cf:after {
+clear:both;
+}
+
+.cf {
+  *zoom:1;
+}
+
+/* Layout */
+#backgammon {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+#backgammon:after {
+  content: '';
+  display: block;
+  margin-top: 56.25%;
+  /*margin-top: 70%;*/
+}
+#backgammon .board {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.board {
+
+}
+
+.row {
+  height: 49%;
+}
+
+.frame {
+  height: 1%;
+}
+
+.point, .panel {
+  float: left;
+  width: 7%;
+  height: 100%;
+  background-color: green;
+
+  text-align: center;
+  position: relative;
+}
+
+#point17, #point6 {
+  margin-right: 0.5%;
+}
+
+#point18, #point5 {
+  margin-left: 0.5%;
+}
+
+/*
+.piece-out {
+  position: absolute;
+  bottom: 0;
+}
+*/
+
+.piece {
+  float: none;
+  display: inline-block;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+.piece:after {
+  content: '';
+  display: block;
+  /*margin-top: 56.25%;*/
+  padding-top: 100%;
+}
+.piece .image {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* Piece text */
+.piece {
+  vertical-align: middle;
+}
+
+.piece .image:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.piece span {
+  vertical-align: middle;
+}
+
+/* Behaviour */
+#backgammon div, #backgammon span {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.piece, .piece .image {
+  cursor: pointer;
+}
+
+/* Style */
+
+.board {
+  background-color: #5E4733;
+  /*E8D1A5*/
+}
+
+.frame {
+  background-color: #5E4733;
+}
+
+
+.point.odd {
+  background-color: #D8C3A3;
+}
+
+.point.even {
+  background-color: #B58863;
+}
+
+.piece {
+  font-weight: bold;
+}
+
+.piece .image {
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.piece.white .image {
+  background-image: url(../images/piece-white.png);
+  color: #000000;
+}
+
+.piece.black .image{
+  background-image: url(../images/piece-black.png);
+  color: #ffffff;
+}

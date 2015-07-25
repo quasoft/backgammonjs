@@ -1,40 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="style/backgammon.css">
   <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="js/backgammon-model.js"></script>
-  <script src="js/backgammon-rules.js"></script>
-  <script src="js/rules/bg-casual.js"></script>
+  <script src="../model/model.js"></script>
+  <script src="../rules/rules.js"></script>
+  <script src="../rules/bg-casual.js"></script>
+  <script src="../rules/bg-gul-bara.js"></script>
   <script src="js/app.js"></script>
-</head>
-<body ng-app="MyApp">
-  Test 123
-  <script type="text/javascript">
-  //var client = new BackgammonClient();
-
+  <script>
+    $(function() {
+      App.config.boardID = 'board';
+      //App.config.rule = 'RuleBgGulbara';
+      App.init();
+    });
   </script>
-  <p><input type="number" ng-model="a"> + <input type="number" ng-model="b"> = {{ a + b }}</p>
-
-  <div ng-controller="MyCtrl">
-    <label for="name">Enter your name:</label><input type="text" ng-model="name" name="name" placeholder="Enter your name">
-    <p>Hello {{ name }}</p>
-
-    <button ng-click="toggle()">Click to toggle</button>
-    <div ng-show="visible">Show this paragraph 1</div>
-
-    <p>Greetings: {{greeting}}</p>
-
-
-
-    <label for="checkbox">
-      <input id="checkbox" type="checkbox" ng-model="visible">
-      Click checkbox to toggle
-    </label>
-    <div show2="visible">Show this paragraph 2</div>
-
+</head>
+<body>
+  <div id="backgammon">
   </div>
-
 </body>
 </html>

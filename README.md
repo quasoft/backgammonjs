@@ -8,7 +8,7 @@ Backgammon is one of the most popular and ancient board games and there are zill
 - Fair gameplay that is as close to real game as possible -  no visual hints for possible moves except those needed for basic interaction with the UI;
 - Zero time to start the game - requires no registration or configuration;
 - Works in browser @ PC & Mobile;
-- Lightweight - playable on any device, even old rugs and smartphones;
+- Lightweight - playable on any device, even old ones - anything that can run a modern browser;
 - Extensible and modular engine that would allow the open source community to implement different variants of the game as known in different countries.
 
 ## Future goals:
@@ -22,6 +22,14 @@ Backgammon is one of the most popular and ancient board games and there are zill
 
 Check out [documentation](docs/) for more details on design and architecture.
 
-## Install
-
+## Brief overview of project structure
 Comming soon...
+
+## How to install
+Comming soon...
+
+## Demo
+Comming soon...
+
+## More documentation for developers
+You will find more information about the design, architecture and ways to extend this project in the [docs folder][docs/README.md] of this repository.

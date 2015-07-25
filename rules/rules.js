@@ -23,12 +23,35 @@ var Backgammon = Backgammon || {};
       throw new Error("Can't instantiate abstract class!");
     }
 
-    this.Title = "";
-    this.Description = "";
-    this.Country = "";
+    this.title = "";
+    this.description = "";
+    this.country = "";
+    this.countryCode = "";
 
-    this.MaxPoints = 0;
-    this.MaxPieces = 0;
+    this.maxPoints = 24;
+    this.maxPieces = 15;
+
+    this.whiteDirection = bg.Direction.LEFT;
+    this.blackDirection = bg.Direction.RIGHT;
+
+    // Most distant position of player with any pieces on it
+    //this.whiteStart = 0;
+    //this.blackStart = 0;
+  };
+
+  /**
+   * Initialize board.
+   */
+  bg.Rule.prototype.initialize = function(board) {
+    board.clear();
+
+    // Create points
+    board.points.length = 0;
+    for (var i = 0; i < this.maxPoints; i++) {
+      var point = new bg.Point();
+      point.number = i;
+      board.points.push(point);
+    }
   };
 
   /**
@@ -37,7 +60,22 @@ var Backgammon = Backgammon || {};
    * @abstract
    */
   bg.Rule.prototype.rollDice = function() {
-    throw new Error("Abstract method!");
+    // Create dice object with 2 random values
+    var dice = bg.Dice.roll();
+
+    // Add those values to moves list - the individual moves the player has to make
+    dice.moves.push(dice.values);
+
+    // Dices with equal values are played four times, so add two more moves
+    if (dice.moves[0] == dice.moves[1]) {
+      dice.moves.push(dice.values);
+    }
+
+    // Sort moves in descending order for convenience later in enforcing
+    // move rules
+    dice.moves.sort(function(a, b){return b-a});
+
+    return dice;
   };
 
   /**
