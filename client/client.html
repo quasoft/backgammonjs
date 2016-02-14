@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="style/backgammon.css">
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="../model/model.js"></script>
+  <script src="../rules/rules.js"></script>
+  <script src="../rules/bg-casual.js"></script>
+  <script src="../rules/bg-gul-bara.js"></script>
+  <script src="js/simplegui.js"></script>
+  <script src="js/client.js"></script>
+  <script>
+    $(function() {
+      var client = new Backgammon['Client']();
+      client.config.rule = 'RuleBgCasual';
+      client.config.containerID = 'backgammon';
+      client.init();
+    });
+  </script>
+</head>
+<body>
+  <div id="backgammon">
+  </div>
+</body>
+</html>

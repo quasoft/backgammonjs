@@ -105,7 +105,7 @@ var Backgammon = Backgammon || {};
   };
 
   bg.Dice.roll = function() {
-    var dice = new Dice ();
+    var dice = new bg.Dice();
     dice.values[0] = bg.Random.get();
     dice.values[1] = bg.Random.get();
     return dice;
@@ -243,11 +243,83 @@ var Backgammon = Backgammon || {};
   };
 
   /**
+   * Player Statistics
+   * @constructor
+   */
+  bg.PlayerStats = function() {
+    this.wins = 0;
+    this.loses = 0;
+    this.doubles = 0;
+  };
+
+  /**
    * Player
    * @constructor
    */
   bg.Player = function() {
-    this.name = 0;
+    this.id = 0;
+    this.name = '';
+    this.currentGame = null;
+    this.stats = new bg.PlayerStats();
+  };
+  bg.Player.createNew = function() {
+    var player = new bg.Player();
+    player.id = bg.Utils.generateID();
+    return player;
+  };
+
+  /**
+   * Game
+   * @constructor
+   */
+  bg.Game = function() {
+    this.id = 0;
+    this.host = null;
+    this.guest = null;
+    this.players = [this.host, this.guest];
+
+    /**
+     * Add host player to game
+     * @param {Backgammon.Player} Player to add
+     */
+    this.addHostPlayer = function (player) {
+      if (this.host != null)
+      {
+        throw "Game already has a host player!";
+      }
+
+      this.host = player;
+    };
+
+    /**
+     * Add guest player
+     * @param {Backgammon.Player} Player to add
+     */
+    this.addGuestPlayer = function (player) {
+      if (this.guest != null)
+      {
+        throw "Game already has a guest player!";
+      }
+
+      this.guest = player;
+    };
+
+  };
+  bg.Game.createNew = function() {
+    var game = new bg.Game();
+    game.id = bg.Utils.generateID();
+    return game;
+  };
+
+  /**
+   * Common utilities
+   * @constructor
+   */
+  bg.Utils = function () {
+    ;
+  };
+  bg.Utils.generateID = function () {
+    return bg.Random.get(99999999);
   };
 
   return bg;

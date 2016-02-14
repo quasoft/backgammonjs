@@ -12,7 +12,7 @@ var App = App || {};
     var n = number - Math.pow(10, -digits)/2;
     n += n / Math.pow(2, 53); // added 1360765523: 17.56.toFixedDown(2) === "17.56"
     return n.toFixed(digits);
-  }
+  };
 
   /**
    * Contains graphical user interface and functionality for moving pieces
@@ -26,8 +26,8 @@ var App = App || {};
 
     this.init = function () {
       this.container = $('#' + app.config.containerID);
-      this.container.append($('<div class="board cf"></div>'));
-      this.board = $('#' + app.config.containerID + ' .board');
+      this.board = $('<div class="board cf"></div>');
+      this.board.appendTo(this.container);
 
       this.createPoints();
       this.createPieces(this.state);
@@ -170,8 +170,8 @@ var App = App || {};
     this.rule = new Backgammon[this.config.rule]();
     this.rule.initialize(this.state);
     this.rule.resetBoard(this.state);
-    this.GUI = new this.GUI(this.state, this.rule);
-    this.GUI.init();
+    this.gui = new this.GUI(this.state, this.rule);
+    this.gui.init();
   };
 
   return app;
