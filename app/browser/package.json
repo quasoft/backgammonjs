@@ -1,0 +1,39 @@
+{
+  "name": "backgammon.js-client",
+  "version": "0.0.1",
+  "author": "quasoft <info@quasoft.net>",
+  "description": "Backgammon.js Client",
+  "license": "MIT",
+  "main": "client.html",
+  "dependencies": {
+    "aliasify": "^1.9.0",
+    "browserify": "^13.0.0",
+    "jquery": "^2.2.1",
+    "socket.io-client": "^1.4.5",
+    "watch": "^0.17.1",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {
+    "build:js": "browserify ./js/main.js --require socket.io-client -o ./js/bundle.js",
+    "build": "npm run build:js",
+    "watch:js": "watchify ./js/main.js --require socket.io-client -o ./js/bundle.js -v",
+    "watch": "npm run watch:js"
+  },
+  "browserify": {
+    "transform": [
+      "aliasify"
+    ]
+  },
+  "aliasify": {
+    "aliases": {
+      "main": "./js/main.js",
+      "simplegui": "./js/simplegui.js",
+      "bg-casual": "../../lib/rules/bg-casual.js",
+      "bg-gul-bara": "../../lib/rules/bg-gul-bara.js",
+      "rule": "../../lib/rules/rule.js",
+      "client": "../../lib/client.js",
+      "comm": "../../lib/comm.js",
+      "model": "../../lib/model.js"
+    }
+  }
+}
