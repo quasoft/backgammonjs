@@ -1,4 +1,4 @@
-Note: The game is still work in progress and not playable/installable.
+Note: The game is still work in progress and not playable/installable yet.
 
 # backgammonjs
 `backgammonjs` is an extensible multiplayer backgammon game written in JavaScript.
