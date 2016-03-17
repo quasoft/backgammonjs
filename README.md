@@ -1,6 +1,8 @@
 # backgammonjs
 `backgammonjs` is an extensible multiplayer backgammon game written in JavaScript.
 
+The game is still work in progress and not playable/installable.
+
 Backgammon is one of the most popular and ancient board games and there are zillion implementations of it for PC and mobile crafted around the world.
 
 ## Main goals:
