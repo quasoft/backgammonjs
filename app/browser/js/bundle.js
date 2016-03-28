@@ -21,11 +21,11 @@ $(document).ready(function() {
   var cl = new client.Client(config);
 
   $('#btn-create-game').click(function (e) {
-    var game = cl.createGame('./rules/bg-casual.js');
+    cl.reqCreateGame('RuleBgCasual');
   });
 
   $('#btn-join-game').click(function (e) {
-    var game = cl.joinGame(null);
+    cl.reqJoinGame(null);
   });
 });
 
@@ -17206,8 +17206,8 @@ var comm = require('./comm.js');
 var io = require('socket.io-client');
 require('../app/browser/js/simplegui.js');
 require('./rules/rule.js');
-require('./rules/bg-casual.js');
-require('./rules/bg-gul-bara.js');
+require('./rules/RuleBgCasual.js');
+require('./rules/RuleBgGulbara.js');
 
 /**
  * Backgammon client
@@ -17215,7 +17215,7 @@ require('./rules/bg-gul-bara.js');
  */
 function Client(config) {
   this.socket = null;
-  this.player = model.Player.createNew();
+  this.player = null;
 
   /**
    * Client configuration
@@ -17223,7 +17223,7 @@ function Client(config) {
   this.config = {
     'containerID': 'backgammon',
     'boardID': 'board',
-    'rulePath': './rules/bg-casual.js',
+    'rulePath': './rules/',
     'guiPath': '../app/browser/js/simplegui.js'
   };
 
@@ -17238,46 +17238,123 @@ function Client(config) {
     this.gui.init();
 
     this.openSocket();
-    this.connect();
+    //this.connect();
   };
 
+  /**
+   * Prepare socket and attach message handlers
+   */
   this.openSocket = function () {
-    this.socket = io();
-
+    var self = this;
+    
+    this.socket = io.connect("http://localhost:" + comm.Protocol.Port, {'force new connection': true});
+    
     this.socket.on(comm.Message.CONNECT, function(){
-      console.log('MSG_CONNECT');
+      self.handleConnect();
+    });
+    
+    this.socket.on(comm.Message.CREATE_GUEST, function(player){
+      self.handleCreateGuest(player);
     });
 
-    this.socket.on(comm.Message.GET_GAME_LIST, function(msg){
-      $('#messages').append($('<li>').text(msg));
+    this.socket.on(comm.Message.GET_GAME_LIST, function(list){
+      self.handleGetGameList(list);
+    });
+    
+    this.socket.on(comm.Message.CREATE_GAME, function(params){
+      self.handleCreateGame(params);
+    });
+    
+    this.socket.on(comm.Message.JOIN_GAME, function(params){
+      self.handleJoinGame(params);
     });
   }
 
+  /**
+   * Connect to server
+   */
   this.connect = function () {
-    console.log(comm.Protocol.Port);
+    console.log('Connecting to server at port ' + comm.Protocol.Port);
     this.socket.connect("http://localhost:" + comm.Protocol.Port, {'force new connection': true});
   }
-
+  
   /**
-   * Create game
+   * Send message to server
+   * @param {string} Message ID
+   * @param {object} Object map with message parameters
    */
-  this.createGame = function (rulePath) {
-    var rule = require(rulePath || this.config.rulePath);
-    var game = new model.Game.createNew(rule);
+  this.sendMessage = function (msg, params) {
+    console.log('Sending message ' + msg);
+    this.socket.emit(msg, params);
+  };
+  
+  /**
+   * Handle connection to server
+   */
+  this.handleConnect = function () {
+    console.log('Client connected');
+    
+    if (!this.player) {
+      this.sendMessage(comm.Message.CREATE_GUEST);
+    }
+  };
+  
+  /**
+   * Guest player created
+   */
+  this.handleCreateGuest = function (player) {
+    this.player = player;
+          
+    // TODO: update GUI
+    console.log('Created guest player (ID): ' + player.id);
+  };
+  
+  /**
+   * List of games returned
+   */
+  this.handleGetGameList = function (list) {      
+    // TODO: update GUI
+    console.log('List of games (IDs): ' + list.length);
+  };
+  
+  /**
+   * New game has been created
+   */
+  this.handleCreateGame = function (params) {
+    console.log('Created game with ID ' + params.gameID + ' and rule ' + params.ruleName);
+    
+    var rule = this.loadRule(params.ruleName);  
+    var game = model.Game.createNew(rule);
     game.addHostPlayer(this.player);
+    this.player.currentGame = game.id;
     this.startGame(game);
-    return game;
   };
-
+  
   /**
-   * Join game
-   * @param {Game} Game to join
+   * Joined new game
    */
-  this.joinGame = function (game) {
+  this.handleJoinGame = function (params) {
+    if (!params) {
+      return;
+    }
+    console.log('Joined game with ID ' + params.gameID + ' and rule ' + params.ruleName);
+    
+    var rule = this.loadRule(params.ruleName);  
+    var game = model.Game.createNew(rule);
+    game.addHostPlayer(params.hostPlayer);
     game.addGuestPlayer(this.player);
+    this.player.currentGame = game.id;
     this.startGame(game);
   };
-
+  
+  /**
+   * Load rule module
+   */
+  this.loadRule = function (ruleName) {
+    var file = this.config.rulePath + model.Utils.sanitizeName(ruleName) + '.js';
+    return require(file);
+  };  
+  
   /**
    * Init game
    */
@@ -17286,10 +17363,31 @@ function Client(config) {
   };
 
   /**
+   * Create game
+   */
+  this.reqCreateGame = function (ruleName) {
+    this.sendMessage(comm.Message.CREATE_GAME, {
+      'playerID': this.player.id,
+      'ruleName': ruleName
+    });
+  };
+
+  /**
+   * Join game
+   * @param {Game} Game to join
+   */
+  this.reqJoinGame = function (gameID) {
+    this.sendMessage(comm.Message.JOIN_GAME, {
+      'playerID': this.player.id,
+      'gameID': gameID
+    });
+  };
+
+  /**
    * Request move
    * @param {PieceType} piece type
    */
-  this.requestMove = function (type) {
+  this.reqMove = function (type) {
     ;
   };
 
@@ -17297,7 +17395,7 @@ function Client(config) {
 };
 module.exports.Client = Client;
 
-},{"../app/browser/js/simplegui.js":2,"./comm.js":52,"./model.js":53,"./rules/bg-casual.js":54,"./rules/bg-gul-bara.js":55,"./rules/rule.js":56,"socket.io-client":"socket.io-client"}],52:[function(require,module,exports){
+},{"../app/browser/js/simplegui.js":2,"./comm.js":52,"./model.js":53,"./rules/RuleBgCasual.js":54,"./rules/RuleBgGulbara.js":55,"./rules/rule.js":56,"socket.io-client":"socket.io-client"}],52:[function(require,module,exports){
 var Protocol = {
   'Port': 3000
 };
@@ -17306,13 +17404,15 @@ module.exports.Protocol = Protocol;
 var Message = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
+  CREATE_GUEST: 'createGuest',
   GET_MESSAGE_LIST: 'getMessageList',
   GET_GAME_LIST: 'getGameList',
-  CREATE_GAME_LIST: 'createGame',
-  JOIN_GAME_LIST: 'joinGame',
+  CREATE_GAME: 'createGame',
+  JOIN_GAME: 'joinGame',
   ROLL_DICE: 'rollDice',
-  REQUEST_MOVE: 'requestMove'
+  MOVE_PIECE: 'movePiece'
 };
+
 module.exports.Message = Message;
 
 },{}],53:[function(require,module,exports){
@@ -17596,6 +17696,8 @@ function Game() {
   this.guest = null;
   this.players = [this.host, this.guest];
   this.ruleName = '';
+  this.rule = null;
+  this.state = null;
 
   /**
    * Add host player to game
@@ -17654,6 +17756,16 @@ function Utils() {
 };
 Utils.generateID = function () {
   return Random.get(99999999);
+};
+Utils.sanitizeName = function (name) {
+  return name.replace(/[^-_A-Za-z0-9]/gi, "");
+};
+Utils.loadRule = function (path, ruleName) {
+  var file = path + Utils.sanitizeName(ruleName) + '.js';
+  console.log('Loading rule in file ' + file);
+  var rule = require(file);
+  console.log(rule);
+  return rule;
 };
 
 module.exports = {
@@ -17828,7 +17940,6 @@ module.exports = new RuleBgGulbara();
 
 },{"../model.js":53,"./rule.js":56}],56:[function(require,module,exports){
 var model = require('../model.js');
-console.log(model);
 
 /**
  * Rules define specific characteristics of each variant of the game.

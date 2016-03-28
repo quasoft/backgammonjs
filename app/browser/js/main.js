@@ -20,10 +20,10 @@ $(document).ready(function() {
   var cl = new client.Client(config);
 
   $('#btn-create-game').click(function (e) {
-    var game = cl.createGame('./rules/bg-casual.js');
+    cl.reqCreateGame('RuleBgCasual');
   });
 
   $('#btn-join-game').click(function (e) {
-    var game = cl.joinGame(null);
+    cl.reqJoinGame(null);
   });
 });

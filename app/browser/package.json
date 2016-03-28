@@ -28,8 +28,8 @@
     "aliases": {
       "main": "./js/main.js",
       "simplegui": "./js/simplegui.js",
-      "bg-casual": "../../lib/rules/bg-casual.js",
-      "bg-gul-bara": "../../lib/rules/bg-gul-bara.js",
+      "RuleBgCasual": "../../lib/rules/RuleBgCasual.js",
+      "RuleBgGulbara": "../../lib/rules/RuleBgGulbara.js",
       "rule": "../../lib/rules/rule.js",
       "client": "../../lib/client.js",
       "comm": "../../lib/comm.js",
