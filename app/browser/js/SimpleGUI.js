@@ -51,6 +51,7 @@ function SimpleGUI(client) {
   };
 
   this.createPoints = function () {
+    console.log("createPoints");
     this.board.append($('<div id="frame-top" class="frame">&nbsp;</div>'));
     this.board.append($('<div id="row1" class="row"></div>'));
     this.board.append($('<div id="row2" class="row"></div>'));
@@ -87,29 +88,29 @@ function SimpleGUI(client) {
    * @param {int} offset - offset from bottom or top.
    */
   this.compactPieces = function (pos) {
-    var point = this.game.state.getPoint(pos);
+    var point = this.game.state.points[pos];
     var pointElement = this.getPoint(pos);
     var pointHeight = pointElement.height();
 
-    if (point.getPieceCount() > 0) {
-      var firstPieceElement = this.getPieceByID(point.pieces[0].id);
+    if (point.length > 0) {
+      var firstPieceElement = this.getPieceByID(point[0].id);
       var pieceHeight = (firstPieceElement) ? firstPieceElement.width() : 0;
       var ratio = 100;
-      var overflow = (pieceHeight * point.getPieceCount()) - pointHeight;
+      var overflow = (pieceHeight * point.length) - pointHeight;
       if (pos == 12) {
         console.log('pos: ' + pos);
         console.log('pointHeight: ' + pointHeight);
-        console.log('getPieceCount: ' + point.getPieceCount());
+        console.log('getPieceCount: ' + point.length);
         console.log('pieceHeight: ' + pieceHeight);
         console.log('overflow: ' + overflow);
       }
-      if ((overflow > 0) && (pieceHeight > 0) && (point.getPieceCount() > 1))
+      if ((overflow > 0) && (pieceHeight > 0) && (point.length > 1))
       {
         // Example:
         // pieceHeight = 88
         // offset per piece = 8
         // margin in percent = 100 - ((8 / 88) * 100)
-        ratio = 100 - (((overflow / (point.getPieceCount() - 1)) / pieceHeight) * 100);
+        ratio = 100 - (((overflow / (point.length - 1)) / pieceHeight) * 100);
       }
       if (pos == 12) {
         console.log('ratio: ' + ratio);
@@ -124,8 +125,8 @@ function SimpleGUI(client) {
         console.log('ratio: ' + ratio);
       }
 
-      for (var i = 0; i < point.getPieceCount(); i++) {
-        var piece = point.pieces[i];
+      for (var i = 0; i < point.length; i++) {
+        var piece = point[i];
         var pieceElement = this.getPieceByID(piece.id);
         if (pos == 12) {
           console.log('pieceID: ' + piece.id);
@@ -153,10 +154,10 @@ function SimpleGUI(client) {
   };
 
   this.createPieces = function () {
-    for (var pos = 0; pos < this.game.state.getPointCount(); pos++) {
-      var point = this.game.state.getPoint(pos);
-      for (var i = 0; i < point.getPieceCount(); i++) {
-        this.createPiece(pos, point.pieces[i], 0);
+    for (var pos = 0; pos < this.game.state.points.length; pos++) {
+      var point = this.game.state.points[pos];
+      for (var i = 0; i < point.length; i++) {
+        this.createPiece(pos, point[i], 0);
       }
       this.compactPieces(pos);
     }
