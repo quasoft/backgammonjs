@@ -8,12 +8,22 @@
   <script src="js/bundle.js"></script>
 </head>
 <body>
-  <button id="btn-create-game">Create new game</button>
-  <button id="btn-join-game">Join game</button>
+  <div id="toolbar">
+    <button id="btn-create-game">Create new game</button>
+    <button id="btn-join-game">Join game</button>
+    <button id="btn-resign">Resign</button>
+    <button id="btn-undo">Undo</button>
+    <div id="score">
+      <span id="myself">Myself</span>
+      <span id="myscore"></span>
+      <span id="otherscore"></span>
+      <span id="otherplayer">Other player</span>
+    </div>
+  </div>
 
   <div id="backgammon">
   </div>
-  
+
   <div id="messages">
   </div>
 </body>

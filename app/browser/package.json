@@ -6,10 +6,12 @@
   "license": "MIT",
   "main": "client.html",
   "dependencies": {
-    "aliasify": "^1.9.0",
-    "browserify": "^13.0.0",
     "jquery": "^2.2.1",
-    "socket.io-client": "^1.4.5",
+    "socket.io-client": "^1.4.5"
+  },
+  "devDependencies": {
+    "aliasify": "^1.9.0",
+    "browserify": "^13.0.1",
     "watch": "^0.17.1",
     "watchify": "^3.7.0"
   },
@@ -20,20 +22,19 @@
     "watch": "npm run watch:js"
   },
   "browserify": {
-    "transform": [
-      "aliasify"
-    ]
+    "transform": []
   },
   "aliasify": {
     "aliases": {
       "main": "./js/main.js",
-      "simplegui": "./js/simplegui.js",
+      "SimpleBoardUI": "./js/SimpleBoardUI.js",
       "RuleBgCasual": "../../lib/rules/RuleBgCasual.js",
       "RuleBgGulbara": "../../lib/rules/RuleBgGulbara.js",
       "rule": "../../lib/rules/rule.js",
       "client": "../../lib/client.js",
       "comm": "../../lib/comm.js",
       "model": "../../lib/model.js"
-    }
+    },
+    "verbose": true
   }
 }

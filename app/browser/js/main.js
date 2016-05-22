@@ -1,12 +1,10 @@
 var $ = require('jquery');
-
 //require('socket.io-client');
 //require('../../../lib/comm.js');
 //require('../../../lib/model.js');
 //require('../../../lib/rules/rule.js');
 //require('../../../lib/rules/bg-casual.js');
 //require('../../../lib/rules/bg-gul-bara.js');
-//require('simplegui');
 var client = require('../../../lib/client');
 
 $(document).ready(function() {
@@ -14,7 +12,8 @@ $(document).ready(function() {
 
   var config = {
     'containerID': 'backgammon',
-    'guiPath': '../app/browser/js/simplegui.js'
+    'boardUI': '../app/browser/js/SimpleBoardUI.js'
+    //'boardUI': 'SimpleBoardUI'
   };
 
   var cl = new client.Client(config);
@@ -26,4 +25,6 @@ $(document).ready(function() {
   $('#btn-join-game').click(function (e) {
     cl.reqJoinGame(null);
   });
+
+
 });
