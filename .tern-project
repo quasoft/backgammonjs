@@ -1,0 +1,28 @@
+{
+  "ecmaVersion": 6,
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEagerly": [
+    "lib/**/*.js",
+    "app/browser/js/**/*.js",
+    "app/server/**/*.js"
+  ],
+  "dontLoad": [
+    "path/to/your/js/**/*.js"
+  ],
+  "plugins": {
+    "complete_strings": {},
+    "node": {"load":true},
+    "lint": {},
+    "angular": {},
+    "requirejs": {},
+    "modules": {},
+    "es_modules": {},
+    "doc_comment": {
+      "fullDocs": true,
+      "strong": true
+    }
+  }
+}

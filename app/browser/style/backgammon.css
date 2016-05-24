@@ -179,7 +179,42 @@ div.action-panel {
   height: 50px;
 }
 
-button.action {
+div.action-panel button.action {
   width: 100%;
   height: 100%;
+}
+
+#dice .die {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  text-indent: -100px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#dice .digit-1 {
+  background-image: url(../images/digit-1.png);
+}
+
+#dice .digit-2 {
+  background-image: url(../images/digit-2.png);
+}
+
+#dice .digit-3 {
+  background-image: url(../images/digit-3.png);
+}
+
+#dice .digit-4 {
+  background-image: url(../images/digit-4.png);
+}
+
+#dice .digit-5 {
+  background-image: url(../images/digit-5.png);
+}
+
+#dice .digit-6 {
+  background-image: url(../images/digit-6.png);
 }

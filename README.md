@@ -22,10 +22,16 @@ Backgammon is one of the most popular and ancient board games and there are zill
 - Create replay engine;
 - Add multiple language support.
 
-Check out [documentation](docs/) for more details on design and architecture.
+Check out [documentation](docs/design.md) for more details on design and architecture.
 
 ## Brief overview of project structure
-Comming soon...
+
+The project is comprised of three components, each implemented by a separate package:
+- Client application: [`backgammon.js-client`](app/browser/README.md)
+- Server application: [`backgammon.js-server`](app/server/README.md)
+- Common Library: [`backgammon.js-lib`](lib/README.md)
+
+More comming soon...
 
 ## How to install
 Comming soon...
@@ -34,4 +40,4 @@ Comming soon...
 Comming soon...
 
 ## More documentation for developers
-You will find more information about the design, architecture and ways to extend this project in the [docs folder][docs/README.md] of this repository.
+Instructions on adding new variants of backgammon to the game can be found at [Creating rules for `backgammon.js`][docs/rules.md].

@@ -4,6 +4,7 @@ var model = require('../../../lib/model.js');
 /**
  * Contains graphical user interface and functionality for moving pieces
  * @constructor
+ * @param client - Client object in control of this UI
  */
 function SimpleBoardUI(client) {
   this.client = client;
@@ -17,21 +18,11 @@ function SimpleBoardUI(client) {
     console.log(this.container);
     this.board = $('<div class="board cf"></div>');
     this.board.appendTo(this.container);
+
+    this.createControls();
   };
 
   this.createControls = function () {
-    var template =
-      '<div class="action-panel">' +
-        '<button id="btn-start" class="action">Start</button>' +
-        '<button id="btn-roll" class="action">Roll</button>' +
-        '<button id="btn-confirm" class="action">Confirm</button>' +
-        '<div id="dice">' +
-          '<span id="die0"></span>' +
-          '<span id="die1"></span>' +
-        '</div>' +
-      '</div>';
-    this.container.append($(template));
-
     var self = this;
 
     $('#btn-start').click(function (e) {
@@ -46,9 +37,9 @@ function SimpleBoardUI(client) {
   /**
    * Rounds down floating point value to specified number of digits
    * after decimal point
-   * @param {float} number to round
-   * @param {int} number of digits after decimal point
-   * @return {float} rounded number
+   * @param {Number} number - float number to round
+   * @param {Number} digits - number of digits after decimal point
+   * @returns {Number} rounded number as float
    */
   this.toFixedDown = function(number, digits) {
     if(number == 0) {
@@ -85,32 +76,32 @@ function SimpleBoardUI(client) {
     this.row2 = $('#row2');
 
     for (var i = this.rule.maxPoints / 2; i < this.rule.maxPoints; i++) {
-      typeClass = i % 2 === 0 ? 'even' : 'odd';
+      var typeClass = i % 2 === 0 ? 'even' : 'odd';
 
       this.createPoint(this.row1, i, typeClass);
     }
 
-    for (var i = this.rule.maxPoints / 2 - 1; i >= 0; i--) {
-      typeClass = i % 2 === 0 ? 'even' : 'odd';
+    for (var k = this.rule.maxPoints / 2 - 1; k >= 0; k--) {
+      var typeClass = k % 2 === 0 ? 'even' : 'odd';
 
-      this.createPoint(this.row2, i, typeClass);
+      this.createPoint(this.row2, k, typeClass);
     }
   };
 
   this.createPiece = function (pos, piece, count) {
     var point = this.getPoint(pos);
 
-    pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
+    var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
     //countText = (count > 0) ? '<span>' + count + '</span>' : '&nbsp';
-    countText = (piece.id) ? '<span>' + piece.id + '</span>' : '&nbsp';
+    var countText = (piece.id) ? '<span>' + piece.id + '</span>' : '&nbsp';
 
     point.append($('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">' + countText + '</div></div>'));
   };
 
-  /*
-   * @param {Piece} piece
-   * @param {int} offset - offset from bottom or top.
+  /**
+   * Compact pieces in specific point to make them fit on screen vertically.
+   * @param {Number} pos - Position of point
    */
   this.compactPieces = function (pos) {
     var point = this.game.state.points[pos];
@@ -159,7 +150,7 @@ function SimpleBoardUI(client) {
         }
         var marginPercent = ratio * i;
 
-        alignment = this.getRow(pos) == 1 ? 'top' : 'bottom';
+        var alignment = this.getRow(pos) == 1 ? 'top' : 'bottom';
 
         pieceElement.css(alignment, "0");
         pieceElement.css("margin-" + alignment, this.toFixedDown(marginPercent, 2) + "%");
@@ -194,7 +185,8 @@ function SimpleBoardUI(client) {
 
   /**
    * Reset board UI
-   * @param {Game} Game
+   * @param {Game} game - Game
+   * @param {Rule} rule - Rule
    */
   this.resetBoard = function (game, rule) {
     this.game = game;
@@ -202,7 +194,6 @@ function SimpleBoardUI(client) {
 
     this.removePoints();
 
-    this.createControls();
     this.createPoints();
     this.createPieces();
 
@@ -265,9 +256,9 @@ function SimpleBoardUI(client) {
       &&
       (!this.game.turnConfirmed);
     $('#dice').toggle(showDice);
+
     if (showDice) {
-      $('#die0').html(this.game.turnDice.values[0]);
-      $('#die1').html(this.game.turnDice.values[1]);
+      this.updateDice(this.game.turnDice);
     }
 
     console.log('Board UI updated');
@@ -284,7 +275,18 @@ function SimpleBoardUI(client) {
     // - have more moves to make?
     // - have confirmed moves?
     // -
-  }
-};
+  };
+
+  this.updateDie = function (dice, index) {
+    var id = '#die' + index;
+    $(id).html(dice.values[index]);
+    $(id).addClass('digit-' + dice.values[index]);
+  };
+
+  this.updateDice = function (dice) {
+    this.updateDie(dice, 0);
+    this.updateDie(dice, 1);
+  };
+}
 
 module.exports = SimpleBoardUI;
