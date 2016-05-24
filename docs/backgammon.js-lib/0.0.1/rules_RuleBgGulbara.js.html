@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: rules/RuleBgGulbara.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: rules/RuleBgGulbara.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var model = require('../model.js');
+var Rule = require('./rule.js');
+
+/**
+ * One of the less popular variants of backgammon in Bulgaria (гюлбара).
+ * @constructor
+ * @extends Rule
+ */
+function RuleBgGulbara() {
+  Rule.call(this);
+
+  /**
+   * Rule name, matching the class name (eg. 'RuleBgCasual')
+   * @type {string}
+   */
+  this.name = "RuleBgGulbara";
+
+  /**
+   * Short title describing rule specifics
+   * @type {string}
+   */
+  this.title = "Gul bara";
+
+  /**
+   * Full description of rule
+   * @type {string}
+   */
+  this.description = "One of the less popular variants of backgammon in Bulgaria.";
+
+  /**
+   * Full name of country where this rule (variant) is played.
+   * To list multiple countries use a pipe ('|') character as separator.
+   * @type {string}
+   */
+  this.country = "Bulgaria";
+
+  /**
+   * Two character ISO code of country where this rule (variant) is played.
+   * To list multiple codes use a pipe ('|') character as separator.
+   * List codes in same order as countries in the field above.
+   * @type {string}
+   */
+  this.countryCode = "bg";
+}
+
+RuleBgGulbara.prototype = Object.create(Rule.prototype);
+RuleBgGulbara.prototype.constructor = RuleBgGulbara;
+
+/**
+ * Roll dice and generate list of moves the player has to make according to
+ * current rules.
+ *
+ * In this variant of the game moves for doubles are determined in the following way:
+ * - In first three dice rolls (counted separately for each player) doubles are played
+ *   as four moves - eg. 5:5 is played as [5,5,5,5].
+ * - In all dice rolls after that, all doubles with values higher than the rolled one are played sequentially.
+ *   For example 4:4 dice is played as [4,4,4,4], then [5,5,5,5] and finally [6,6,6,6],
+ *   whereas 5:5 dice is played as [5,5,5,5] and [6,6,6,6].
+ * - If the player cannot play all moves, but has moved at least one piece, then the other player
+ *   finishes the moves that could not be played and then rolls the dice (as it is his turn).
+ *
+ * @returns {Dice} - Dice object containing random values and allowed moves
+ */
+RuleBgGulbara.prototype.rollDice = function() {
+  return Rule.prototype.rollDice.call(this);
+};
+
+/**
+ * Reset state to initial position of pieces according to current rule.
+ * @param {State} state - Board state
+ */
+RuleBgGulbara.prototype.resetState = function(state) {
+  /**
+   * Move pieces to correct initial positions for both players.
+   * Values in state.points are zero based and denote the .
+   * the number of pieces on each position.
+   * Index 0 of array is position 1 and increments to the number of maximum
+   * points.
+   *
+   * Position: |12 13 14 15 16 17| |18 19 20 21 22 23|
+   *           |                 | |              15w| &lt;-
+   *           |                 | |                 |
+   *           |                 | |                 |
+   *           |                 | |                 |
+   *        -> |15b              | |                 |
+   * Position: |11 10 09 08 07 06| |05 04 03 02 01 00|
+   *
+   */
+
+
+  model.State.clear(state);
+
+  this.place(state, 15, model.PieceType.WHITE, 23);
+
+  this.place(state, 15, model.PieceType.BLACK, 11);
+};
+
+
+module.exports = new RuleBgGulbara();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Game.html">Game</a></li><li><a href="Match.html">Match</a></li><li><a href="Piece.html">Piece</a></li><li><a href="Player.html">Player</a></li><li><a href="PlayerStats.html">PlayerStats</a></li><li><a href="Random.html">Random</a></li><li><a href="Rule.html">Rule</a></li><li><a href="RuleBgCasual.html">RuleBgCasual</a></li><li><a href="RuleBgGulbara.html">RuleBgGulbara</a></li><li><a href="State.html">State</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Direction">Direction</a></li><li><a href="global.html#GameStatus">GameStatus</a></li><li><a href="global.html#Message">Message</a></li><li><a href="global.html#PieceType">PieceType</a></li><li><a href="global.html#Protocol">Protocol</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue May 24 2016 20:21:11 GMT+0300 (FLE Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
