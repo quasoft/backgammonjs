@@ -14,7 +14,7 @@ To get an idea how the library package fits in the whole picture, look at
 
 ## Library reference 
 
-Check out [library reference](https://cdn.rawgit.com/quasoft/backgammonjs/master/docs/lib/index.html) for more details on available classes.
+Check out [library reference](https://github.com/quasoft/backgammonjs/tree/master/docs/backgammon.js-lib/0.0.1/index.html) for more details on available classes.
 
 To recompile library reference, using [jsdoc](http://usejsdoc.org/), execute the following:
 
