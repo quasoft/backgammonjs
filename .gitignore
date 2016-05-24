@@ -4,3 +4,6 @@ dist
 .sass-cache
 bower_components
 /app/browser/js/bundle.js
+/nbproject/private/
+.idea
+nbproject

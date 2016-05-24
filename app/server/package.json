@@ -1,13 +1,13 @@
 {
   "name": "backgammon.js-server",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "author": "quasoft <info@quasoft.net>",
+  "description": "Backgammon.js Server",
+  "license": "MIT",
   "main": "server.js",
   "dependencies": {
     "express": "^4.10.2",
     "mongodb": "^2.1.18",
     "socket.io": "^1.4.5"
-  },
-  "author": "",
-  "license": "ISC"
+  }
 }
