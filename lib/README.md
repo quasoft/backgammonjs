@@ -9,12 +9,12 @@ The `backgammon.js-model` library, used by both `backgammon.js-client` and `back
 
 ## The whole picture
 
-To get an idea how the library package fits in the whole picture, look at 
-[project documentation](docs/design.md) containing details on design and architecture.
+To get an idea how the library package fits in the whole picture, look at
+[project documentation](../docs/README.md) containing details on design and architecture.
 
-## Library reference 
+## Library reference
 
-Check out [library reference](https://cdn.rawgit.com/quasoft/backgammonjs/master/docs/backgammon.js-lib/0.0.1/index.html) for more details on available classes.
+Check out [library reference](https://cdn.rawgit.com/quasoft/backgammonjs/master/docs/backgammon.js-lib/0.0.1/index.html) and [class diagrams in documentation](../docs/README.md#model-classes) for more details on available classes.
 
 To recompile library reference, using [jsdoc](http://usejsdoc.org/), execute the following:
 
@@ -22,4 +22,3 @@ To recompile library reference, using [jsdoc](http://usejsdoc.org/), execute the
 cd lib
 npm build:docs
 ```
-

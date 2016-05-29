@@ -1,0 +1,3 @@
+# backgammon.js: Documentation :: Rules
+
+Coming soon...
