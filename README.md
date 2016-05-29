@@ -25,11 +25,11 @@ Comming soon...
 Comming soon...
 
 ## How to add new rules (variants)
-Instructions on adding new variants of backgammon to the game can be found at [Creating rules for `backgammon.js`][docs/rules.md].
+Instructions on adding new variants of backgammon to the game can be found at [Creating rules for `backgammon.js`](docs/rules.md).
 
 ## Documentation:
 
-- [Full Project Documentation](docs/README.md)
-- Client application: [`backgammon.js-client`](../app/browser/README.md)
-- Server application: [`backgammon.js-server`](../app/server/README.md)
-- Common Library: [`backgammon.js-lib`](../lib/README.md)
+- [Project Architecture](docs/README.md)
+- Client application: [`backgammon.js-client`](app/browser/README.md)
+- Server application: [`backgammon.js-server`](app/server/README.md)
+- Common Library: [`backgammon.js-lib`](lib/README.md)

@@ -2,14 +2,14 @@
 
 ## Contents:
 
-1. [Motivation/problem](#motivation-problem)
+1. [Motivation/problem](#motivationproblem)
 2. [Goals](#goals)
   - [Must have](#must-have)
   - [Under consideration](#under-consideration)
-3. [Users/Actors](#users-actors)
+3. [Users/Actors](#usersactors)
 4. [Use cases](#use-cases)
-  - [Player's use cases](Player-s-use-cases)
-  - [Developer's use cases](Developer-s-use-cases)
+  - [Player's use cases](Players-use-cases)
+  - [Developer's use cases](Developers-use-cases)
 5. [Objectives](#objectives)
   - [High level](#high-level)
   - [Mid-level](#mid-level)
@@ -18,7 +18,7 @@
   - [Overview](#overview)
   - [Environment layer](#environment-layer)
   - [Module layer](#module-layer)
-  - [Application player](#application-player)
+  - [Application layer](#application-layer)
   - [Directory structure](#directory-structure)
 8. [Credits](#credits)
   - [Tools used](#tools-used)
@@ -196,7 +196,7 @@ This package includes:
 
 ![Rules Class Diagram](images/class-diagrams/rules.png)
 
-Instructions on adding new variants of backgammon (rules) to the game can be found at [Creating rules for `backgammon.js`][docs/rules.md].
+Instructions on adding new variants of backgammon (rules) to the game can be found at [Creating rules for `backgammon.js`](docs/rules.md).
 
 ### Application layer
 
@@ -278,7 +278,7 @@ Licensed under the [MIT license](../LICENSE).
 
 ## Other documents:
 
-- Project [`README.md`](../README.md)
+- [`Project README`](../README.md)
 - Client application: [`backgammon.js-client`](../app/browser/README.md)
 - Server application: [`backgammon.js-server`](../app/server/README.md)
 - Common Library: [`backgammon.js-lib`](../lib/README.md)

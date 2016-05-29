@@ -27,3 +27,10 @@ Automatically rebuild, if a file is changed:
 ```
 npm run watch
 ```
+
+## Other documents:
+
+- [`Project README`](../README.md)
+- [`Project Architecture`](../doc/README.md)
+- Server application: [`backgammon.js-server`](../app/server/README.md)
+- Common Library: [`backgammon.js-lib`](../README.md)

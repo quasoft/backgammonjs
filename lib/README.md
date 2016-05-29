@@ -1,6 +1,6 @@
-# backgammon.js-model
+# backgammon.js-lib
 
-The `backgammon.js-model` library, used by both `backgammon.js-client` and `backgammon.js-server` packages, provides the following functionality:
+The `backgammon.js-lib` library, used by both `backgammon.js-client` and `backgammon.js-server` packages, provides the following functionality:
 
 - Object oriented model of classes modeling real-world and objects and abstract notions ([model.js](model.js) file);
 - Message IDs shared by client and server communication objects ([comm.js](comm.js) file);
@@ -22,3 +22,10 @@ To recompile library reference, using [jsdoc](http://usejsdoc.org/), execute the
 cd lib
 npm build:docs
 ```
+
+## Other documents:
+
+- [`Project README`](../README.md)
+- [`Project Architecture`](../doc/README.md)
+- Client application: [`backgammon.js-client`](../app/browser/README.md)
+- Server application: [`backgammon.js-server`](../app/server/README.md)
