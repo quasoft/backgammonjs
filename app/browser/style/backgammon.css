@@ -14,45 +14,48 @@
 }
 
 /* Layout */
-#backgammon {
-  display: inline-block;
-  position: relative;
-  width: 100%;
-}
-#backgammon:after {
-  content: '';
-  display: block;
-  margin-top: 56.25%;
-  /*margin-top: 70%;*/
-}
-#backgammon .board {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
+html, body,
+#backgammon,
+.board, .pane, .bar {
   width: 100%;
   height: 100%;
 }
 
-.board {
-
+.pane {
+  width: 45%;
 }
 
-.row {
-  height: 49%;
+#pane-left,
+#pane-right,
+#bar {
+  float: left;
+}
+
+#pane-left,
+#pane-right {
+  width: 46%;
+}
+
+.bar {
+  width: 8%;
+}
+
+.field {
+  height: 50%;
+}
+
+.space {
+  height: 7%;
 }
 
 .frame {
-  height: 1%;
+  height: 0.5%;
 }
 
-.point, .panel {
+.point {
   float: left;
-  width: 7%;
+  width: 16.5%;
   height: 100%;
-  background-color: green;
 
   text-align: center;
   position: relative;
@@ -114,6 +117,34 @@
   vertical-align: middle;
 }
 
+/*
+.action-panel {
+  margin: auto;
+  width: 150px;
+  height: 100%;
+}
+
+.action-panel button.action {
+  width: 100%;
+  height: 100%;
+}
+*/
+
+div.action-panel {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  z-index: 1000;
+  width: 9%;
+  min-width: 50px;
+  height: 50px;
+}
+
+div.action-panel button.action {
+  width: 100%;
+  height: 100%;
+}
+
 /* Behaviour */
 #backgammon div, #backgammon span {
   -webkit-touch-callout: none;
@@ -132,21 +163,40 @@
 /* Style */
 
 .board {
-  background-color: #5E4733;
+  /*background-color: #5E4733*/;
   /*E8D1A5*/
+  /*background-color: #fff1dd;*/
+  background-color: #fff1dd;
 }
 
-.frame {
-  background-color: #5E4733;
+.frame, .bar {
+  background-color: #5e4733;
 }
 
-
-.point.odd {
-  background-color: #D8C3A3;
-}
-
+.point.odd,
 .point.even {
-  background-color: #B58863;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.row0 .point.odd {
+  /*background-color: #D8C3A3;*/
+  background-image: url(../images/row1-triangle-light.gif);
+}
+
+.row0 .point.even {
+  /*background-color: #B58863;*/
+  background-image: url(../images/row1-triangle-dark.gif);
+}
+
+.row1 .point.odd {
+  /*background-color: #D8C3A3;*/
+  background-image: url(../images/row2-triangle-light.gif);
+}
+
+.row1 .point.even {
+  /*background-color: #B58863;*/
+  background-image: url(../images/row2-triangle-dark.gif);
 }
 
 .piece {
@@ -170,22 +220,9 @@
   color: #ffffff;
 }
 
-div.action-panel {
-  margin: auto;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  z-index: 1000;
-  width: 150px;
-  height: 50px;
-}
-
-div.action-panel button.action {
-  width: 100%;
-  height: 100%;
-}
-
 #dice .die {
-  display: inline-block;
+  margin: 0 auto;
+  display: block;
   width: 64px;
   height: 64px;
   text-indent: -100px;

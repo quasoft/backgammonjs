@@ -6,32 +6,59 @@
   <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
   <link rel="stylesheet" type="text/css" href="style/backgammon.css">
   <script src="js/bundle.js"></script>
-</head>
-<body>
-  <div id="toolbar">
-    <button id="btn-create-game">Create new game</button>
-    <button id="btn-join-game">Join game</button>
-    <button id="btn-resign">Resign</button>
-    <button id="btn-undo">Undo</button>
-    <div id="score">
-      <span id="myself">Myself</span>
-      <span id="myscore"></span>
-      <span id="otherscore"></span>
-      <span id="otherplayer">Other player</span>
+  
+  <script type="text/x-mustache" id="tmpl-board">
+    <div id="frame-top" class="frame">&nbsp;</div>
+    <div class="board cf">
+      <div id="pane-left" class="pane">
+        <div id="field0" class="field row0 col0"></div>
+        <div id="field1" class="field row1 col0"></div>
+      </div>
+      <div id="bar" class="bar">
+      </div>
+      <div id="pane-right" class="pane">
+        <div id="field2" class="field row0 col1"></div>
+        <div id="field3" class="field row1 col1"></div>
+      </div>
     </div>
-  </div>
-
-  <div id="backgammon">
+    <div id="frame-bottom" class="frame">&nbsp;</div>
     <div class="action-panel">
       <button id="btn-start" class="action" style="display: none">Start</button>
       <button id="btn-roll" class="action" style="display: none">Roll</button>
       <button id="btn-confirm" class="action" style="display: none">Confirm</button>
+      <button id="btn-undo" class="action" style="display: none">Undo</button>
       <div id="dice" style="display: none">
-        <span id="die0" class="die"></span>
-        <span id="die1" class="die"></span>
+          <span id="die0" class="die"></span>
+          <span id="die1" class="die"></span>
       </div>
     </div>
-  </div>
+  </script>
+  
+</head>
+<body>
+  <table width="100%" height="100%">
+  <tr>
+    <td height="45">
+      <div id="toolbar">
+        <button id="btn-create-game">Create new game</button>
+        <button id="btn-join-game">Join game</button>
+        <button id="btn-resign">Resign</button>
+        <!--<button id="btn-undo">Undo</button>-->
+        <div id="score">
+          <span id="myself">Myself</span>
+          <span id="myscore"></span>
+          <span id="otherscore"></span>
+          <span id="otherplayer">Other player</span>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td height="*">
+      <div id="backgammon"></div>
+    </td>
+  </tr>
+  </table>
 
   <div id="messages">
   </div>

@@ -9,7 +9,11 @@ require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
 
 /**
- * Backgammon client
+ * Backgammon server.
+ * Listens to socket for command messages and processes them.
+ * The server is responsible for management of game and player objects,
+ * rolling dice and validation of moves.
+ *
  * @constructor
  */
 function Server() {
@@ -87,11 +91,69 @@ function Server() {
         self.handleRequest(comm.Message.MOVE_PIECE, socket, params);
       });
 
+      socket.on(comm.Message.CONFIRM_MOVES, function(params){
+        self.handleRequest(comm.Message.CONFIRM_MOVES, socket, params);
+      });
+
     });
 
     http.listen(comm.Protocol.Port, function(){
       console.log('listening on *:' + comm.Protocol.Port);
     });
+  };
+
+  /**
+   * Get game object associated with a socket
+   * @param {Socket} socket - Client's socket
+   * @returns {Game} - Game object associated with this socket
+   */
+  this.getSocketGame = function (socket) {
+    return socket['game'];
+  };
+
+  /**
+   * Get game object associated with a socket
+   * @param {Socket} socket - Client's socket
+   * @returns {Player} - Player object associated with this socket
+   */
+  this.getSocketPlayer = function (socket) {
+    return socket['player'];
+  };
+
+  /**
+   * Get game object associated with a socket
+   * @param {Socket} socket - Client's socket
+   * @returns {Rule} - Rule object associated with this socket
+   */
+  this.getSocketRule = function (socket) {
+    return socket['rule'];
+  };
+
+  /**
+   * Associate game object with socket
+   * @param {Socket} socket - Client's socket
+   * @param {Game} game - Game object to associate
+   */
+  this.setSocketGame = function (socket, game) {
+    socket['game'] = game;
+  };
+
+  /**
+   * Associate player object with socket
+   * @param {Socket} socket - Client's socket
+   * @param {Player} player - Player object to associate
+   */
+  this.setSocketPlayer = function (socket, player) {
+    socket['player'] = player;
+  };
+
+  /**
+   * Associate player object with socket
+   * @param {Socket} socket - Client's socket
+   * @param {Rule} rule - Rule object to associate
+   */
+  this.setSocketRule = function (socket, rule) {
+    socket['rule'] = rule;
   };
 
   /**
@@ -186,13 +248,16 @@ function Server() {
     else if (msg === comm.Message.MOVE_PIECE) {
       reply.result = this.handleMovePiece(socket, params, reply);
     }
+    else if (msg === comm.Message.CONFIRM_MOVES) {
+      reply.result = this.handleConfirmMoves(socket, params, reply);
+    }
     else {
       console.log('Unknown message!');
       return;
     }
 
-    if (socket['game'] != null) {
-      reply.game = socket['game'];
+    if (this.getSocketGame(socket) != null) {
+      reply.game = this.getSocketGame(socket);
     }
 
     if (reply['errorMessage'] != null) {
@@ -219,7 +284,7 @@ function Server() {
     this.players.push(player);
 
     player.socketID = socket.id;
-    socket['player'] = player;
+    this.setSocketPlayer(socket, player);
 
     reply.player = player;
 
@@ -254,6 +319,7 @@ function Server() {
    * Handle client's request to create a new game
    * @param {Socket} socket - Client socket
    * @param {Object} params - Request parameters
+   * @param {string} params.ruleName - Name of rule that should be used for creating the game
    * @param {Object} reply - Object to be send as reply
    * @returns {boolean} - Returns true if message have been processed
    *                      successfully and a reply should be sent.
@@ -261,7 +327,7 @@ function Server() {
   this.handleCreateGame = function (socket, params, reply) {
     console.log('Creating new game', params);
 
-    var player = socket['player'];
+    var player = this.getSocketPlayer(socket);
     if (player == null) {
         reply.errorMessage = 'Player not found!';
         return false;
@@ -272,11 +338,11 @@ function Server() {
     var game = model.Game.createNew(rule);
     model.Game.addHostPlayer(game, player);
     player.currentGame = game.id;
-    player.pieceType = model.PieceType.WHITE;
+    player.currentPieceType = model.PieceType.WHITE;
     this.games.push(game);
 
-    socket['game'] = game;
-    socket['rule'] = rule;
+    this.setSocketGame(socket, game);
+    this.setSocketRule(socket, rule);
 
     reply.player = player;
     reply.ruleName = params.ruleName;
@@ -288,6 +354,7 @@ function Server() {
    * Handle client's request to join a new game
    * @param {Socket} socket - Client socket
    * @param {Object} params - Request parameters
+   * @param {string} params.gameID - ID of game to join
    * @param {Object} reply - Object to be send as reply
    * @returns {boolean} - Returns true if message have been processed
    *                      successfully and a reply should be sent.
@@ -313,20 +380,25 @@ function Server() {
       return false;
     }
 
-    var guestPlayer = socket['player'];
+    var guestPlayer = this.getSocketPlayer(socket);
     if (guestPlayer == null) {
       reply.errorMessage = 'Player not found!';
       return false;
     }
 
+    var rule = model.Utils.loadRule(this.config.rulePath, game.ruleName);
+
     model.Game.addGuestPlayer(game, guestPlayer);
 
     guestPlayer.currentGame = game.id;
-    guestPlayer.pieceType = model.PieceType.BLACK;
+    guestPlayer.currentPieceType = model.PieceType.BLACK;
 
-    socket['game'] = game;
+    this.setSocketGame(socket, game);
+    this.setSocketRule(socket, rule);
 
     reply.ruleName = game.ruleName;
+    reply.host = game.host;
+    reply.guest = guestPlayer;
 
     this.sendOthersMessage(
       game,
@@ -334,6 +406,7 @@ function Server() {
       comm.Message.EVENT_PLAYER_JOINED,
       {
         'game': game,
+        'host': game.host,
         'guest': guestPlayer
       }
     );
@@ -353,8 +426,8 @@ function Server() {
   this.handleStartGame = function (socket, params, reply) {
     console.log('Starting game');
 
-    var game = socket['game'];
-    var player = socket['player'];
+    var game = this.getSocketGame(socket);
+    var player = this.getSocketPlayer(socket);
 
     if ((game.host == null) || (game.host.id != player.id)) {
       reply.errorMessage = 'Game with ID ' + game.id + ' not owned by player with ID ' + player.id + '!';
@@ -367,7 +440,7 @@ function Server() {
     }
 
     game.hasStarted = true;
-    game.turnPlayer = socket['player'];
+    game.turnPlayer = player;
 
     this.sendOthersMessage(
       game,
@@ -392,9 +465,9 @@ function Server() {
   this.handleRollDice = function (socket, params, reply) {
     console.log('Rolling dice');
 
-    var game = socket['game'];
-    var player = socket['player'];
-    var rule = socket['rule'];
+    var game = this.getSocketGame(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
 
     if (!game.hasStarted) {
       reply.errorMessage = 'Game with ID ' + game.id + ' is not yet started!';
@@ -432,40 +505,99 @@ function Server() {
 
   /**
    * Handle client's request to move a piece.
-   * @param {Socket} socket - Client socketq
+   * @param {Socket} socket - Client socket
    * @param {Object} params - Request parameters
+   * @param {number} params.position - Position of piece to move
+   * @param {number} params.steps - Number of steps to move
+   * @param {PieceType} params.type - Type of piece
    * @param {Object} reply - Object to be send as reply
    * @returns {boolean} - Returns true if message have been processed
    *                      successfully and a reply should be sent.
    */
   this.handleMovePiece = function (socket, params, reply) {
-    console.log('Moving a piece');
+    console.log('Moving a piece', params);
 
-    var game = socket['game'];
-    var player = socket['player'];
-    var rule = socket['rule'];
+    var game = this.getSocketGame(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
 
-    if (player.pieceType != params.type) {
-      reply.errorMessage = 'Player cannot move ' + params.type + ' pieces!';
-      return false;
-    }
+    //if (player.currentPieceType != params.type) {
+    //  reply.errorMessage = 'Player cannot move ' + params.type + ' pieces!';
+    //  return false;
+    //}
 
+    /*
     if (!rule.validateMove(game, params.position, params.type, params.steps)) {
       reply.errorMessage = 'Requested move is not valid!';
       return false;
     }
+    */
 
-    rule.moveBy(game, params.position, params.type, params.steps);
+    var actionList = rule.getMoveActions(game, params.position, player.currentPieceType, params.steps);
+    if (actionList.length == 0) {
+      reply.errorMessage = 'Requested move is not valid!';
+      return false;
+    }
 
-    this.sendOthersMessage(
+    rule.applyMoveActions(game, actionList);
+
+    rule.markAsPlayed(game, params.steps);
+
+    reply.position = params.position;
+    reply.type = params.type;
+    reply.steps = params.steps;
+    reply.moveActionList = actionList;
+
+    this.sendGameMessage(
       game,
-      player.id,
+      //player.id,
       comm.Message.EVENT_PIECE_MOVE,
       {
         'game': game,
         'position': params.position,
         'type': params.type,
-        'steps': params.steps
+        'steps': params.steps,
+        'moveActionList': actionList
+      }
+    );
+
+    return true;
+  };
+
+  /**
+   * Handle client's request to confirm moves made in current turn
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.handleConfirmMoves = function (socket, params, reply) {
+    console.log('Confirming piece movement', params);
+
+    var game = this.getSocketGame(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
+
+    if (!rule.validateConfirm(game, player.currentPieceType)) {
+      reply.errorMessage = 'Confirming moves is not allowed!';
+      return false;
+    }
+
+    // Start next turn:
+    // 1. Reset turn
+    // 2. Change players
+    // 3. Roll new dice
+
+    game.turnConfirmed = false;
+    game.turnPlayer = (game.turnPlayer.id == game.host.id) ? game.guest: game.host;
+    game.turnDice = rule.rollDice();
+
+    this.sendGameMessage(
+      game,
+      comm.Message.EVENT_TURN_START,
+      {
+        'game': game
       }
     );
 

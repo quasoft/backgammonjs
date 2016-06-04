@@ -90,6 +90,23 @@ There will be two main types of users of the system:
 - **Players** - Players will just play the game
 - **Developers** - Developers will host the game at servers and write custom rules
 
+## Naming notions
+
+// TODO: Explain basic terms used in source code like board, point, piece
+- Board:
+- Point:
+- Piece:
+- Piece type:
+- Bar:
+- Home field:
+- Outside:
+- Direction:
+- Position:
+- Normalized position:
+- Denormalized position:
+- Move:
+- Action:
+
 ## Use cases
 
 Use cases for those actors complement the goals from users' perspective:
