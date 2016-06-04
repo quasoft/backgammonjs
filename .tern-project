@@ -9,9 +9,6 @@
     "app/browser/js/**/*.js",
     "app/server/**/*.js"
   ],
-  "dontLoad": [
-    "path/to/your/js/**/*.js"
-  ],
   "plugins": {
     "complete_strings": {},
     "node": {"load":true},
