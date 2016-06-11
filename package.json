@@ -1,0 +1,17 @@
+{
+  "name": "backgammon.js",
+  "version": "0.0.1",
+  "author": "quasoft <info@quasoft.net>",
+  "description": "Backgammon.js Game",
+  "license": "MIT",
+  "dependencies": {
+    "backgammon.js-lib": "*",
+    "backgammon.js-server": "*",
+    "backgammon.js-browser": "*"
+  },
+  "scripts": {
+    "start:db": "mongod --dbpath ./app/server/db --port 27017",
+	"start:server": "node ./app/server/server.js",
+    "start": "npm run start:db & npm run start:server"
+  }
+}

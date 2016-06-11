@@ -8,3 +8,4 @@ bower_components
 .idea
 nbproject
 /docs/backgammon.js-lib
+/app/server/db

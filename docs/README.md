@@ -269,6 +269,9 @@ Directory structure of code follows project architecture:
 
 ## Credits
 
+- Dice icon by ElegantThemes
+- 
+
 ### Tools used:
 
 - Atom editor with `atom-tern.js`

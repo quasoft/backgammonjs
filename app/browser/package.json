@@ -6,6 +6,8 @@
   "license": "MIT",
   "main": "client.html",
   "dependencies": {
+    "bootstrap": "^3.3.6",
+    "clipboard": "^1.5.10",
     "jquery": "^2.2.1",
     "socket.io-client": "^1.4.5"
   },

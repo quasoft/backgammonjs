@@ -4,23 +4,110 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
+  <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,700" rel="stylesheet" type="text/css">
   <link rel="stylesheet" type="text/css" href="style/backgammon.css">
-  <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="../model/model.js"></script>
-  <script src="../rules/rules.js"></script>
-  <script src="../rules/bg-casual.js"></script>
-  <script src="../rules/bg-gul-bara.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    $(function() {
-      App.config.boardID = 'board';
-      //App.config.rule = 'RuleBgGulbara';
-      App.init();
-    });
+  <link rel="stylesheet" type="text/css" href="style/ribbons.css">
+  <script src="js/bundle.js"></script>
+  
+  <script type="text/x-mustache" id="tmpl-board">
+    <div id="frame-top" class="frame">&nbsp;</div>
+    <div class="board cf">
+      <div id="pane-left" class="pane">
+        <div id="field0" class="field row0 col0"></div>
+        <div id="field1" class="field row1 col0"></div>
+      </div>
+      <div id="bar" class="bar">
+      </div>
+      <div id="pane-right" class="pane">
+        <div id="field2" class="field row0 col1"></div>
+        <div id="field3" class="field row1 col1"></div>
+      </div>
+    </div>
+    <div id="frame-bottom" class="frame">&nbsp;</div>
+    <div class="action-panel">
+      <button id="btn-start" class="action" style="display: none">Start</button>
+      <button id="btn-roll" class="action" style="display: none">Roll</button>
+      <button id="btn-confirm" class="action" style="display: none">Confirm</button>
+      <button id="btn-undo" class="action" style="display: none">Undo</button>
+      <div id="dice" style="display: none">
+          <span id="die0" class="die"></span>
+          <span id="die1" class="die"></span>
+      </div>
+    </div>
   </script>
+  
 </head>
-<body>
-  <div id="backgammon">
+<body id="page-index">
+
+  <!-- Landing page -->
+  <table id="index-view" width="100%" height="100%">
+  <tr>
+    <div class="ribbon right hidden-xs"><a href="https://github.com/quasoft/backgammonjs">Project at GitHub</a></div>
+    <td height="100%" valign="middle">
+      <div class="container-fluid">
+        <div class="row">
+          <h1 class="text-center">Backgammon.js<br><small>Extensible multiplayer game</small></h1>
+          <br>
+
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col col-ts-12 col-xs-6 text-right">
+                <button id="btn-play-random" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>Play random game</button>
+              </div>
+              <div class="col col-ts-12 col-xs-6 text-left">
+                <button id="btn-challenge-friend" class="btn btn-default btn-lg" disabled="disabled"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Challenge friend</button>
+              </div>
+            </div>
+            <!--
+            <div class="row centered">
+              <div class="input-group input-group-lg">
+                <input id="foo" type="text" class="form-control" value="test1234">
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-copy" type="button" data-clipboard-target="#foo">Copy</button>
+                </span>
+              </div>
+            </div>
+            -->
+          </div>
+
+        </div>
+      </div>
+    </td>
+  </tr>
+  </table>
+  
+  <!-- Game board -->
+  <table id="game-view" width="100%" height="100%" style="display: none">
+  <tr>
+    <td height="45">
+      <div id="toolbar">
+        <button id="btn-create-game">Create new game</button>
+        <button id="btn-join-game">Join game</button>
+        <button id="btn-resign">Resign</button>
+        <!--<button id="btn-undo">Undo</button>-->
+        <div id="score">
+          <span id="myself">Myself</span>
+          <span id="myscore"></span>
+          <span id="otherscore"></span>
+          <span id="otherplayer">Other player</span>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td height="*">
+      <div id="backgammon"></div>
+    </td>
+  </tr>
+  </table>
+  
+  <div id="waiting-overlay" style="display: none">
+    <div class="loader"><span>Waiting another player...</br><img src="images/loader.gif"></span></div>
+  </div>
+  
+  <div id="messages">
   </div>
 </body>
 </html>

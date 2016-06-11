@@ -21,6 +21,10 @@ html, body,
   height: 100%;
 }
 
+.board {
+  height: 97%;
+}
+
 .pane {
   width: 45%;
 }
@@ -160,8 +164,86 @@ div.action-panel button.action {
   cursor: pointer;
 }
 
-/* Style */
+/* Global style */
 
+body {
+  /* TODO: use smaller image on mobile devices or a css only background */
+  background: url('../images/background-photo.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-color:#333;
+}
+
+.glyphicon {
+  top: 3px;
+  padding-right: 5px;
+}
+
+/* Index page style */
+#page-index h1,
+#page-index h1 small {
+  font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #ffffff;
+}
+
+#page-index h1 {
+  font-size: 50px;
+  font-weight: 700;
+  padding-right: 1em;
+}
+
+#page-index h1 small {
+  font-size: 30px;
+  font-weight: 300;
+  padding-left: 2em;
+}
+
+#page-index .row .col {
+  padding-bottom: 20px;
+}
+
+#page-index .input-group {
+  max-width: 250px;
+  margin: 0 auto;
+}
+
+#waiting-overlay {
+  background-color: rgba(239,239,239,0.9);
+  position:fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  top: 0px;
+  left: 0px;
+}
+
+#waiting-overlay .loader {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  text-align: center;
+}
+
+#waiting-overlay .loader:before {
+  content: '';
+  display: inline-block;
+  height: 90%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+}
+
+#waiting-overlay .loader span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 22px;
+  color: #000000;
+}
+
+/* Board style */
 .board {
   /*background-color: #5E4733*/;
   /*E8D1A5*/
@@ -211,12 +293,12 @@ div.action-panel button.action {
 }
 
 .piece.white .image {
-  background-image: url(../images/piece-white.png);
+  background-image: url(../images/piece-white-2.png);
   color: #000000;
 }
 
 .piece.black .image{
-  background-image: url(../images/piece-black.png);
+  background-image: url(../images/piece-black-2.png);
   color: #ffffff;
 }
 
@@ -232,26 +314,93 @@ div.action-panel button.action {
   background-repeat: no-repeat;
 }
 
-#dice .digit-1 {
-  background-image: url(../images/digit-1.png);
+#dice .digit-1-white {
+  background-image: url(../images/digit-1-white.png);
 }
 
-#dice .digit-2 {
-  background-image: url(../images/digit-2.png);
+#dice .digit-2-white {
+  background-image: url(../images/digit-2-white.png);
 }
 
-#dice .digit-3 {
-  background-image: url(../images/digit-3.png);
+#dice .digit-3-white {
+  background-image: url(../images/digit-3-white.png);
 }
 
-#dice .digit-4 {
-  background-image: url(../images/digit-4.png);
+#dice .digit-4-white {
+  background-image: url(../images/digit-4-white.png);
 }
 
-#dice .digit-5 {
-  background-image: url(../images/digit-5.png);
+#dice .digit-5-white {
+  background-image: url(../images/digit-5-white.png);
 }
 
-#dice .digit-6 {
-  background-image: url(../images/digit-6.png);
+#dice .digit-6-white {
+  background-image: url(../images/digit-6-white.png);
+}
+
+#dice .digit-1-black {
+  background-image: url(../images/digit-1-black.png);
+}
+
+#dice .digit-2-black {
+  background-image: url(../images/digit-2-black.png);
+}
+
+#dice .digit-3-black {
+  background-image: url(../images/digit-3-black.png);
+}
+
+#dice .digit-4-black {
+  background-image: url(../images/digit-4-black.png);
+}
+
+#dice .digit-5-black {
+  background-image: url(../images/digit-5-black.png);
+}
+
+#dice .digit-6-black {
+  background-image: url(../images/digit-6-black.png);
+}
+
+/* Responsive variations */
+@media screen and (min-width: 1024px) {
+  #page-index h1 {
+    font-size: 72px;
+  }
+  #page-index h1 small {
+    font-size: 36px;  
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #page-index h1 {
+    font-size: 36px;  
+  }
+  #page-index h1 small {
+    font-size: 22px;  
+  }
+}
+
+@media screen and (max-width: 544px) {
+  #page-index h1 {
+    font-size: 20px;
+  }
+  #page-index h1 small {
+    font-size: 12px;  
+  }
+  
+  #page-index .row .col {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) { 
+  .col-ts-12 {
+    width: 100%;    
+    float: none;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
 }

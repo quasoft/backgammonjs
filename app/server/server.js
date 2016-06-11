@@ -25,15 +25,21 @@ function Server() {
 
   /**
    * List of all players
-   * @type {Array}
+   * @type {Player[]}
    */
   this.players = [];
 
   /**
    * List of all games
-   * @type {Array}
+   * @type {Game[]}
    */
   this.games = [];
+  
+  /**
+   * List of players waiting for starting a random queue
+   * @type {Player[]}
+   */
+  this.randomPlayerQueue = [];
 
   /**
    * Server's default config object
@@ -69,6 +75,10 @@ function Server() {
 
       socket.on(comm.Message.GET_GAME_LIST, function(params){
         self.handleRequest(comm.Message.GET_GAME_LIST, socket, params);
+      });
+      
+      socket.on(comm.Message.PLAY_RANDOM, function(params){
+        self.handleRequest(comm.Message.PLAY_RANDOM, socket, params);
       });
 
       socket.on(comm.Message.CREATE_GAME, function(params){
@@ -226,12 +236,21 @@ function Server() {
     var reply = {
       'result': false
     };
+    
+    // Return client's sequence number back. Client uses this number
+    // to find the right callback that should be executed on message reply.
+    if (params.clientMsgSeq) {
+      reply.clientMsgSeq = params.clientMsgSeq;
+    }
 
     if (msg === comm.Message.CREATE_GUEST) {
       reply.result = this.handleCreateGuest(socket, params, reply);
     }
     else if (msg === comm.Message.GET_GAME_LIST) {
       reply.result = this.handleGetGameList(socket, params, reply);
+    }
+    else if (msg === comm.Message.PLAY_RANDOM) {
+      reply.result = this.handlePlayRandom(socket, params, reply);
     }
     else if (msg === comm.Message.CREATE_GAME) {
       reply.result = this.handleCreateGame(socket, params, reply);
@@ -256,15 +275,29 @@ function Server() {
       return;
     }
 
-    if (this.getSocketGame(socket) != null) {
-      reply.game = this.getSocketGame(socket);
+    var game = this.getSocketGame(socket);
+    if (game != null) {
+      reply.game = game;
     }
 
-    if (reply['errorMessage'] != null) {
-      console.log(reply['errorMessage']);
+    if (reply.errorMessage) {
+      console.log(reply.errorMessage);
     }
 
+    // First send reply
     this.sendMessage(socket, msg, reply);
+    
+    // After that execute provided sendAfter callback. The callback
+    // allows any additional events to be sent after the reply
+    // has been sent.
+    if (reply.sendAfter)
+    {
+      // Execute provided callback
+      reply.sendAfter();
+      
+      // Remove it from reply, it does not need to be sent to client
+      delete reply.sendAfter;
+    }
   };
 
   /**
@@ -313,6 +346,85 @@ function Server() {
     reply.list = list;
 
     return true;
+  };
+  
+  /**
+   * Handle client's request to play a random game.
+   * If there is another player waiting in queue, start a game
+   * between the two players. If there are no other players
+   * waiting, put player in queue.
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {string} params.ruleName - Name of rule that should be used for creating the game
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.handlePlayRandom = function (socket, params, reply) {
+    console.log('Play random game');
+    
+    var player = this.getSocketPlayer(socket);
+    if (player == null) {
+        reply.errorMessage = 'Player not found!';
+        return false;
+    }
+
+    var otherPlayer = this.randomPlayerQueue.pop();
+    if (otherPlayer != null) {
+      // Start a new game with this other player
+      var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
+      var game = model.Game.createNew(rule);
+      
+      otherPlayer.currentGame = game.id;
+      otherPlayer.currentPieceType = model.PieceType.WHITE;
+      model.Game.addHostPlayer(game, otherPlayer);
+      
+      player.currentGame = game.id;
+      player.currentPieceType = model.PieceType.BLACK;
+      model.Game.addGuestPlayer(game, player);
+      
+      game.hasStarted = true;
+      game.turnPlayer = otherPlayer;
+      
+      this.games.push(game);
+
+      // Assign game and rule objects to sockets of both players
+      this.setSocketGame(socket, game);
+      this.setSocketRule(socket, rule);
+      
+      var otherSocket = this.clients[otherPlayer.socketID];
+      this.setSocketGame(otherSocket, game);
+      this.setSocketRule(otherSocket, rule);
+      
+      // Remove players from waiting queue
+      model.Utils.removeItem(this.randomPlayerQueue, player);
+      model.Utils.removeItem(this.randomPlayerQueue, otherPlayer);
+
+      // Prepare reply
+      reply.host = otherPlayer;
+      reply.guest = player;
+      reply.ruleName = params.ruleName;
+      
+      var self = this;
+      reply.sendAfter = function () {
+        self.sendGameMessage(
+          game,
+          comm.Message.EVENT_RANDOM_GAME_START,
+          {
+            'game': game
+          }
+        );
+      };
+      
+      return true;
+    }
+    else {
+      // Put player in queue, and wait for another player
+      this.randomPlayerQueue.push(player);
+      
+      reply.isWaiting = true;
+      return true;
+    }
   };
 
   /**

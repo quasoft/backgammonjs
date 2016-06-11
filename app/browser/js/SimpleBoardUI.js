@@ -150,7 +150,8 @@ function SimpleBoardUI(client) {
     var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
     //countText = (count > 0) ? '<span>' + count + '</span>' : '&nbsp';
-    var countText = (piece.id) ? '<span>' + piece.id + '</span>' : '&nbsp';
+    //var countText = (piece.id) ? '<span>' + piece.id + '</span>' : '&nbsp';
+    var countText = "";
 
     var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">' + countText + '</div></div>');
     pieceElem.data('piece', piece);
@@ -297,6 +298,17 @@ function SimpleBoardUI(client) {
     this.createPieces();
 
     this.updateControls();
+    
+    this.randomizeDiceRotation();
+  };
+  
+  this.handleTurnStart = function () {
+    this.randomizeDiceRotation();
+  };
+  
+  this.randomizeDiceRotation = function () {
+    this.rotationAngle1 = Math.random() * 30 - 15;
+    this.rotationAngle2 = Math.random() * 30 - 15;
   };
 
   /**
@@ -360,7 +372,7 @@ function SimpleBoardUI(client) {
     $('#dice').toggle(showDice);
 
     if (showDice) {
-      this.updateDice(this.game.turnDice);
+      this.updateDice(this.game.turnDice, this.game.turnPlayer.currentPieceType);
     }
 
     console.log('Board UI updated');
@@ -368,16 +380,24 @@ function SimpleBoardUI(client) {
     console.log(this.client.player);
   };
 
-  this.updateDie = function (dice, index) {
+  this.updateDie = function (dice, index, type) {
+    var color = (type === model.PieceType.BLACK) ? 'black' : 'white';
     var id = '#die' + index;
+    
+    // Set text
     $(id).html(dice.values[index]);
-    $(id).removeClass('digit-1 digit-2 digit-3 digit-4 digit-5 digit-6');
-    $(id).addClass('digit-' + dice.values[index]);
+    
+    // Change image
+    $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black');
+    $(id).addClass('digit-' + dice.values[index] + '-' + color);
+    
+    var angle = (index == 0) ? this.rotationAngle1 : this.rotationAngle2;
+    $(id).css('transform', 'rotate(' + angle + 'deg)');
   };
 
-  this.updateDice = function (dice) {
-    this.updateDie(dice, 0);
-    this.updateDie(dice, 1);
+  this.updateDice = function (dice, type) {
+    this.updateDie(dice, 0, type);
+    this.updateDie(dice, 1, type);
   };
 
   this.playActions = function (actionList) {
