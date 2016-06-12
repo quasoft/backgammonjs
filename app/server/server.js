@@ -1,9 +1,11 @@
-var app = require('express')();
-var http = require('http').Server(app);
+var path = require('path');
+var express = require('express');
+var expressServer = express();
+var http = require('http').Server(expressServer);
 var io = require('socket.io')(http);
 var comm = require('../../lib/comm.js');
 var model = require('../../lib/model.js');
-var mongo = require('mongodb').MongoClient;
+//var mongo = require('mongodb').MongoClient;
 require('../../lib/rules/rule.js');
 require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
@@ -56,11 +58,12 @@ function Server() {
     /** Reference to server instance */
     var self = this;
 
-    app.get('/', function(req, res){
-      res.sendFile(__dirname + '/client.html');
-    });
+    expressServer.use(express.static(path.join(__dirname, '../browser')));
+    //express.get('/', function (req, res) {
+    //  res.sendFile('index.html', {'root': './app/browser/'});
+    //});
 
-    io.on('connection', function(socket){
+    io.on('connection', function (socket){
       console.log('Client connected');
 
       self.clients[socket.id] = socket;
@@ -69,45 +72,45 @@ function Server() {
         self.handleDisconnect(socket);
       });
 
-      socket.on(comm.Message.CREATE_GUEST, function(params){
+      socket.on(comm.Message.CREATE_GUEST, function (params) {
         self.handleRequest(comm.Message.CREATE_GUEST, socket, params);
       });
 
-      socket.on(comm.Message.GET_GAME_LIST, function(params){
+      socket.on(comm.Message.GET_GAME_LIST, function (params) {
         self.handleRequest(comm.Message.GET_GAME_LIST, socket, params);
       });
       
-      socket.on(comm.Message.PLAY_RANDOM, function(params){
+      socket.on(comm.Message.PLAY_RANDOM, function (params) {
         self.handleRequest(comm.Message.PLAY_RANDOM, socket, params);
       });
 
-      socket.on(comm.Message.CREATE_GAME, function(params){
+      socket.on(comm.Message.CREATE_GAME, function (params) {
         self.handleRequest(comm.Message.CREATE_GAME, socket, params);
       });
 
-      socket.on(comm.Message.JOIN_GAME, function(params){
+      socket.on(comm.Message.JOIN_GAME, function (params) {
         self.handleRequest(comm.Message.JOIN_GAME, socket, params);
       });
 
-      socket.on(comm.Message.START_GAME, function(params){
+      socket.on(comm.Message.START_GAME, function (params) {
         self.handleRequest(comm.Message.START_GAME, socket, params);
       });
 
-      socket.on(comm.Message.ROLL_DICE, function(params){
+      socket.on(comm.Message.ROLL_DICE, function (params) {
         self.handleRequest(comm.Message.ROLL_DICE, socket, params);
       });
 
-      socket.on(comm.Message.MOVE_PIECE, function(params){
+      socket.on(comm.Message.MOVE_PIECE, function (params) {
         self.handleRequest(comm.Message.MOVE_PIECE, socket, params);
       });
 
-      socket.on(comm.Message.CONFIRM_MOVES, function(params){
+      socket.on(comm.Message.CONFIRM_MOVES, function (params) {
         self.handleRequest(comm.Message.CONFIRM_MOVES, socket, params);
       });
 
     });
 
-    http.listen(comm.Protocol.Port, function(){
+    http.listen(comm.Protocol.Port, function () {
       console.log('listening on *:' + comm.Protocol.Port);
     });
   };
@@ -364,7 +367,7 @@ function Server() {
     console.log('Play random game');
     
     var player = this.getSocketPlayer(socket);
-    if (player == null) {
+    if ((!player) || (player == null)) {
         reply.errorMessage = 'Player not found!';
         return false;
     }
@@ -440,7 +443,7 @@ function Server() {
     console.log('Creating new game', params);
 
     var player = this.getSocketPlayer(socket);
-    if (player == null) {
+    if ((!player) || (player == null)) {
         reply.errorMessage = 'Player not found!';
         return false;
     }
@@ -478,6 +481,7 @@ function Server() {
       reply.errorMessage = 'Game with ID ' + params.gameID + ' not found!';
       return false;
     }
+    // TODO: Find game by ID, do not join last game created
     var game = this.games[this.games.length - 1];
     /*
     var game = this.getGameByID(params.gameID);
@@ -493,7 +497,7 @@ function Server() {
     }
 
     var guestPlayer = this.getSocketPlayer(socket);
-    if (guestPlayer == null) {
+    if ((!guestPlayer) || (guestPlayer == null)) {
       reply.errorMessage = 'Player not found!';
       return false;
     }
@@ -633,47 +637,43 @@ function Server() {
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
 
-    //if (player.currentPieceType != params.type) {
-    //  reply.errorMessage = 'Player cannot move ' + params.type + ' pieces!';
-    //  return false;
-    //}
-
-    /*
-    if (!rule.validateMove(game, params.position, params.type, params.steps)) {
-      reply.errorMessage = 'Requested move is not valid!';
-      return false;
-    }
-    */
-
     var actionList = rule.getMoveActions(game, params.position, player.currentPieceType, params.steps);
     if (actionList.length == 0) {
       reply.errorMessage = 'Requested move is not valid!';
       return false;
     }
 
-    rule.applyMoveActions(game, actionList);
+    try {
+      rule.applyMoveActions(game, actionList);
+      rule.markAsPlayed(game, params.steps);
+      
+      reply.position = params.position;
+      reply.type = params.type;
+      reply.steps = params.steps;
+      reply.moveActionList = actionList;
 
-    rule.markAsPlayed(game, params.steps);
+      this.sendGameMessage(
+        game,
+        comm.Message.EVENT_PIECE_MOVE,
+        {
+          'game': game,
+          'position': params.position,
+          'type': params.type,
+          'steps': params.steps,
+          'moveActionList': actionList
+        }
+      );
 
-    reply.position = params.position;
-    reply.type = params.type;
-    reply.steps = params.steps;
-    reply.moveActionList = actionList;
+      return true;      
+    }
+    catch (e) {
+      reply.position = params.position;
+      reply.type = params.type;
+      reply.steps = params.steps;
+      reply.moveActionList = [];
 
-    this.sendGameMessage(
-      game,
-      //player.id,
-      comm.Message.EVENT_PIECE_MOVE,
-      {
-        'game': game,
-        'position': params.position,
-        'type': params.type,
-        'steps': params.steps,
-        'moveActionList': actionList
-      }
-    );
-
-    return true;
+      return false;
+    }
   };
 
   /**
@@ -749,6 +749,7 @@ function Server() {
 var server = new Server();
 var db = null;
 
+/*
 mongo.connect('mongodb://127.0.0.1:27017/backgammon', function(err, database) {
   if(err) throw err;
 
@@ -757,3 +758,7 @@ mongo.connect('mongodb://127.0.0.1:27017/backgammon', function(err, database) {
   // Start server if connected to database
   server.run();
 });
+*/
+
+// TODO: Do not start server, if database was not connected to
+server.run();

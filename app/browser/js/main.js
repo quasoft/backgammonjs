@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var cookie = require('js-cookie');
 // TODO: Fix this hack. Makes bootstrap happy, but this should not be needed.
 window.jQuery = window.$ = $;
 
@@ -28,8 +29,10 @@ function App() {
 
     $('#game-view').hide();
     $('#index-view').hide();
+    $('#github-ribbon').hide();
     if (this._currentView == 'index') {
       $('#index-view').show();
+      $('#github-ribbon').show();
     }
     else if (this._currentView == 'game') {
       $('#game-view').show();
@@ -58,6 +61,7 @@ $(document).ready(function() {
     app.setIsWaiting(false);
     app.setCurrentView('game');
     app.updateView();
+    client.resizeUI();
   });
 
   $('#btn-create-game').click(function (e) {
@@ -72,6 +76,10 @@ $(document).ready(function() {
     app.setIsWaiting(true);
     app.updateView();
     client.reqPlayRandom('RuleBgCasual');
+  });
+  
+  $(window).resize(function () {
+    client.resizeUI();
   });
 
 });

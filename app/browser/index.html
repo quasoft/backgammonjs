@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+  <!--<link rel="stylesheet" href="bower_components/normalize.css/normalize.css">-->
   <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
   <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,700" rel="stylesheet" type="text/css">
@@ -19,6 +19,14 @@
         <div id="field1" class="field row1 col0"></div>
       </div>
       <div id="bar" class="bar">
+        <table id="index-view" width="100%" height="100%">
+        <tr height="50%">
+          <td valign="top" id="top-bar"></td>
+        </tr>
+        <tr height="50%">
+          <td valign="bottom" id="bottom-bar"></td>
+        </tr>
+        </table>
       </div>
       <div id="pane-right" class="pane">
         <div id="field2" class="field row0 col1"></div>
@@ -27,14 +35,11 @@
     </div>
     <div id="frame-bottom" class="frame">&nbsp;</div>
     <div class="action-panel">
-      <button id="btn-start" class="action" style="display: none">Start</button>
-      <button id="btn-roll" class="action" style="display: none">Roll</button>
-      <button id="btn-confirm" class="action" style="display: none">Confirm</button>
-      <button id="btn-undo" class="action" style="display: none">Undo</button>
-      <div id="dice" style="display: none">
-          <span id="die0" class="die"></span>
-          <span id="die1" class="die"></span>
-      </div>
+      <button id="btn-start" class="btn btn-primary btn-lg action" style="display: none">Start</button>
+      <button id="btn-roll" class="btn btn-primary btn-lg action" style="display: none">Roll</button>
+      <button id="btn-confirm" class="btn btn-primary btn-lg action" style="display: none">Confirm</button>
+      <button id="btn-undo" class="btn btn-default btn-lg action" style="display: none" disabled="disabled">Undo</button>
+      <div id="dice" style="display: none"></div>
     </div>
   </script>
   
@@ -44,8 +49,8 @@
   <!-- Landing page -->
   <table id="index-view" width="100%" height="100%">
   <tr>
-    <div class="ribbon right hidden-xs"><a href="https://github.com/quasoft/backgammonjs">Project at GitHub</a></div>
     <td height="100%" valign="middle">
+      <div id="github-ribbon" class="ribbon right hidden-xs"><a href="https://github.com/quasoft/backgammonjs">Project at GitHub</a></div>
       <div class="container-fluid">
         <div class="row">
           <h1 class="text-center">Backgammon.js<br><small>Extensible multiplayer game</small></h1>
@@ -83,9 +88,11 @@
   <tr>
     <td height="45">
       <div id="toolbar">
-        <button id="btn-create-game">Create new game</button>
-        <button id="btn-join-game">Join game</button>
-        <button id="btn-resign">Resign</button>
+        <!--
+        <button id="btn-create-game" class="btn btn-default">Create new game</button>
+        <button id="btn-join-game" class="btn btn-default">Join game</button>
+        -->
+        <button id="btn-resign" class="btn btn-default">Resign</button>
         <!--<button id="btn-undo">Undo</button>-->
         <div id="score">
           <span id="myself">Myself</span>

@@ -79,9 +79,18 @@ function SimpleBoardUI(client) {
     var pieceElem = this.getTopPieceElem(pos);
     return pieceElem.data('piece');
   };
+  
+  this.getBarElem = function (type) {
+    var barID = (type === this.client.player.currentPieceType) ? 'top-bar' : 'bottom-bar';
+    var bar = $('#' + barID);
+    return bar;
+  };
 
-  this.getBarPieceElem = function () {
-
+  this.getBarPieceElem = function (type) {
+    var barElem = this.getBarElem(type);
+    var pieceElem = barElem.find('div.piece').last();
+    
+    return pieceElem;
   };
 
   this.getPieceByID = function (id) {
@@ -101,59 +110,117 @@ function SimpleBoardUI(client) {
     });
     */
     var self = this;
-    pointElem.click(function (e) {
+    
+    // TODO: Use contextmenu instead of mousedown and block
+    //       browser menu
+    /*
+    $(document).on("contextmenu", pointElem, function(e){
+       alert('Context Menu event has fired!');
+       return false;
+    });
+    */
+    
+    $(document).on("contextmenu", pointElem, function(e){
+       //return false;
+    });
+    
+    pointElem.mousedown(function(e) {
+    //pointElem.click(function (e) {
       if (!model.Game.hasMoreMoves(self.game)) {
         return;
       }
 
-      var func = null;
-      // If right mouse button was pressed, play lowest die value
+      var movesLeft = self.game.turnDice.movesLeft;
+      var steps;
+      // If right mouse button was pressed, play last die value
       if (e.which == 3) {
-        func = Math.min;
+        steps = movesLeft[movesLeft.length - 1];
       }
-      // If left mouse button was pressed, play highest die value
+      // If left mouse button was pressed, play first die value
       else {
-        func = Math.max;
+        steps = movesLeft[0];
       }
-      var steps = func.apply(Math, self.game.turnDice.movesLeft);
-      console.log($(this));
       var position = $(this).data('position');
-      console.log(position);
       //var piece = self.getTopPiece(position);
       self.client.reqMove(position, null, steps);
+      
+      e.preventDefault();
+      
+      //return false;
     });
   };
 
   this.createPoints = function () {
+    /*
+      Fields are numbered in the following way,
+      no matter what pieces the user is playing with:
+      - Field 0 - top left
+      - Field 1 - bottom left
+      - Field 2 - top right
+      - Field 3 - bottom right
+      
+      If use is playing with white piece, the fields
+      are mapped to point positions in the following
+      way.
+      
+      +12-13-14-15-16-17------18-19-20-21-22-23-+
+      |                  |   |                  |
+      |      Field 0     |   |      Field 2     |
+      |                  |   |                  |
+      |                  |   |                  |
+      |                  |   |                  |
+      |                  |   |                  |
+      |                  |   |                  |
+      |                  |   |                  |
+      |                  |   |                  |
+      |      Field 1     |   |      Field 3     |
+      |                  |   |                  |
+      +11-10--9--8--7--6-------5--4--3--2--1--0-+ -1
+      
+      The fieldsMap object is used to swap top and bottom points,
+      depending on player's piece type.
+    */
+    
+    var fieldsMap = {};    
+    
+    if (this.client.player.currentPieceType === model.PieceType.BLACK) {
+      fieldsMap[0] = 1;
+      fieldsMap[1] = 0;
+      fieldsMap[2] = 3;
+      fieldsMap[3] = 2;
+    }
+    else {
+      fieldsMap[0] = 0;
+      fieldsMap[1] = 1;
+      fieldsMap[2] = 2;
+      fieldsMap[3] = 3;
+    }
+    
     for (var i = 12; i < 18; i++) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[0], i, typeClass);
+      this.createPoint(this.fields[fieldsMap[0]], i, typeClass);
     }
-    
+
     for (var i = 11; i >= 6; i--) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[1], i, typeClass);
+      this.createPoint(this.fields[fieldsMap[1]], i, typeClass);
     }
-    
+
     for (var i = 18; i < 24; i++) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[2], i, typeClass);
+      this.createPoint(this.fields[fieldsMap[2]], i, typeClass);
     }
 
     for (var i = 5; i >= 0; i--) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[3], i, typeClass);
+      this.createPoint(this.fields[fieldsMap[3]], i, typeClass);
     }
   };
 
   this.createPiece = function (pos, piece, count) {
     var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
-    //countText = (count > 0) ? '<span>' + count + '</span>' : '&nbsp';
-    //var countText = (piece.id) ? '<span>' + piece.id + '</span>' : '&nbsp';
-    var countText = "";
-
-    var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">' + countText + '</div></div>');
+    var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">&nbsp;</div></div>');
     pieceElem.data('piece', piece);
 
     var pointElem = this.getPointElem(pos);
@@ -182,12 +249,89 @@ function SimpleBoardUI(client) {
     });
 */
   };
+  
+  /**
+   * Compact pieces in all positions
+   */
+  this.compactAllPositions = function () {
+    for (var i = 0; i < 24; i++) {
+      this.compactPosition(i);
+    }
+  }
+  
+  /**
+   * Compact pieces in specific DOM element to make them fit vertically.
+   * @param {number} pos - Position of point
+   * @param {string} alignment - Alignment of pieces - 'top' or 'bottom', depending on within which side of the board the piece is
+   */
+  this.compactElement = function (element, alignment) {
+    var elementHeight = element.height();
+    var itemCount = element.children().length;
+
+    if (itemCount > 0) {
+      var firstItem = element.children().first();
+      var itemHeight = firstItem.width();
+      var ratio = 100;
+      var overflow = (itemHeight * itemCount) - elementHeight;
+
+      if ((overflow > 0) && (itemHeight > 0) && (itemCount > 1))
+      {
+        // Example:
+        // itemHeight = 88
+        // offset per item = 8
+        // margin in percent = 100 - ((8 / 88) * 100)
+        ratio = 100 - (((overflow / (itemCount - 1)) / itemHeight) * 100);
+      }
+      
+      if (ratio > 100) {
+        ratio = 100;
+      }
+      if (ratio <= 0) {
+        ratio = 1;
+      }
+      
+      /*
+      var marginPercent = ratio * i;
+      var negAlignment = (alignment === 'top') ? 'bottom' : 'top';
+      element.children().css(alignment, "0");
+      element.children().css("margin-" + alignment, this.toFixedDown(marginPercent, 2) + "%");
+      element.children().css(negAlignment, "inherit");
+      element.children().css("margin-" + negAlignment, "inherit");
+      */
+      
+      var self = this;
+      element.children().each(function(i) {
+        var marginPercent = ratio * i;
+        var negAlignment = (alignment === 'top') ? 'bottom' : 'top';
+        
+        $(this).css(alignment, "0");
+        $(this).css("margin-" + alignment, self.toFixedDown(marginPercent, 2) + "%");
+
+        $(this).css(negAlignment, "inherit");
+        $(this).css("margin-" + negAlignment, "inherit");
+      });
+      
+    }
+  };
 
   /**
-   * Compact pieces in specific point to make them fit on screen vertically.
+   * Compact pieces in specific position to make them fit on screen vertically.
    * @param {Number} pos - Position of point
    */
-  this.compactPieces = function (pos) {
+  this.compactPosition = function (pos) {
+    var pointElement = this.getPointElem(pos);
+    var alignment;
+    
+    if (this.client.player.currentPieceType === model.PieceType.BLACK) {
+      alignment = ((pos >= 0) && (pos <= 11)) ? 'top' : 'bottom';
+    }
+    else {
+      alignment = ((pos >= 12) && (pos <= 23)) ? 'top' : 'bottom';
+    }
+    
+    this.compactElement(pointElement, alignment);
+    return;
+    
     var point = this.game.state.points[pos];
     var pointElement = this.getPointElem(pos);
     var pointHeight = pointElement.height();
@@ -197,13 +341,7 @@ function SimpleBoardUI(client) {
       var pieceHeight = (firstPieceElement) ? firstPieceElement.width() : 0;
       var ratio = 100;
       var overflow = (pieceHeight * point.length) - pointHeight;
-      if (pos == 12) {
-        console.log('pos: ' + pos);
-        console.log('pointHeight: ' + pointHeight);
-        console.log('getPieceCount: ' + point.length);
-        console.log('pieceHeight: ' + pieceHeight);
-        console.log('overflow: ' + overflow);
-      }
+
       if ((overflow > 0) && (pieceHeight > 0) && (point.length > 1))
       {
         // Example:
@@ -212,32 +350,21 @@ function SimpleBoardUI(client) {
         // margin in percent = 100 - ((8 / 88) * 100)
         ratio = 100 - (((overflow / (point.length - 1)) / pieceHeight) * 100);
       }
-      if (pos == 12) {
-        console.log('ratio: ' + ratio);
-      }
+      
       if (ratio > 100) {
         ratio = 100;
       }
       if (ratio <= 0) {
         ratio = 1;
       }
-      if (pos == 12) {
-        console.log('ratio: ' + ratio);
-      }
 
       for (var i = 0; i < point.length; i++) {
         var piece = point[i];
         var pieceElement = this.getPieceByID(piece.id);
-        if (pos == 12) {
-          console.log('pieceID: ' + piece.id);
-          console.log('ratio: ' + ratio);
-        }
         var marginPercent = ratio * i;
 
         var alignment = ((pos >= 12) && (pos <= 23)) ? 'top' : 'bottom';
         var negAlignment = ((pos >= 12) && (pos <= 23)) ? 'bottom' : 'top';
-        
-        console.log(pos, alignment, negAlignment);
 
         pieceElement.css(alignment, "0");
         pieceElement.css("margin-" + alignment, this.toFixedDown(marginPercent, 2) + "%");
@@ -265,7 +392,7 @@ function SimpleBoardUI(client) {
       for (var i = 0; i < point.length; i++) {
         this.createPiece(pos, point[i], 0);
       }
-      this.compactPieces(pos);
+      this.compactPosition(pos);
     }
   };
 
@@ -307,8 +434,10 @@ function SimpleBoardUI(client) {
   };
   
   this.randomizeDiceRotation = function () {
-    this.rotationAngle1 = Math.random() * 30 - 15;
-    this.rotationAngle2 = Math.random() * 30 - 15;
+    this.rotationAngle = [];
+    for (var i = 0; i < 10; i++) {
+      this.rotationAngle[i] = Math.random() * 30 - 15;  
+    }
   };
 
   /**
@@ -325,7 +454,7 @@ function SimpleBoardUI(client) {
 
   this.updateControls = function () {
 
-    if (this.game == null) {
+    if ((!this.game) || (this.game == null)) {
       $('#btn-start').hide();
       $('#btn-roll').hide();
       $('#btn-confirm').hide();
@@ -376,8 +505,8 @@ function SimpleBoardUI(client) {
     }
 
     console.log('Board UI updated');
-    console.log(this.game);
-    console.log(this.client.player);
+    console.log('Game:', this.game);
+    console.log('Player:', this.client.player);
   };
 
   this.updateDie = function (dice, index, type) {
@@ -385,25 +514,34 @@ function SimpleBoardUI(client) {
     var id = '#die' + index;
     
     // Set text
-    $(id).html(dice.values[index]);
+    $(id).html(dice.movesLeft[index]);
     
     // Change image
     $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black');
-    $(id).addClass('digit-' + dice.values[index] + '-' + color);
+    $(id).addClass('digit-' + dice.movesLeft[index] + '-' + color);
     
-    var angle = (index == 0) ? this.rotationAngle1 : this.rotationAngle2;
+    var angle = this.rotationAngle[index];
     $(id).css('transform', 'rotate(' + angle + 'deg)');
   };
 
   this.updateDice = function (dice, type) {
-    this.updateDie(dice, 0, type);
-    this.updateDie(dice, 1, type);
+    $('#dice').empty();
+    for (var i = 0; i < dice.movesLeft.length; i++) {
+      $('#dice').append('<span id="die' + i + '" class="die"></span>');
+      this.updateDie(dice, i, type);
+    }
+    
+    var self = this;
+    $('#dice .die').click(function (e) {
+      console.log(dice.movesLeft);
+      model.Utils.rotateLeft(dice.movesLeft);
+      self.updateControls();
+    });
   };
 
   this.playActions = function (actionList) {
     for (var i = 0; i < actionList.length; i++) {
       var action = actionList[i];
-
       if (action.type === model.MoveActionType.MOVE) {
         var piece = this.getTopPiece(action.from);
         if (piece.type !== action.pieceType) {
@@ -417,8 +555,8 @@ function SimpleBoardUI(client) {
         pieceElem.detach();
         dstPointElem.append(pieceElem);
 
-        this.compactPieces(srcPointElem.data('position'));
-        this.compactPieces(dstPointElem.data('position'));
+        this.compactPosition(srcPointElem.data('position'));
+        this.compactPosition(dstPointElem.data('position'));
       }
       else if (action.type === model.MoveActionType.RECOVER) {
         var pieceElem = this.getBarPieceElem(action.pieceType);
@@ -429,7 +567,8 @@ function SimpleBoardUI(client) {
         pieceElem.detach();
         dstPointElem.append(pieceElem);
 
-        this.compactPieces(dstPointElem.data('position'));
+        this.compactElement(srcPointElem, action.pieceType === this.client.player.currentPieceType ? 'top' : 'bottom');
+        this.compactPosition(dstPointElem.data('position'));
       }
       else if (action.type === model.MoveActionType.HIT) {
         var piece = this.getTopPiece(action.position);
@@ -437,12 +576,15 @@ function SimpleBoardUI(client) {
           throw new Error('Wrong piece type!');
         }
 
-        var pieceElem = this.getTopPieceElem(action.from);
+        var pieceElem = this.getTopPieceElem(action.position);
         var srcPointElem = pieceElem.parent();
+        var dstPointElem = this.getBarElem(action.pieceType);
 
         pieceElem.detach();
+        dstPointElem.append(pieceElem);
 
-        this.compactPieces(srcPointElem.data('position'));
+        this.compactPosition(srcPointElem.data('position'));
+        this.compactElement(dstPointElem, action.pieceType === this.client.player.currentPieceType ? 'top' : 'bottom');
       }
       else if (action.type === model.MoveActionType.BEAR) {
         var piece = this.getTopPiece(action.position);
@@ -450,18 +592,25 @@ function SimpleBoardUI(client) {
           throw new Error('Wrong piece type!');
         }
 
-        var pieceElem = this.getTopPieceElem(action.from);
+        var pieceElem = this.getTopPieceElem(action.position);
         var srcPointElem = pieceElem.parent();
 
         pieceElem.detach();
 
-        this.compactPieces(srcPointElem.data('position'));
+        this.compactPosition(srcPointElem.data('position'));
       }
 
       // TODO: Make sure actions are played back slow enough for player to see
       // all of them comfortly
     }
   }
+  
+  /**
+   * Compact pieces after UI was resized
+   */
+  this.resizeUI = function () {
+    this.compactAllPositions();
+  };
 }
 
 module.exports = SimpleBoardUI;

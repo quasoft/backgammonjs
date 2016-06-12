@@ -12,7 +12,9 @@ npm install
 
 ## How to run:
 
-open [client.html](client.html) in modern web browser
+First, start server.
+
+Then, open http://localhost:3000 or the [index.html](index.html) file manually in modern web browser.
 
 ## How to build:
 

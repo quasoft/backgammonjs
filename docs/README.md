@@ -1,4 +1,4 @@
-# backgammon.js: Documentation
+# [backgammon.js](../README.md) :: Documentation
 
 ## Contents:
 
@@ -90,23 +90,6 @@ There will be two main types of users of the system:
 - **Players** - Players will just play the game
 - **Developers** - Developers will host the game at servers and write custom rules
 
-## Naming notions
-
-// TODO: Explain basic terms used in source code like board, point, piece
-- Board:
-- Point:
-- Piece:
-- Piece type:
-- Bar:
-- Home field:
-- Outside:
-- Direction:
-- Position:
-- Normalized position:
-- Denormalized position:
-- Move:
-- Action:
-
 ## Use cases
 
 Use cases for those actors complement the goals from users' perspective:
@@ -127,6 +110,7 @@ These are business objectives that exactly match goals.
 
 > Allow anyone to challenge friends or play with strangers online with zero time to start the game - requires no registration or configuration
 
+- [X] Allow players to quickly start a random game;
 - [ ] Allow players to send invites by chat or E-mail;
 
 -----
@@ -158,25 +142,35 @@ Coming soon...
 | Objective                                   | State                                | Time Frame |
 |:--------------------------------------------|:-------------------------------------|:----------:|
 | Create documentation                        | :soon: In Progress                   |            |
-| Choose network <br> communication library   | :white_check_mark: Completed         |            |
+| Choose network/communication library        | :white_check_mark: Completed         |            |
 | Choose DBMS                                 | :white_check_mark: Completed         |            |
 | Create object model                         | :soon: Working                       |            |
-| Create a sample rule                        | :white_large_square: Not implemented |            |
+| Create a sample rule                        | :construction: In Progress           |            |
 | Create simple board UI                      | :construction: In Progress           |            |
 | Integrate Socket.IO                         | :soon: Working                       |            |
 | Allow player to create and join game        | :construction: In Progress           |            |
 | Allow player to start game                  | :soon: Working                       |            |
+| Allow player to start random game           | :soon: Working                       |            |
 | Update board UI on game state change        | :construction: In Progress           |            |
 | Allow player to roll dice (at server)       | :soon: Working                       |            |
 | Use quality random generator                | :white_large_square: Not implemented |            |
-| Allow player to move pieces                 | :white_large_square: Not implemented |            |
-| Validate moves at server, using rules       | :white_large_square: Not implemented |            |
+| Always show player's pieces at bottom       | :soon: Working                       |            |
+| Play lowest die value on right click        | :soon: Working                       |            |
+| Reverse die values on click at dice         | :soon: Working                       |            |
+| Allow player to move pieces                 | :soon: Working                       |            |
+| Validate moves at server, using rules       | :construction: In Progress           |            |
 | Implement matches                           | :white_large_square: Not implemented |            |
-| Allow can get "challenge" links             | :white_large_square: Not implemented |            |
-| Allow can see list of games                 | :white_large_square: Not implemented |            |
+| Show player names and match score in toolbar| :white_large_square: Not implemented |            |
+| Allow player to resign from game/match      | :white_large_square: Not implemented |            |
+| Allow user to get "challenge" links         | :white_large_square: Not implemented |            |
+| Allow user to see list of games             | :white_large_square: Not implemented |            |
 | Users can filter/sort games by rule         | :white_large_square: Not implemented |            |
 | Users can choose use of clock, cube and match length | :white_large_square: Not implemented |            |
 | Polish simple board UI                      | :white_large_square: Not implemented |            |
+| Continue game on page reload                | :white_large_square: Not implemented |            |
+| Allow player to end turn, if a move cannot be played | :white_large_square: Not implemented |            |
+| Force player to use all possible moves, if possible | :white_large_square: Not implemented |            |
+
 
 *Possible states: :white_large_square: Not implemented, :construction: In progress, :soon: Working, :white_check_mark: Completed*
 
@@ -269,12 +263,11 @@ Directory structure of code follows project architecture:
 
 ## Credits
 
-- Dice icon by ElegantThemes
 - 
 
 ### Tools used:
 
-- Atom editor with `atom-tern.js`
+- Brackets & Atom editor (with `atom-tern.js`)
 - Netbeans IDE
 - White StarUML
 - browserify.js

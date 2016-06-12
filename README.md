@@ -15,6 +15,12 @@
 
 If you want to lean more about the project see [Project Documentation](docs/README.md).
 
+## Teaser (not ready for demo yet)
+
+![Landing page](docs/images/progress-landing-page.jpg)
+
+![Prototype](docs/images/progress-gameplay.jpg)
+
 ## Demo
 Comming soon...
 

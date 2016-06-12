@@ -12,6 +12,6 @@
   "scripts": {
     "start:db": "mongod --dbpath ./app/server/db --port 27017",
 	"start:server": "node ./app/server/server.js",
-    "start": "npm run start:db & npm run start:server"
+    "start": "npm run start:server"
   }
 }
