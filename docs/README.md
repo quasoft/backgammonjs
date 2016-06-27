@@ -117,7 +117,7 @@ These are business objectives that exactly match goals.
 
 > Fair gameplay that is as close to real game as possible
 
-- [ ] Use quality random generator to achieve
+- [ ] Use quality random generator
 
 -----
 
@@ -152,15 +152,19 @@ Coming soon...
 | Allow player to start game                  | :soon: Working                       |            |
 | Allow player to start random game           | :soon: Working                       |            |
 | Update board UI on game state change        | :construction: In Progress           |            |
-| Allow player to roll dice (at server)       | :soon: Working                       |            |
+| Allow player to roll dice (at server)       | :white_check_mark: Completed         |            |
 | Use quality random generator                | :white_large_square: Not implemented |            |
-| Always show player's pieces at bottom       | :soon: Working                       |            |
-| Play lowest die value on right click        | :soon: Working                       |            |
-| Reverse die values on click at dice         | :soon: Working                       |            |
-| Allow player to move pieces                 | :soon: Working                       |            |
-| Validate moves at server, using rules       | :construction: In Progress           |            |
+| Always show player's pieces at bottom       | :white_check_mark: Completed         |            |
+| Play lowest die value on right click        | :white_check_mark: Completed         |            |
+| Reverse die values on click at dice         | :white_check_mark: Completed         |            |
+| Allow player to move pieces                 | :white_check_mark: Completed         |            |
+| Validate moves at server, using rules       | :white_check_mark: Completed         |            |
+| Allow player to end turn, if a move cannot be played | :white_check_mark: Completed |            |
+| Force player to use all possible moves, if possible | :white_check_mark: Completed |            |
 | Implement matches                           | :white_large_square: Not implemented |            |
+| Show an offcanvas (swipe to show) game menu | :white_large_square: Not implemented |            |
 | Show player names and match score in toolbar| :white_large_square: Not implemented |            |
+| Show borne pieces                            | :white_large_square: Not implemented |            |
 | Allow player to resign from game/match      | :white_large_square: Not implemented |            |
 | Allow user to get "challenge" links         | :white_large_square: Not implemented |            |
 | Allow user to see list of games             | :white_large_square: Not implemented |            |
@@ -168,8 +172,6 @@ Coming soon...
 | Users can choose use of clock, cube and match length | :white_large_square: Not implemented |            |
 | Polish simple board UI                      | :white_large_square: Not implemented |            |
 | Continue game on page reload                | :white_large_square: Not implemented |            |
-| Allow player to end turn, if a move cannot be played | :white_large_square: Not implemented |            |
-| Force player to use all possible moves, if possible | :white_large_square: Not implemented |            |
 
 
 *Possible states: :white_large_square: Not implemented, :construction: In progress, :soon: Working, :white_check_mark: Completed*

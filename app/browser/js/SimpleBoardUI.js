@@ -36,17 +36,7 @@ function SimpleBoardUI(client) {
 
     var self = this;
 
-    $('#btn-start').click(function (e) {
-      self.client.reqStartGame();
-    });
-
-    $('#btn-roll').click(function (e) {
-      self.client.reqRollDice();
-    });
-
-    $('#btn-confirm').click(function (e) {
-      self.client.reqConfirmMoves();
-    });
+    this.assignActions();
   };
 
   /**
@@ -68,16 +58,25 @@ function SimpleBoardUI(client) {
   this.getPointElem = function (pos) {
     return $('#point' + pos);
   };
+  
+  this.getPieceElem = function (piece) {
+    return $('#piece' + piece.id);
+  };
 
   this.getTopPieceElem = function (pos) {
     var pointElem = $('#point' + pos);
-    var pieceElem = pointElem.find('div.piece').last();
-    return pieceElem;
+    if (pointElem) {
+      return pointElem.find('div.piece').last();
+    }
+    return null;
   };
 
   this.getTopPiece = function (pos) {
     var pieceElem = this.getTopPieceElem(pos);
-    return pieceElem.data('piece');
+    if (pieceElem) {
+      return pieceElem.data('piece');
+    }
+    return null;
   };
   
   this.getBarElem = function (type) {
@@ -86,11 +85,19 @@ function SimpleBoardUI(client) {
     return bar;
   };
 
-  this.getBarPieceElem = function (type) {
+  this.getBarTopPieceElem = function (type) {
     var barElem = this.getBarElem(type);
     var pieceElem = barElem.find('div.piece').last();
     
     return pieceElem;
+  };
+  
+  this.getBarTopPiece = function (type) {
+    var pieceElem = this.getBarTopPieceElem(type);
+    if (pieceElem) {
+      return pieceElem.data('piece');
+    }
+    return null;
   };
 
   this.getPieceByID = function (id) {
@@ -101,53 +108,6 @@ function SimpleBoardUI(client) {
     var pointElem = $('<div id="point' + pos + '" class="point ' + type + '"></div>');
     pointElem.data('position', pos);
     field.append(pointElem);
-
-    /*
-    var self = this;
-    pointElem.click({ 'pos': pos }, function (e) {
-      window.alert("clicked point " + e.data.pos);
-      //self.client.reqStartGame(self.game.id);
-    });
-    */
-    var self = this;
-    
-    // TODO: Use contextmenu instead of mousedown and block
-    //       browser menu
-    /*
-    $(document).on("contextmenu", pointElem, function(e){
-       alert('Context Menu event has fired!');
-       return false;
-    });
-    */
-    
-    $(document).on("contextmenu", pointElem, function(e){
-       //return false;
-    });
-    
-    pointElem.mousedown(function(e) {
-    //pointElem.click(function (e) {
-      if (!model.Game.hasMoreMoves(self.game)) {
-        return;
-      }
-
-      var movesLeft = self.game.turnDice.movesLeft;
-      var steps;
-      // If right mouse button was pressed, play last die value
-      if (e.which == 3) {
-        steps = movesLeft[movesLeft.length - 1];
-      }
-      // If left mouse button was pressed, play first die value
-      else {
-        steps = movesLeft[0];
-      }
-      var position = $(this).data('position');
-      //var piece = self.getTopPiece(position);
-      self.client.reqMove(position, null, steps);
-      
-      e.preventDefault();
-      
-      //return false;
-    });
   };
 
   this.createPoints = function () {
@@ -225,29 +185,6 @@ function SimpleBoardUI(client) {
 
     var pointElem = this.getPointElem(pos);
     pointElem.append(pieceElem);
-
-    /*
-    var self = this;
-    pieceElem.click(function (e) {
-      if (!model.Game.hasMoreMoves(self.game)) {
-        return;
-      }
-
-      var func = null;
-      // If right mouse button was pressed, play lowest die value
-      if (e.which == 3) {
-        func = Math.min;
-      }
-      // If left mouse button was pressed, play highest die value
-      else {
-        func = Math.max;
-      }
-      var steps = func.apply(Math, self.game.turnDice.movesLeft);
-      var position = $(this).parent().data('position');
-      var piece = $(this).data('piece');
-      self.client.reqMove(position, piece.type, steps);
-    });
-*/
   };
   
   /**
@@ -423,7 +360,8 @@ function SimpleBoardUI(client) {
 
     this.createPoints();
     this.createPieces();
-
+    
+    this.assignActions();
     this.updateControls();
     
     this.randomizeDiceRotation();
@@ -450,6 +388,133 @@ function SimpleBoardUI(client) {
     this.removePieces();
     this.createPieces();
     this.updateControls();
+  };
+  
+  /**
+   * Assign actions to DOM elements
+   */
+  this.assignActions = function () {
+    var self = this;
+    
+    // Game actions
+    $('#btn-start').click(function (e) {
+      self.client.reqStartGame();
+    });
+
+    $('#btn-roll').click(function (e) {
+      self.client.reqRollDice();
+    });
+
+    $('#btn-confirm').click(function (e) {
+      self.client.reqConfirmMoves();
+    });
+    
+    
+    if (!this.game || !this.client.player) {
+      return;
+    }
+    
+    // Actions for points
+    for (var pos = 0; pos < 24; pos++) {
+      var pointElem = this.getPointElem(pos);
+
+      $(document).on("contextmenu", pointElem, function(e){
+         // Block browser menu
+      });
+
+      pointElem.mousedown(function(e) {
+        if (!model.Game.hasMoreMoves(self.game)) {
+          return;
+        }
+
+        var movesLeft = self.game.turnDice.movesLeft;
+        var steps;
+        // If right mouse button was pressed, play last die value
+        if (e.which == 3) {
+          steps = movesLeft[movesLeft.length - 1];
+        }
+        // If left mouse button was pressed, play first die value
+        else {
+          steps = movesLeft[0];
+        }
+        var position = $(this).data('position');
+        var piece = self.getTopPiece(position);
+        if (piece) {
+          self.client.reqMove(piece, steps);  
+        }
+
+        e.preventDefault();
+
+        //return false;
+      });
+    }
+    
+    // Actions for bar
+    for (var pieceType = 0; pieceType <= model.PieceType.BLACK; pieceType++) {
+      console.log('pieceType', pieceType);
+      var barElem = this.getBarElem(pieceType);
+      console.log(barElem);
+      
+      $(document).on("contextmenu", barElem, function(e){
+         // Block browser menu
+      });
+      
+      function HandleClick(pieceType) {
+        this.handleEvent = function(e) {
+          if (!model.Game.hasMoreMoves(self.game)) {
+            return;
+          }
+
+          var movesLeft = self.game.turnDice.movesLeft;
+          var steps;
+          // If right mouse button was pressed, play last die value
+          if (e.which == 3) {
+            steps = movesLeft[movesLeft.length - 1];
+          }
+          // If left mouse button was pressed, play first die value
+          else {
+            steps = movesLeft[0];
+          }
+          var piece = self.getBarTopPiece(pieceType);
+          console.log('Piece:', piece);
+          if (piece) {
+            self.client.reqMove(piece, steps);  
+          }
+
+          e.preventDefault();
+
+          //return false; 
+        }
+      };  
+      
+      barElem.mousedown(function(e) {
+        if (!model.Game.hasMoreMoves(self.game)) {
+          return;
+        }
+
+        var movesLeft = self.game.turnDice.movesLeft;
+        var steps;
+        // If right mouse button was pressed, play last die value
+        if (e.which == 3) {
+          steps = movesLeft[movesLeft.length - 1];
+        }
+        // If left mouse button was pressed, play first die value
+        else {
+          steps = movesLeft[0];
+        }
+        var pieceElem = $(this).find('div.piece').last();
+        var piece = pieceElem.data('piece');
+        console.log('Piece:', piece);
+        if (piece) {
+          self.client.reqMove(piece, steps);  
+        }
+
+        e.preventDefault();
+
+        //return false;
+      });
+      
+    }
   };
 
   this.updateControls = function () {
@@ -498,7 +563,7 @@ function SimpleBoardUI(client) {
       model.Game.diceWasRolled(this.game)
       &&
       (!this.game.turnConfirmed);
-    $('#dice').toggle(showDice);
+    $('.dice-panel').toggle(showDice);
 
     if (showDice) {
       this.updateDice(this.game.turnDice, this.game.turnPlayer.currentPieceType);
@@ -509,30 +574,61 @@ function SimpleBoardUI(client) {
     console.log('Player:', this.client.player);
   };
 
+  /**
+   * Updates the DOM element representing the specified die (specified by index).
+   * Changes CSS styles of the element.
+   * @param {Dice} dice - Dice to render
+   * @param {number} index - Index of dice value in array
+   * @param {PieceType} type - Player's type
+   */
   this.updateDie = function (dice, index, type) {
     var color = (type === model.PieceType.BLACK) ? 'black' : 'white';
     var id = '#die' + index;
     
     // Set text
-    $(id).html(dice.movesLeft[index]);
+    $(id).html(dice.values[index]);
     
     // Change image
-    $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black');
-    $(id).addClass('digit-' + dice.movesLeft[index] + '-' + color);
+    $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black played');
+    $(id).addClass('digit-' + dice.values[index] + '-' + color);
+    if (dice.movesLeft.length == 0) {
+      $(id).addClass('played');
+    }
     
     var angle = this.rotationAngle[index];
     $(id).css('transform', 'rotate(' + angle + 'deg)');
   };
 
+  /**
+   * Recreate DOM elements representing dice and render them in dice container.
+   * Player's dice are shown in right pane. Other player's dice are shown in 
+   * left pane.
+   * @param {Dice} dice - Dice to render
+   * @param {number} index - Index of dice value in array
+   * @param {PieceType} type - Player's type
+   */
   this.updateDice = function (dice, type) {
-    $('#dice').empty();
-    for (var i = 0; i < dice.movesLeft.length; i++) {
-      $('#dice').append('<span id="die' + i + '" class="die"></span>');
+    $('.dice').each(function() {
+      $(this).empty();
+    });
+
+    // Player's dice are shown in right pane.
+    //Other player's dice are shown in left pane.
+    var diceElem;
+    if (type === this.client.player.currentPieceType) {
+      diceElem = $('#dice-right');
+    }
+    else {
+      diceElem = $('#dice-left');
+    }
+                    
+    for (var i = 0; i < dice.values.length; i++) {
+      diceElem.append('<span id="die' + i + '" class="die"></span>');
       this.updateDie(dice, i, type);
     }
     
     var self = this;
-    $('#dice .die').click(function (e) {
+    $('.dice .die').click(function (e) {
       console.log(dice.movesLeft);
       model.Utils.rotateLeft(dice.movesLeft);
       self.updateControls();
@@ -543,12 +639,11 @@ function SimpleBoardUI(client) {
     for (var i = 0; i < actionList.length; i++) {
       var action = actionList[i];
       if (action.type === model.MoveActionType.MOVE) {
-        var piece = this.getTopPiece(action.from);
-        if (piece.type !== action.pieceType) {
-          throw new Error('Wrong piece type!');
+        if (action.piece == null) {
+          throw new Error('No piece!');
         }
 
-        var pieceElem = this.getTopPieceElem(action.from);
+        var pieceElem = this.getPieceElem(action.piece);
         var srcPointElem = pieceElem.parent();
         var dstPointElem = this.getPointElem(action.to);
 
@@ -559,40 +654,41 @@ function SimpleBoardUI(client) {
         this.compactPosition(dstPointElem.data('position'));
       }
       else if (action.type === model.MoveActionType.RECOVER) {
-        var pieceElem = this.getBarPieceElem(action.pieceType);
-        var piece = pieceElem.data('piece');
+        if (action.piece == null) {
+          throw new Error('No piece!');
+        }
+        
+        var pieceElem = this.getPieceElem(action.piece);
         var srcPointElem = pieceElem.parent();
         var dstPointElem = this.getPointElem(action.position);
 
         pieceElem.detach();
         dstPointElem.append(pieceElem);
 
-        this.compactElement(srcPointElem, action.pieceType === this.client.player.currentPieceType ? 'top' : 'bottom');
+        this.compactElement(srcPointElem, action.piece.type === this.client.player.currentPieceType ? 'top' : 'bottom');
         this.compactPosition(dstPointElem.data('position'));
       }
       else if (action.type === model.MoveActionType.HIT) {
-        var piece = this.getTopPiece(action.position);
-        if (piece.type !== action.pieceType) {
-          throw new Error('Wrong piece type!');
+        if (action.piece == null) {
+          throw new Error('No piece!');
         }
 
-        var pieceElem = this.getTopPieceElem(action.position);
+        var pieceElem = this.getPieceElem(action.piece);
         var srcPointElem = pieceElem.parent();
-        var dstPointElem = this.getBarElem(action.pieceType);
+        var dstPointElem = this.getBarElem(action.piece.type);
 
         pieceElem.detach();
         dstPointElem.append(pieceElem);
 
         this.compactPosition(srcPointElem.data('position'));
-        this.compactElement(dstPointElem, action.pieceType === this.client.player.currentPieceType ? 'top' : 'bottom');
+        this.compactElement(dstPointElem, action.piece.type === this.client.player.currentPieceType ? 'top' : 'bottom');
       }
       else if (action.type === model.MoveActionType.BEAR) {
-        var piece = this.getTopPiece(action.position);
-        if (piece.type !== action.pieceType) {
-          throw new Error('Wrong piece type!');
+        if (action.piece == null) {
+          throw new Error('No piece!');
         }
 
-        var pieceElem = this.getTopPieceElem(action.position);
+        var pieceElem = this.getPieceElem(action.piece);
         var srcPointElem = pieceElem.parent();
 
         pieceElem.detach();
@@ -603,7 +699,7 @@ function SimpleBoardUI(client) {
       // TODO: Make sure actions are played back slow enough for player to see
       // all of them comfortly
     }
-  }
+  };
   
   /**
    * Compact pieces after UI was resized

@@ -26,7 +26,7 @@ html, body,
 }
 
 .board {
-  height: 97%;
+  height: 99%;
 }
 
 .pane {
@@ -67,6 +67,14 @@ html, body,
 
   text-align: center;
   position: relative;
+}
+
+.row0.field {
+  padding-bottom: 2%;
+}
+
+.row1.field {
+  padding-top: 2%;
 }
 
 #point17, #point6 {
@@ -138,12 +146,42 @@ html, body,
 }
 */
 
+.game-menu {
+  background: hsla(1,0%,100%,.9);
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1050;
+  min-height: 100%;
+}
+
+div.menu-toggle .inner {
+  position: relative;
+}
+
+div.menu-toggle .inner {
+  margin: auto;
+  position: absolute;
+  top: 1%; left: 1%;
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+}
+
+div.menu-toggle .inner .btn {
+  width: 100%;
+  height: 100%;
+  background-color: red;
+  opacity: 0.5;
+}
+
 div.action-panel {
   margin: auto;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
   z-index: 1000;
-  width: 9%;
+  width: 12%;
   min-width: 50px;
   height: 50px;
 }
@@ -153,6 +191,24 @@ div.action-panel button.action {
   height: 100%;
   min-width: 40px;
   margin-bottom: 10px;
+}
+
+div.dice-panel {
+  margin: auto;
+  position: absolute;
+  top: 0; bottom: 0;
+  z-index: 1000;
+  width: 50%;
+  min-width: 50px;
+  height: 50px;
+}
+
+div.dice-panel.left {
+  left: 0;
+}
+
+div.dice-panel.right {
+  right: 0;
 }
 
 /* Behaviour */
@@ -166,8 +222,13 @@ div.action-panel button.action {
   user-select: none;
 }
 
-.piece, .piece .image {
+.piece, .piece .image .die {
   cursor: pointer;
+}
+
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
 }
 
 /* Global style */
@@ -257,8 +318,12 @@ body {
   background-color: #fff1dd;
 }
 
-.frame, .bar {
+.frame {
   background-color: #5e4733;
+}
+
+.bar {
+  background: #5e4733 url(../images/v-line.gif) repeat-y center center;
 }
 
 .point.odd,
@@ -308,9 +373,13 @@ body {
   color: #ffffff;
 }
 
-#dice .die {
+.dice {
+  text-align: center;
+}
+
+.die {
   margin: 0 auto;
-  display: block;
+  display: inline-block;
   width: 64px;
   height: 64px;
   text-indent: -100px;
@@ -320,52 +389,56 @@ body {
   background-repeat: no-repeat;
 }
 
-#dice .digit-1-white {
+.digit-1-white {
   background-image: url(../images/digit-1-white.png);
 }
 
-#dice .digit-2-white {
+.digit-2-white {
   background-image: url(../images/digit-2-white.png);
 }
 
-#dice .digit-3-white {
+.digit-3-white {
   background-image: url(../images/digit-3-white.png);
 }
 
-#dice .digit-4-white {
+.digit-4-white {
   background-image: url(../images/digit-4-white.png);
 }
 
-#dice .digit-5-white {
+.digit-5-white {
   background-image: url(../images/digit-5-white.png);
 }
 
-#dice .digit-6-white {
+.digit-6-white {
   background-image: url(../images/digit-6-white.png);
 }
 
-#dice .digit-1-black {
+.digit-1-black {
   background-image: url(../images/digit-1-black.png);
 }
 
-#dice .digit-2-black {
+.digit-2-black {
   background-image: url(../images/digit-2-black.png);
 }
 
-#dice .digit-3-black {
+.digit-3-black {
   background-image: url(../images/digit-3-black.png);
 }
 
-#dice .digit-4-black {
+.digit-4-black {
   background-image: url(../images/digit-4-black.png);
 }
 
-#dice .digit-5-black {
+.digit-5-black {
   background-image: url(../images/digit-5-black.png);
 }
 
-#dice .digit-6-black {
+.digit-6-black {
   background-image: url(../images/digit-6-black.png);
+}
+
+.dice .played {
+  opacity: 0.5;
 }
 
 /* Responsive variations */
@@ -409,4 +482,13 @@ body {
     padding-right: 15px;
     padding-left: 15px;
   }
+  
+  .hidden-ts {
+    display: none;
+  }
+  
+  .dice .die {
+    width: 32px;
+    height: 32px;
+  }  
 }

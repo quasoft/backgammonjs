@@ -12,11 +12,14 @@
   <script src="js/bundle.js"></script>
   
   <script type="text/x-mustache" id="tmpl-board">
-    <div id="frame-top" class="frame">&nbsp;</div>
+    <div id="frame-top" class="frame"></div>
     <div class="board cf">
       <div id="pane-left" class="pane">
         <div id="field0" class="field row0 col0"></div>
         <div id="field1" class="field row1 col0"></div>
+        <div class="dice-panel left" style="display: none">
+          <div id="dice-left" class="dice left"></div>
+        </div>
       </div>
       <div id="bar" class="bar">
         <table id="index-view" width="100%" height="100%">
@@ -31,9 +34,12 @@
       <div id="pane-right" class="pane">
         <div id="field2" class="field row0 col1"></div>
         <div id="field3" class="field row1 col1"></div>
+        <div class="dice-panel right" style="display: none">
+          <div id="dice-right" class="dice right"></div>
+        </div>
       </div>
     </div>
-    <div id="frame-bottom" class="frame">&nbsp;</div>
+    <div id="frame-bottom" class="frame"></div>
     <div class="action-panel">
       <button id="btn-start" class="btn btn-primary btn-lg action" style="display: none">Start</button>
       <button id="btn-roll" class="btn btn-primary btn-lg action" style="display: none">Roll</button>
@@ -84,8 +90,17 @@
   </table>
   
   <!-- Game board -->
+  <div class="game-menu collapse text-center">
+    <ul class="nav">
+      <li><a href="#">Menu #1</a></li>
+      <li><a href="#">Menu #2</a></li>
+      <li><a href="#">Menu #3</a></li>
+      <li><a href="#">Menu #4</a></li>
+      <li><a href="#">Menu #5</a></li>
+    </ul>
+  </div>
   <table id="game-view" width="100%" height="100%" style="display: none">
-  <tr>
+  <tr class="hidden">
     <td height="45">
       <div id="toolbar">
         <!--
@@ -105,6 +120,13 @@
   </tr>
   <tr>
     <td height="*">
+      <div class="menu-toggle">
+        <div class="inner">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".game-menu">
+            <span class="glyphicons glyphicons-menu-hamburger"></span>
+          </a>
+        </div>
+      </div>
       <div id="backgammon"></div>
     </td>
   </tr>

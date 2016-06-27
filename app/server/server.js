@@ -388,6 +388,7 @@ function Server() {
       
       game.hasStarted = true;
       game.turnPlayer = otherPlayer;
+      game.turnNumber = 1;
       
       this.games.push(game);
 
@@ -557,6 +558,7 @@ function Server() {
 
     game.hasStarted = true;
     game.turnPlayer = player;
+    game.turnNumber = 1;
 
     this.sendOthersMessage(
       game,
@@ -600,8 +602,7 @@ function Server() {
       return false;
     }
 
-    var dice = rule.rollDice();
-
+    var dice = rule.rollDice(game);
     game.turnDice = dice;
 
     reply.player = game.turnPlayer;
@@ -623,7 +624,7 @@ function Server() {
    * Handle client's request to move a piece.
    * @param {Socket} socket - Client socket
    * @param {Object} params - Request parameters
-   * @param {number} params.position - Position of piece to move
+   * @param {number} params.piece - Piece to move
    * @param {number} params.steps - Number of steps to move
    * @param {PieceType} params.type - Type of piece
    * @param {Object} reply - Object to be send as reply
@@ -636,18 +637,31 @@ function Server() {
     var game = this.getSocketGame(socket);
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
-
-    var actionList = rule.getMoveActions(game, params.position, player.currentPieceType, params.steps);
-    if (actionList.length == 0) {
+    
+    console.log('Piece:', params.piece);
+    
+    if (params.piece == null) {
+      reply.errorMessage = 'No piece selected!';
+      return false;
+    }
+    
+    // First, check status of the game: if game was started, if it is player's turn, etc.
+    if (!rule.validateMove(game, player, params.piece, params.steps)) {
       reply.errorMessage = 'Requested move is not valid!';
       return false;
     }
 
+    var actionList = rule.getMoveActions(game.state, params.piece, params.steps);
+    if (actionList.length == 0) {
+      reply.errorMessage = 'Requested move is not allowed!';
+      return false;
+    }
+
     try {
-      rule.applyMoveActions(game, actionList);
+      rule.applyMoveActions(game.state, actionList);
       rule.markAsPlayed(game, params.steps);
       
-      reply.position = params.position;
+      reply.piece = params.piece;
       reply.type = params.type;
       reply.steps = params.steps;
       reply.moveActionList = actionList;
@@ -657,7 +671,7 @@ function Server() {
         comm.Message.EVENT_PIECE_MOVE,
         {
           'game': game,
-          'position': params.position,
+          'piece': params.piece,
           'type': params.type,
           'steps': params.steps,
           'moveActionList': actionList
@@ -667,11 +681,13 @@ function Server() {
       return true;      
     }
     catch (e) {
-      reply.position = params.position;
+      reply.piece = params.piece;
       reply.type = params.type;
       reply.steps = params.steps;
       reply.moveActionList = [];
 
+      //throw e;
+      
       return false;
     }
   };
@@ -691,7 +707,7 @@ function Server() {
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
 
-    if (!rule.validateConfirm(game, player.currentPieceType)) {
+    if (!rule.validateConfirm(game, player)) {
       reply.errorMessage = 'Confirming moves is not allowed!';
       return false;
     }
@@ -702,8 +718,9 @@ function Server() {
     // 3. Roll new dice
 
     game.turnConfirmed = false;
+    game.turnDice = null;
     game.turnPlayer = (game.turnPlayer.id == game.host.id) ? game.guest: game.host;
-    game.turnDice = rule.rollDice();
+    game.turnNumber += 1;
 
     this.sendGameMessage(
       game,
