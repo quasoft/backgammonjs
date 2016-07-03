@@ -161,9 +161,9 @@ Coming soon...
 | Validate moves at server, using rules       | :white_check_mark: Completed         |            |
 | Allow player to end turn, if a move cannot be played | :white_check_mark: Completed |            |
 | Force player to use all possible moves, if possible | :white_check_mark: Completed |            |
-| Implement matches                           | :white_large_square: Not implemented |            |
-| Show an offcanvas (swipe to show) game menu | :white_large_square: Not implemented |            |
-| Show player names and match score in toolbar| :white_large_square: Not implemented |            |
+| Implement matches                           | :construction: In Progress           |            |
+| Show an offcanvas game menu                 | :construction: In Progress           |            |
+| Show player names and match score in toolbar| :construction: In Progress           |            |
 | Show borne pieces                            | :white_large_square: Not implemented |            |
 | Allow player to resign from game/match      | :white_large_square: Not implemented |            |
 | Allow user to get "challenge" links         | :white_large_square: Not implemented |            |

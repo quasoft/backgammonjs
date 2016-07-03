@@ -16,13 +16,9 @@
 /* Layout */
 html, body,
 #backgammon,
-.board, .pane, .bar {
+.board, .pane {
   width: 100%;
   height: 100%;
-}
-
-.bar td {
-  position: relative;
 }
 
 .board {
@@ -44,12 +40,16 @@ html, body,
   width: 46%;
 }
 
-.bar {
-  width: 8%;
-}
-
 .field {
   height: 50%;
+}
+
+.row0.field {
+  padding-bottom: 8%;
+}
+
+.row1.field {
+  padding-top: 8%;
 }
 
 .space {
@@ -60,6 +60,15 @@ html, body,
   height: 0.5%;
 }
 
+.bar {
+  width: 8%;
+  height: 100%;
+}
+
+.bar td {
+  position: relative;
+}
+
 .point {
   float: left;
   width: 16.5%;
@@ -67,14 +76,6 @@ html, body,
 
   text-align: center;
   position: relative;
-}
-
-.row0.field {
-  padding-bottom: 2%;
-}
-
-.row1.field {
-  padding-top: 2%;
 }
 
 #point17, #point6 {
@@ -133,6 +134,15 @@ html, body,
   vertical-align: middle;
 }
 
+.navbar {
+  min-height: auto;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  z-index: 1100;
+}
+
 /*
 .action-panel {
   margin: auto;
@@ -146,14 +156,43 @@ html, body,
 }
 */
 
+/*
 .game-menu {
   background: hsla(1,0%,100%,.9);
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
+  bottom: 0;
   z-index: 1050;
   min-height: 100%;
+}
+
+.game-menu td {
+  text-align: center;
+  vertical-align: middle;
+}
+*/
+
+/*
+
+#score {
+  font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#score .player {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+#score .score {
+  font-size: 36px;
+  font-weight: 300;
+}
+
+.game-menu .btn {
+  width: 100%;
+  height: 100%;
 }
 
 div.menu-toggle .inner {
@@ -175,6 +214,7 @@ div.menu-toggle .inner .btn {
   background-color: red;
   opacity: 0.5;
 }
+*/
 
 div.action-panel {
   margin: auto;
@@ -182,14 +222,14 @@ div.action-panel {
   top: 0; left: 0; bottom: 0; right: 0;
   z-index: 1000;
   width: 12%;
-  min-width: 50px;
-  height: 50px;
+  min-width: 64px;
+  height: 128px;
 }
 
 div.action-panel button.action {
   width: 100%;
-  height: 100%;
-  min-width: 40px;
+  height: 50%;
+  min-width: 64px;
   margin-bottom: 10px;
 }
 
@@ -199,8 +239,8 @@ div.dice-panel {
   top: 0; bottom: 0;
   z-index: 1000;
   width: 50%;
-  min-width: 50px;
-  height: 50px;
+  min-width: 128px;
+  height: 64px;
 }
 
 div.dice-panel.left {
@@ -249,29 +289,29 @@ body {
 }
 
 /* Index page style */
-#page-index h1,
-#page-index h1 small {
+#index-view h1,
+#index-view h1 small {
   font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
   color: #ffffff;
 }
 
-#page-index h1 {
+#index-view h1 {
   font-size: 50px;
   font-weight: 700;
   padding-right: 1em;
 }
 
-#page-index h1 small {
+#index-view h1 small {
   font-size: 30px;
   font-weight: 300;
   padding-left: 2em;
 }
 
-#page-index .row .col {
+#index-view .row .col {
   padding-bottom: 20px;
 }
 
-#page-index .input-group {
+#index-view .input-group {
   max-width: 250px;
   margin: 0 auto;
 }
@@ -308,6 +348,33 @@ body {
   font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 22px;
   color: #000000;
+}
+
+.navbar-toggle {
+  width: 100%;
+  height: 100%;
+  max-width: 48px;
+  max-height: 48px;
+  display: block !important;
+  position: inherit;
+  float: none;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0;  
+}
+
+.navbar-toggle .glyphicon {
+  padding-right: 0;
+}
+
+.navbar .badge {
+  margin-left: 5px;
+}
+
+.navbar .badge.left {
+  margin-right: 5px;
 }
 
 /* Board style */
@@ -443,37 +510,44 @@ body {
 
 /* Responsive variations */
 @media screen and (min-width: 1024px) {
-  #page-index h1 {
+  #index-view h1 {
     font-size: 72px;
   }
-  #page-index h1 small {
+  #index-view h1 small {
     font-size: 36px;  
   }
 }
 
 @media screen and (max-width: 768px) {
-  #page-index h1 {
+  #index-view h1 {
     font-size: 36px;  
   }
-  #page-index h1 small {
+  #index-view h1 small {
     font-size: 22px;  
   }
 }
 
 @media screen and (max-width: 544px) {
-  #page-index h1 {
-    font-size: 20px;
+  #index-view h1 {
+    font-size: 32px;
   }
-  #page-index h1 small {
-    font-size: 12px;  
+  #index-view h1 small {
+    font-size: 20px;  
   }
   
-  #page-index .row .col {
+  #index-view .row .col {
     text-align: center;
   }
 }
 
-@media (max-width: 480px) { 
+@media screen and (max-width: 480px) {
+  #index-view h1 {
+    font-size: 26px;
+  }
+  #index-view h1 small {
+    font-size: 14px;  
+  }
+  
   .col-ts-12 {
     width: 100%;    
     float: none;
@@ -483,12 +557,63 @@ body {
     padding-left: 15px;
   }
   
+  #index-view .row .col {
+      padding-bottom: 8px;
+  }
+  
+  #index-view .btn-group-lg>.btn,
+  #index-view .btn-lg {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
   .hidden-ts {
     display: none;
+  }
+  
+  div.action-panel {
+    min-width: 64px;
+    height: 64px;
+  }
+
+  div.action-panel button.action {
+    min-width: 64px;
+    margin-bottom: 4px;
+  }
+  
+  div.action-panel .btn-group-lg>.btn,
+  div.action-panel .btn-lg {
+    padding: 1px 2px;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  
+  #btn-roll,
+  #btn-start {
+      margin-top: 25%;
+  }
+
+  div.dice-panel {
+    min-width: 64px;
+    height: 32px;
   }
   
   .dice .die {
     width: 32px;
     height: 32px;
-  }  
+  }
+}
+
+@media screen and (max-width: 380px) {
+  #index-view h1 {
+    font-size: 20px;
+  }
+  #index-view h1 small {
+    font-size: 12px;  
+  }
+  
+  .h1, .h2, .h3, h1, h2, h3 {
+      margin-top: 8px;
+      margin-bottom: 4px;
+  }
 }

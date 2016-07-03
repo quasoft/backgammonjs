@@ -57,19 +57,19 @@ $(document).ready(function() {
   var client = new cl.Client(config);
   
   // Subscribe to events used on landing page
-  client.subscribe(comm.Message.EVENT_RANDOM_GAME_START, function (msg, params) {
+  client.subscribe(comm.Message.EVENT_RANDOM_MATCH_START, function (msg, params) {
     app.setIsWaiting(false);
     app.setCurrentView('game');
     app.updateView();
     client.resizeUI();
   });
 
-  $('#btn-create-game').click(function (e) {
-    client.reqCreateGame('RuleBgCasual');
+  $('#btn-create-match').click(function (e) {
+    client.reqCreateMatch('RuleBgCasual');
   });
 
-  $('#btn-join-game').click(function (e) {
-    client.reqJoinGame(null);
+  $('#btn-join-match').click(function (e) {
+    client.reqJoinMatch(null);
   });
   
   $('#btn-play-random').click(function (e) {

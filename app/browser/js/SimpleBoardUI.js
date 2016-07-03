@@ -11,11 +11,11 @@ function SimpleBoardUI(client) {
    * @type {Client}
    */
   this.client = client;
-
+  
   /**
-   * @type {Game}
+   * @type {Match}
    */
-  this.game = null;
+  this.match = null;
 
   /**
    * @type {Rule}
@@ -102,6 +102,150 @@ function SimpleBoardUI(client) {
 
   this.getPieceByID = function (id) {
     return $('#piece' + id);
+  };
+  
+    /**
+   * Assign actions to DOM elements
+   */
+  this.assignActions = function () {
+    console.log('assignActions');
+    var self = this;
+    
+    // Game actions
+    $('#btn-start').unbind('click');
+    $('#btn-start').click(function (e) {
+      self.client.reqStartMatch();
+    });
+
+    $('#btn-roll').unbind('click');
+    $('#btn-roll').click(function (e) {
+      self.client.reqRollDice();
+      console.log('roll1', e);
+      console.log('roll2', this);
+    });
+
+    $('#btn-confirm').unbind('click');
+    $('#btn-confirm').click(function (e) {
+      self.client.reqConfirmMoves();
+    });
+    
+    console.log('mm1', this.match);
+    if ((!this.match) || (!this.match.currentGame) || (!this.client.player)) {
+      return;
+    }
+    console.log('mm2', this.match);
+    console.log('mm3', this.match.currentGame);
+    
+    // Actions for points
+    for (var pos = 0; pos < 24; pos++) {
+      var pointElem = this.getPointElem(pos);
+
+      $(document).on('contextmenu', pointElem, function(e){
+         // Block browser menu
+      });
+      
+      pointElem.unbind('mousedown');
+      pointElem.mousedown(function(e) {
+        var game = self.match.currentGame;
+        
+        console.log('mousedown click', game);
+        if (!model.Game.hasMoreMoves(game)) {
+          return;
+        }
+
+        var movesLeft = game.turnDice.movesLeft;
+        var steps;
+        // If right mouse button was pressed, play last die value
+        if (e.which == 3) {
+          steps = movesLeft[movesLeft.length - 1];
+        }
+        // If left mouse button was pressed, play first die value
+        else {
+          steps = movesLeft[0];
+        }
+        var position = $(this).data('position');
+        var piece = self.getTopPiece(position);
+        if (piece) {
+          self.client.reqMove(piece, steps);  
+        }
+
+        e.preventDefault();
+
+        //return false;
+      });
+    }
+    
+    // Actions for bar
+    for (var pieceType = 0; pieceType <= model.PieceType.BLACK; pieceType++) {
+      console.log('pieceType', pieceType);
+      var barElem = this.getBarElem(pieceType);
+      console.log(barElem);
+      
+      $(document).on("contextmenu", barElem, function(e){
+         // Block browser menu
+      });
+      
+      /*
+      function HandleClick(pieceType) {
+        this.handleEvent = function(e) {
+          if (!model.Game.hasMoreMoves(game)) {
+            return;
+          }
+
+          var movesLeft = game.turnDice.movesLeft;
+          var steps;
+          // If right mouse button was pressed, play last die value
+          if (e.which == 3) {
+            steps = movesLeft[movesLeft.length - 1];
+          }
+          // If left mouse button was pressed, play first die value
+          else {
+            steps = movesLeft[0];
+          }
+          var piece = self.getBarTopPiece(pieceType);
+          console.log('Piece:', piece);
+          if (piece) {
+            self.client.reqMove(piece, steps);  
+          }
+
+          e.preventDefault();
+
+          //return false; 
+        }
+      };  
+      */
+      
+      barElem.unbind('mousedown');
+      barElem.mousedown(function(e) {
+        var game = self.match.currentGame;
+        
+        if (!model.Game.hasMoreMoves(game)) {
+          return;
+        }
+
+        var movesLeft = game.turnDice.movesLeft;
+        var steps;
+        // If right mouse button was pressed, play last die value
+        if (e.which == 3) {
+          steps = movesLeft[movesLeft.length - 1];
+        }
+        // If left mouse button was pressed, play first die value
+        else {
+          steps = movesLeft[0];
+        }
+        var pieceElem = $(this).find('div.piece').last();
+        var piece = pieceElem.data('piece');
+        console.log('Piece:', piece);
+        if (piece) {
+          self.client.reqMove(piece, steps);  
+        }
+
+        e.preventDefault();
+
+        //return false;
+      });
+      
+    }
   };
 
   this.createPoint = function (field, pos, type) {
@@ -194,6 +338,8 @@ function SimpleBoardUI(client) {
     for (var i = 0; i < 24; i++) {
       this.compactPosition(i);
     }
+    this.compactElement(this.getBarElem(model.PieceType.WHITE));
+    this.compactElement(this.getBarElem(model.PieceType.BLACK));
   }
   
   /**
@@ -267,65 +413,13 @@ function SimpleBoardUI(client) {
     }
     
     this.compactElement(pointElement, alignment);
-    return;
-    
-    var point = this.game.state.points[pos];
-    var pointElement = this.getPointElem(pos);
-    var pointHeight = pointElement.height();
-
-    if (point.length > 0) {
-      var firstPieceElement = this.getPieceByID(point[0].id);
-      var pieceHeight = (firstPieceElement) ? firstPieceElement.width() : 0;
-      var ratio = 100;
-      var overflow = (pieceHeight * point.length) - pointHeight;
-
-      if ((overflow > 0) && (pieceHeight > 0) && (point.length > 1))
-      {
-        // Example:
-        // pieceHeight = 88
-        // offset per piece = 8
-        // margin in percent = 100 - ((8 / 88) * 100)
-        ratio = 100 - (((overflow / (point.length - 1)) / pieceHeight) * 100);
-      }
-      
-      if (ratio > 100) {
-        ratio = 100;
-      }
-      if (ratio <= 0) {
-        ratio = 1;
-      }
-
-      for (var i = 0; i < point.length; i++) {
-        var piece = point[i];
-        var pieceElement = this.getPieceByID(piece.id);
-        var marginPercent = ratio * i;
-
-        var alignment = ((pos >= 12) && (pos <= 23)) ? 'top' : 'bottom';
-        var negAlignment = ((pos >= 12) && (pos <= 23)) ? 'bottom' : 'top';
-
-        pieceElement.css(alignment, "0");
-        pieceElement.css("margin-" + alignment, this.toFixedDown(marginPercent, 2) + "%");
-
-        pieceElement.css(negAlignment, "inherit");
-        pieceElement.css("margin-" + negAlignment, "inherit");
-      }
-    }
-
-    //var piece = this.getPiece(id);
-/*
-    piece.
-
-    pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
-
-    countText = (count > 0) ? '<span>' + count + '</span>' : '&nbsp';
-
-    point.append($('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">' + countText + '</div></div>'));
-    */
   };
 
   this.createPieces = function () {
-    for (var pos = 0; pos < this.game.state.points.length; pos++) {
-      var point = this.game.state.points[pos];
+    var game = this.match.currentGame;
+    
+    for (var pos = 0; pos < game.state.points.length; pos++) {
+      var point = game.state.points[pos];
       for (var i = 0; i < point.length; i++) {
         this.createPiece(pos, point[i], 0);
       }
@@ -340,8 +434,10 @@ function SimpleBoardUI(client) {
   };
 
   this.removePieces = function () {
-    for (var pos = 0; pos < this.game.state.points.length; pos++) {
-      var point = this.game.state.points[pos];
+    var game = this.match.currentGame;
+    
+    for (var pos = 0; pos < game.state.points.length; pos++) {
+      var point = game.state.points[pos];
       var pointElem = this.getPointElem(pos);
       pointElem.empty();
     }
@@ -349,11 +445,11 @@ function SimpleBoardUI(client) {
 
   /**
    * Reset board UI
-   * @param {Game} game - Game
+   * @param {Match} match - Match
    * @param {Rule} rule - Rule
    */
-  this.resetBoard = function (game, rule) {
-    this.game = game;
+  this.resetBoard = function (match, rule) {
+    this.match = match;
     this.rule = rule;
 
     this.removePoints();
@@ -363,6 +459,7 @@ function SimpleBoardUI(client) {
     
     this.assignActions();
     this.updateControls();
+    this.updateScoreboard();
     
     this.randomizeDiceRotation();
   };
@@ -378,201 +475,101 @@ function SimpleBoardUI(client) {
     }
   };
 
-  /**
-   * Update board
-   * @param {Game} game - Game
-   */
-  this.updateBoard = function (game) {
-    this.game = game;
-
-    this.removePieces();
-    this.createPieces();
-    this.updateControls();
-  };
-  
-  /**
-   * Assign actions to DOM elements
-   */
-  this.assignActions = function () {
-    var self = this;
-    
-    // Game actions
-    $('#btn-start').click(function (e) {
-      self.client.reqStartGame();
-    });
-
-    $('#btn-roll').click(function (e) {
-      self.client.reqRollDice();
-    });
-
-    $('#btn-confirm').click(function (e) {
-      self.client.reqConfirmMoves();
-    });
-    
-    
-    if (!this.game || !this.client.player) {
-      return;
-    }
-    
-    // Actions for points
-    for (var pos = 0; pos < 24; pos++) {
-      var pointElem = this.getPointElem(pos);
-
-      $(document).on("contextmenu", pointElem, function(e){
-         // Block browser menu
-      });
-
-      pointElem.mousedown(function(e) {
-        if (!model.Game.hasMoreMoves(self.game)) {
-          return;
-        }
-
-        var movesLeft = self.game.turnDice.movesLeft;
-        var steps;
-        // If right mouse button was pressed, play last die value
-        if (e.which == 3) {
-          steps = movesLeft[movesLeft.length - 1];
-        }
-        // If left mouse button was pressed, play first die value
-        else {
-          steps = movesLeft[0];
-        }
-        var position = $(this).data('position');
-        var piece = self.getTopPiece(position);
-        if (piece) {
-          self.client.reqMove(piece, steps);  
-        }
-
-        e.preventDefault();
-
-        //return false;
-      });
-    }
-    
-    // Actions for bar
-    for (var pieceType = 0; pieceType <= model.PieceType.BLACK; pieceType++) {
-      console.log('pieceType', pieceType);
-      var barElem = this.getBarElem(pieceType);
-      console.log(barElem);
-      
-      $(document).on("contextmenu", barElem, function(e){
-         // Block browser menu
-      });
-      
-      function HandleClick(pieceType) {
-        this.handleEvent = function(e) {
-          if (!model.Game.hasMoreMoves(self.game)) {
-            return;
-          }
-
-          var movesLeft = self.game.turnDice.movesLeft;
-          var steps;
-          // If right mouse button was pressed, play last die value
-          if (e.which == 3) {
-            steps = movesLeft[movesLeft.length - 1];
-          }
-          // If left mouse button was pressed, play first die value
-          else {
-            steps = movesLeft[0];
-          }
-          var piece = self.getBarTopPiece(pieceType);
-          console.log('Piece:', piece);
-          if (piece) {
-            self.client.reqMove(piece, steps);  
-          }
-
-          e.preventDefault();
-
-          //return false; 
-        }
-      };  
-      
-      barElem.mousedown(function(e) {
-        if (!model.Game.hasMoreMoves(self.game)) {
-          return;
-        }
-
-        var movesLeft = self.game.turnDice.movesLeft;
-        var steps;
-        // If right mouse button was pressed, play last die value
-        if (e.which == 3) {
-          steps = movesLeft[movesLeft.length - 1];
-        }
-        // If left mouse button was pressed, play first die value
-        else {
-          steps = movesLeft[0];
-        }
-        var pieceElem = $(this).find('div.piece').last();
-        var piece = pieceElem.data('piece');
-        console.log('Piece:', piece);
-        if (piece) {
-          self.client.reqMove(piece, steps);  
-        }
-
-        e.preventDefault();
-
-        //return false;
-      });
-      
-    }
-  };
-
   this.updateControls = function () {
 
-    if ((!this.game) || (this.game == null)) {
+    if ((!this.match) || (!this.match.currentGame)) {
       $('#btn-start').hide();
       $('#btn-roll').hide();
       $('#btn-confirm').hide();
       $('#btn-undo').hide();
+      $('#menu-resign').hide();
+      $('#menu-undo').hide();
       return;
     }
+    
+    var game = this.match.currentGame;    
 
     $('#btn-start').toggle(
-      model.Game.isHost(this.game, this.client.player)
+      model.Match.isHost(this.match, this.client.player)
       &&
-      (!this.game.hasStarted)
+      (!game.hasStarted)
     );
 
     $('#btn-roll').toggle(
-      this.game.hasStarted && (!this.game.isOver)
+      game.hasStarted && (!game.isOver)
       &&
-      model.Game.isPlayerTurn(this.game, this.client.player)
+      model.Game.isPlayerTurn(game, this.client.player)
       &&
-      (!model.Game.diceWasRolled(this.game))
+      (!model.Game.diceWasRolled(game))
       &&
-      (!this.game.turnConfirmed)
+      (!game.turnConfirmed)
     );
-
+    
     var canConfirmMove =
-      this.game.hasStarted && (!this.game.isOver)
+      game.hasStarted && (!game.isOver)
       &&
-      model.Game.isPlayerTurn(this.game, this.client.player)
+      model.Game.isPlayerTurn(game, this.client.player)
       &&
-      model.Game.diceWasRolled(this.game)
+      model.Game.diceWasRolled(game)
       &&
-      (!model.Game.hasMoreMoves(this.game))
+      (!model.Game.hasMoreMoves(game))
       &&
-      (!this.game.turnConfirmed);
+      (!game.turnConfirmed);
+
+    var canUndoMove =
+      game.hasStarted && (!game.isOver)
+      &&
+      model.Game.isPlayerTurn(game, this.client.player)
+      &&
+      model.Game.diceWasRolled(game)
+      &&
+      (!game.turnConfirmed);
+    
     $('#btn-confirm').toggle(canConfirmMove);
     $('#btn-undo').toggle(canConfirmMove);
+    
+    $('#menu-resign').toggle(game.hasStarted && (!game.isOver));
+    $('#menu-undo').toggle(canUndoMove);
 
-    var showDice = this.game.hasStarted
+    var showDice = game.hasStarted
       &&
-      (!this.game.isOver)
+      (!game.isOver)
       &&
-      model.Game.diceWasRolled(this.game)
+      model.Game.diceWasRolled(game)
       &&
-      (!this.game.turnConfirmed);
+      (!game.turnConfirmed);
     $('.dice-panel').toggle(showDice);
 
     if (showDice) {
-      this.updateDice(this.game.turnDice, this.game.turnPlayer.currentPieceType);
+      this.updateDice(game.turnDice, game.turnPlayer.currentPieceType);
     }
 
     console.log('Board UI updated');
-    console.log('Game:', this.game);
+    console.log('Match:', this.match);
+    console.log('Game:', game);
     console.log('Player:', this.client.player);
   };
+  
+  this.updateScoreboard = function () {
+    if ((!this.match) || (!this.match.currentGame)) {
+      return;
+    }
+    
+    var isInMatch = (this.match.currentGame);
+    var matchText = (isInMatch)
+      ? ('Match "' + this.rule.title + '", ' + this.match.length + '/' + this.match.length)
+      : 'Not in match';
+    $('#match-state').text(matchText);
+    
+    if (model.Match.isHost(this.match, this.player)) {
+      $('#yourscore').text(this.match.score[model.PieceType.WHITE]);
+      $('#oppscore').text(this.match.score[model.PieceType.BLACK]);
+    }
+    else {
+      $('#yourscore').text(this.match.score[model.PieceType.BLACK]);
+      $('#oppscore').text(this.match.score[model.PieceType.WHITE]);
+    }
+  }
 
   /**
    * Updates the DOM element representing the specified die (specified by index).
@@ -628,6 +625,7 @@ function SimpleBoardUI(client) {
     }
     
     var self = this;
+    $('.dice .die').unbind('click');
     $('.dice .die').click(function (e) {
       console.log(dice.movesLeft);
       model.Utils.rotateLeft(dice.movesLeft);
