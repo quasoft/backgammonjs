@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var fittext = require('jquery-fittext');
 var cookie = require('js-cookie');
 // TODO: Fix this hack. Makes bootstrap happy, but this should not be needed.
 window.jQuery = window.$ = $;
@@ -52,7 +53,12 @@ $(document).ready(function() {
     'boardUI': '../app/browser/js/SimpleBoardUI.js'
     //'boardUI': 'SimpleBoardUI'
   };
-
+  
+  // Initialize the overlay showing game results
+  $('#game-result-overlay').click(function () {
+    $('#game-result-overlay').hide();
+  });
+  
   // Initialize game client
   var client = new cl.Client(config);
   
@@ -62,6 +68,12 @@ $(document).ready(function() {
     app.setCurrentView('game');
     app.updateView();
     client.resizeUI();
+  });
+  
+  client.subscribe(comm.Message.EVENT_MATCH_OVER, function (msg, params) {
+    app.setIsWaiting(false);
+    app.setCurrentView('index');
+    app.updateView();
   });
 
   $('#btn-create-match').click(function (e) {

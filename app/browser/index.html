@@ -24,7 +24,7 @@
         <table width="100%" height="100%">
         <tr height="10%">
           <td valign="top">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar" aria-expanded="false" title="Show/Hide game menu">
               <span class="sr-only">Toggle game menu</span>
               <span class="glyphicon glyphicon-menu-hamburger"></span>
             </button>
@@ -48,10 +48,10 @@
     </div>
     <div id="frame-bottom" class="frame"></div>
     <div class="action-panel">
-      <button id="btn-start" class="btn btn-primary btn-lg action" style="display: none">Start</button>
-      <button id="btn-roll" class="btn btn-primary btn-lg action" style="display: none">Roll</button>
-      <button id="btn-confirm" class="btn btn-primary btn-lg action" style="display: none">Confirm</button>
-      <button id="btn-undo" class="btn btn-default btn-lg action" style="display: none" disabled="disabled">Undo</button>
+      <button id="btn-start" class="btn btn-primary btn-lg action" style="display: none" title="Start game">Start</button>
+      <button id="btn-roll" class="btn btn-primary btn-lg action" style="display: none" title="Roll dice">Roll</button>
+      <button id="btn-confirm" class="btn btn-primary btn-lg action" style="display: none" title="Confirm moves made">Confirm</button>
+      <button id="btn-undo" class="btn btn-default btn-lg action" style="display: none" disabled="disabled" title="Undo moves made">Undo</button>
       <div id="dice" style="display: none"></div>
     </div>
   </script>
@@ -102,13 +102,13 @@
       </div>
 
       <div class="navbar-collapse">
-        <button type="button" class="btn btn-primary navbar-btn yourself"><span id="yourself" class="player">Yourself</span><span id="yourscore" class="score badge">3</span></button>
-        <button type="button" class="btn btn-default navbar-btn opponent"><span id="oppscore" class="score badge left">3</span><span id="opponent" class="player">Opponent</span></button>
+        <button type="button" class="btn btn-primary navbar-btn yourself" title="Your score in current match"><span id="yourself" class="player">Yourself</span><span id="yourscore" class="score badge">3</span></button>
+        <button type="button" class="btn btn-default navbar-btn opponent" title="Opponent's score in current match"><span id="oppscore" class="score badge left">3</span><span id="opponent" class="player">Opponent</span></button>
         
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="menu-resign" href="#"><span class="glyphicon glyphicon-flag"></span>Resign</a></li>
-          <li><a id="menu-undo" href="#"><span class="glyphicon glyphicon-repeat"></span>Undo</a></li>
-          <li><a id="menu-back" href="#" data-toggle="collapse" data-target=".navbar"><span class="glyphicon glyphicon-remove"></span>Close</a></li>
+          <li><a id="menu-resign" href="#" title="Resign from current game"><span class="glyphicon glyphicon-flag"></span>Resign</a></li>
+          <li><a id="menu-undo" href="#" title="Undo moves made"><span class="glyphicon glyphicon-repeat"></span>Undo</a></li>
+          <li><a id="menu-close" href="#" data-toggle="collapse" data-target=".navbar" title="Close game menu"><span class="glyphicon glyphicon-remove"></span>Close</a></li>
         </ul>
       </div>
     </div>
@@ -123,7 +123,12 @@
   </tr>
   </table>
   
-  <div id="waiting-overlay" style="display: none">
+  <div id="game-result-overlay" class="game-result overlay" style="display: none">
+    <div class="text message">Message</div>
+    <div class="text score"><span class="state">State</span><br><strong><span class="yourscore">0</span>&nbsp;:&nbsp;<span class="oppscore">0</span></strong></div>
+  </div>
+  
+  <div id="waiting-overlay" class="waiting overlay" style="display: none">
     <div class="loader"><span>Waiting another player...</br><img src="images/loader.gif"></span></div>
   </div>
   

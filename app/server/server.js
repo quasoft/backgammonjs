@@ -751,8 +751,12 @@ function Server() {
       return false;
     }
     
+    var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
+    
+    console.log('CONFIRM MOVES');
     // Check if player has won
     if (rule.hasWon(match.currentGame.state, player)) {
+      console.log('HAS NOW');
       // Player has won the game
       // 1. Update score
       // 2. If score < match.length, start a new game
@@ -774,6 +778,7 @@ function Server() {
             match,
             comm.Message.EVENT_MATCH_OVER,
             {
+              'match': match,
               'winner': player
             }
           );
@@ -782,6 +787,11 @@ function Server() {
       else {
         // 2. Start a new game
         // NEXT: Start a new game
+        var game = model.Match.createNewGame(match, rule);
+        this.games.push(game);
+        game.hasStarted = true;
+        game.turnPlayer = otherPlayer;
+        game.turnNumber = 1;
         
         var self = this;
         reply.sendAfter = function () {
@@ -789,10 +799,21 @@ function Server() {
             match,
             comm.Message.EVENT_GAME_OVER,
             {
+              'match': match,
               'winner': player
             }
           );
+          
+          self.sendMatchMessage(
+            match,
+            comm.Message.EVENT_GAME_RESTART,
+            {
+              'match': match,
+              'game': match.currentGame
+            }
+          );
         };
+        
       }
     }
     else {

@@ -559,16 +559,45 @@ function SimpleBoardUI(client) {
     var matchText = (isInMatch)
       ? ('Match "' + this.rule.title + '", ' + this.match.length + '/' + this.match.length)
       : 'Not in match';
+    var matchTextTitle = (isInMatch)
+      ? ('Playing match with length of ' + this.match.length + ' games and rule "' + this.rule.title + '"')
+      : 'Match has not been started';
     $('#match-state').text(matchText);
+    $('#match-state').attr('title', matchTextTitle);
     
-    if (model.Match.isHost(this.match, this.player)) {
-      $('#yourscore').text(this.match.score[model.PieceType.WHITE]);
-      $('#oppscore').text(this.match.score[model.PieceType.BLACK]);
+    var yourscore = this.match.score[this.client.player.currentPieceType];
+    var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
+    
+    $('#yourscore').text(yourscore);
+    $('#oppscore').text(oppscore);
+  };
+  
+  this.showGameEndMessage = function (winner) {
+    $('#game-result-overlay').show();
+    
+    var result = winner.id == this.client.player.id;
+    if (this.match.isOver) {
+      var message = (result) ? 'You WON the match!' : 'You lost the match.';
+      var matchState = 'Match result:';
     }
     else {
-      $('#yourscore').text(this.match.score[model.PieceType.BLACK]);
-      $('#oppscore').text(this.match.score[model.PieceType.WHITE]);
+      var message = (result) ? 'You WON!' : 'You lost.';
+      var matchState = 'Match standing ';
     }
+    var color = (result) ? 'green' : 'red';
+    
+    $('.game-result').css('color', color);
+    $('.game-result .message').html(message);
+    $('.game-result .state').html(matchState);
+    
+    var yourscore = this.match.score[this.client.player.currentPieceType];
+    var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
+    $('.game-result .yourscore').text(yourscore);
+    $('.game-result .oppscore').text(oppscore);
+    
+    $('.game-result .text').each(function () {
+      fitText($(this));
+    });
   }
 
   /**
