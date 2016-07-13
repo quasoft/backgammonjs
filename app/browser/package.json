@@ -24,6 +24,9 @@
     "watch:js": "watchify ./js/main.js --require socket.io-client -o ./js/bundle.js -v",
     "watch": "npm run watch:js"
   },
+  "browser": {
+    "jquery-fittext": "./bower_components/fittext/fittext.js"
+  },
   "browserify": {
     "transform": []
   },
