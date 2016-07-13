@@ -578,7 +578,7 @@ function SimpleBoardUI(client) {
     var result = winner.id == this.client.player.id;
     if (this.match.isOver) {
       var message = (result) ? 'You WON the match!' : 'You lost the match.';
-      var matchState = 'Match result:';
+      var matchState = 'Match result: ';
     }
     else {
       var message = (result) ? 'You WON!' : 'You lost.';
