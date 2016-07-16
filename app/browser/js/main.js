@@ -63,7 +63,7 @@ $(document).ready(function() {
   var client = new cl.Client(config);
   
   // Subscribe to events used on landing page
-  client.subscribe(comm.Message.EVENT_RANDOM_MATCH_START, function (msg, params) {
+  client.subscribe(comm.Message.EVENT_MATCH_START, function (msg, params) {
     app.setIsWaiting(false);
     app.setCurrentView('game');
     app.updateView();

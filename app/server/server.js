@@ -56,7 +56,7 @@ function Server() {
   this.config = {
     'rulePath': './rules/'
   };
-
+  
   /**
    * Run server instance
    */
@@ -69,7 +69,7 @@ function Server() {
     //  res.sendFile('index.html', {'root': './app/browser/'});
     //});
 
-    io.on('connection', function (socket){
+    io.on('connection', function (socket) {
       console.log('Client connected');
 
       self.clients[socket.id] = socket;
@@ -337,11 +337,51 @@ function Server() {
    */
   this.handleCreateGuest = function (socket, params, reply) {
     console.log('Creating guest player');
+    
+    var cookie = socket.handshake.headers.cookie;
+    if (cookie) {
+      var match = cookie.match(/\bplayer_id=([0-9]+)/);
+      var playerID = match ? match[1] : null;
+      console.log('Player ID found in cookie: ' + playerID);
+    }
+    
+    var player = this.getPlayerByID(playerID);
+    if (player) {
+      // Player already exists, but has been disconnected
+      var match = this.getMatchByID(player.currentMatch);
+      
+      // If there is a pending match, use existing player,
+      // else create a new player object
+      if (match && !match.isOver)
+      {
+        var rule = model.Utils.loadRule(this.config.rulePath, match.ruleName);
+        player.socketID = socket.id;
+        this.setSocketPlayer(socket, player);
+        this.setSocketMatch(socket, match);
+        this.setSocketRule(socket, rule);
 
+        var self = this;
+        reply.sendAfter = function () {
+          self.sendPlayerMessage(
+            player,
+            comm.Message.EVENT_MATCH_START,
+            {
+              'match': match
+            }
+          );
+        };
+        
+        reply.player = player;
+
+        return true;        
+      }
+    }
+    
+    // New player will be created
     var player = model.Player.createNew();
     player.name = 'Player ' + player.id;
-
     this.players.push(player);
+    console.log('New player ID: ' + player.id);
 
     player.socketID = socket.id;
     this.setSocketPlayer(socket, player);
@@ -439,7 +479,7 @@ function Server() {
       reply.sendAfter = function () {
         self.sendMatchMessage(
           match,
-          comm.Message.EVENT_RANDOM_MATCH_START,
+          comm.Message.EVENT_MATCH_START,
           {
             'match': match
           }
@@ -845,8 +885,10 @@ function Server() {
    * @returns {Player} - Returns player or null if not found.
    */
   this.getPlayerByID = function (id) {
+    console.log('Length:' + this.players.length);
     for (var i = 0; i < this.players.length; i++) {
-      if (this.players[i].id === id) {
+      console.log(this.players[i]);
+      if (this.players[i].id == id) {
         return this.players[i];
       }
     }
@@ -860,7 +902,7 @@ function Server() {
    */
   this.getMatchByID = function (id) {
     for (var i = 0; i < this.matches.length; i++) {
-      if (this.matches[i].id === id) {
+      if (this.matches[i].id == id) {
         return this.matches[i];
       }
     }

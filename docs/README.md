@@ -161,17 +161,18 @@ Coming soon...
 | Validate moves at server, using rules       | :white_check_mark: Completed         |            |
 | Allow player to end turn, if a move cannot be played | :white_check_mark: Completed |            |
 | Force player to use all possible moves, if possible | :white_check_mark: Completed |            |
-| Implement matches                           | :construction: In Progress           |            |
-| Show an offcanvas game menu                 | :construction: In Progress           |            |
+| Continue game on page reload                | :soon: Working                       |            |
+| Implement matches                           | :soon: Working                       |            |
+| Show an offcanvas game menu                 | :soon: Working                       |            |
 | Show player names and match score in toolbar| :construction: In Progress           |            |
-| Show borne pieces                            | :white_large_square: Not implemented |            |
+| Show borne pieces                           | :white_large_square: Not implemented |            |
 | Allow player to resign from game/match      | :white_large_square: Not implemented |            |
 | Allow user to get "challenge" links         | :white_large_square: Not implemented |            |
 | Allow user to see list of games             | :white_large_square: Not implemented |            |
 | Users can filter/sort games by rule         | :white_large_square: Not implemented |            |
 | Users can choose use of clock, cube and match length | :white_large_square: Not implemented |            |
 | Polish simple board UI                      | :white_large_square: Not implemented |            |
-| Continue game on page reload                | :white_large_square: Not implemented |            |
+| Allow user to choose game rule (variant)    | :white_large_square: Not implemented |            |
 
 
 *Possible states: :white_large_square: Not implemented, :construction: In progress, :soon: Working, :white_check_mark: Completed*
