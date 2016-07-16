@@ -457,11 +457,11 @@ function SimpleBoardUI(client) {
     this.createPoints();
     this.createPieces();
     
+    this.randomizeDiceRotation();
+    
     this.assignActions();
     this.updateControls();
     this.updateScoreboard();
-    
-    this.randomizeDiceRotation();
   };
   
   this.handleTurnStart = function () {
