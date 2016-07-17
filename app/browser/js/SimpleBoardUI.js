@@ -263,9 +263,7 @@ function SimpleBoardUI(client) {
       - Field 2 - top right
       - Field 3 - bottom right
       
-      If use is playing with white piece, the fields
-      are mapped to point positions in the following
-      way.
+      Fields are arrange on the board in the following way:
       
       +12-13-14-15-16-17------18-19-20-21-22-23-+
       |                  |   |                  |
@@ -281,43 +279,36 @@ function SimpleBoardUI(client) {
       |                  |   |                  |
       +11-10--9--8--7--6-------5--4--3--2--1--0-+ -1
       
-      The fieldsMap object is used to swap top and bottom points,
-      depending on player's piece type.
     */
     
-    var fieldsMap = {};    
-    
-    if (this.client.player.currentPieceType === model.PieceType.BLACK) {
-      fieldsMap[0] = 1;
-      fieldsMap[1] = 0;
-      fieldsMap[2] = 3;
-      fieldsMap[3] = 2;
-    }
-    else {
-      fieldsMap[0] = 0;
-      fieldsMap[1] = 1;
-      fieldsMap[2] = 2;
-      fieldsMap[3] = 3;
-    }
+    var pieceType = this.client.player.currentPieceType;
     
     for (var i = 12; i < 18; i++) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[fieldsMap[0]], i, typeClass);
+      
+      var k = (pieceType === model.PieceType.BLACK) ? i - 12 : i;
+      this.createPoint(this.fields[0], k, typeClass);
     }
 
     for (var i = 11; i >= 6; i--) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[fieldsMap[1]], i, typeClass);
+      
+      var k = (pieceType === model.PieceType.BLACK) ? i + 12 : i;
+      this.createPoint(this.fields[1], k, typeClass);
     }
 
     for (var i = 18; i < 24; i++) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[fieldsMap[2]], i, typeClass);
+      
+      var k = (pieceType === model.PieceType.BLACK) ? i - 12 : i;
+      this.createPoint(this.fields[2], k, typeClass);
     }
 
     for (var i = 5; i >= 0; i--) {
       var typeClass = i % 2 === 0 ? 'even' : 'odd';
-      this.createPoint(this.fields[fieldsMap[3]], i, typeClass);
+      
+      var k = (pieceType === model.PieceType.BLACK) ? i + 12 : i;
+      this.createPoint(this.fields[3], k, typeClass);
     }
   };
 
