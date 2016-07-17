@@ -796,6 +796,10 @@ function Server() {
     console.log('CONFIRM MOVES');
     // Check if player has won
     if (rule.hasWon(match.currentGame.state, player)) {
+      
+      // TODO: Move ending game logic to rule. Keep only calls
+      //       sending messages to client.
+      
       console.log('HAS NOW');
       // Player has won the game
       // 1. Update score
@@ -853,19 +857,10 @@ function Server() {
             }
           );
         };
-        
       }
     }
     else {
-      // Start next turn:
-      // 1. Reset turn
-      // 2. Change players
-      // 3. Roll new dice
-      var game = match.currentGame;
-      game.turnConfirmed = false;
-      game.turnDice = null;
-      game.turnPlayer = (game.turnPlayer.id == match.host.id) ? match.guest: match.host;
-      game.turnNumber += 1;
+      rule.nextTurn(match);
 
       this.sendMatchMessage(
         match,
