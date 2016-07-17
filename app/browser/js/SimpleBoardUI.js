@@ -647,8 +647,12 @@ function SimpleBoardUI(client) {
     var self = this;
     $('.dice .die').unbind('click');
     $('.dice .die').click(function (e) {
-      console.log(dice.movesLeft);
-      model.Utils.rotateLeft(dice.movesLeft);
+      if (dice.movesLeft.length > 0) {
+        console.log('Values:', dice.values);
+        console.log('Moves left:', dice.movesLeft);
+        model.Utils.rotateLeft(dice.values);
+        model.Utils.rotateLeft(dice.movesLeft);
+      }
       self.updateControls();
     });
   };
