@@ -119,7 +119,7 @@ function Server() {
 
     });
 
-    http.listen(process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port, function () {
+    http.listen(process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1', function () {
       console.log('listening on *:' + comm.Protocol.Port);
     });
   };
