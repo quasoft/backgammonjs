@@ -10,8 +10,8 @@ require('../../lib/rules/rule.js');
 require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
 
-expressServer.set('port', process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port);
-expressServer.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+//expressServer.set('port', process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port);
+//expressServer.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 /**
  * Backgammon server.
