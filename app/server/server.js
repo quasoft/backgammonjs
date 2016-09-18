@@ -247,6 +247,14 @@ function Server() {
    */
   this.handleDisconnect = function (socket) {
     console.log('Client disconnected');
+    
+    // DONE: remove this client from the waiting queue
+    var player = this.getSocketPlayer(socket);
+    if (!player) {
+        return;
+    }
+    
+    model.Utils.removeItem(this.randomPlayerQueue, player);
   };
 
   /**
@@ -435,6 +443,9 @@ function Server() {
     }
 
     var otherPlayer = this.randomPlayerQueue.pop();
+    // TODO: Make sure otherPlayer has not disconnected while waiting.
+    //       If that is the case, pop another player from the queue.
+    
     if (otherPlayer != null) {
       // Start a new match with this other player
       var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
