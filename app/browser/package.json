@@ -23,7 +23,7 @@
     "build": "npm run build:js",
     "watch:js": "watchify ./js/main.js --require socket.io-client -o ./js/bundle.js -v",
     "watch": "npm run watch:js",
-    "postinstall": "bower install"
+    "postinstall": "if [ -d \"$OPENSHIFT_REPO_DIR\" ]; then (export HOME=\"$OPENSHIFT_REPO_DIR\"/..; bower install --config.interactive=false) else (bower install) fi"
   },
   "browser": {
     "jquery-fittext": "./bower_components/fittext/fittext.js"
