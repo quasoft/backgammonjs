@@ -4,16 +4,16 @@
   "author": "quasoft <info@quasoft.net>",
   "description": "Backgammon.js Client",
   "license": "MIT",
-  "main": "client.html",
+  "main": "index.html",
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "bower": "^1.7.9",
     "clipboard": "^1.5.10",
     "jquery": "^2.2.1",
     "js-cookie": "^2.1.2",
     "socket.io-client": "^1.4.5"
   },
   "devDependencies": {
-    "aliasify": "^1.9.0",
     "browserify": "^13.0.1",
     "watch": "^0.17.1",
     "watchify": "^3.7.0"
@@ -22,25 +22,13 @@
     "build:js": "browserify ./js/main.js --require socket.io-client -o ./js/bundle.js",
     "build": "npm run build:js",
     "watch:js": "watchify ./js/main.js --require socket.io-client -o ./js/bundle.js -v",
-    "watch": "npm run watch:js"
+    "watch": "npm run watch:js",
+    "postinstall": "bower install"
   },
   "browser": {
     "jquery-fittext": "./bower_components/fittext/fittext.js"
   },
   "browserify": {
     "transform": []
-  },
-  "aliasify": {
-    "aliases": {
-      "main": "./js/main.js",
-      "SimpleBoardUI": "./js/SimpleBoardUI.js",
-      "RuleBgCasual": "../../lib/rules/RuleBgCasual.js",
-      "RuleBgGulbara": "../../lib/rules/RuleBgGulbara.js",
-      "rule": "../../lib/rules/rule.js",
-      "client": "../../lib/client.js",
-      "comm": "../../lib/comm.js",
-      "model": "../../lib/model.js"
-    },
-    "verbose": true
   }
 }

@@ -112,7 +112,9 @@ function Server() {
 
     });
 
-    http.listen(comm.Protocol.Port, function () {
+    var host = process.env.OPENSHIFT_NODEJS_IP || 'localhost';
+    var port = process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port;
+    http.listen(port, host, function () {
       console.log('listening on *:' + comm.Protocol.Port);
     });
   };
