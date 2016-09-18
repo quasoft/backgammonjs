@@ -5,13 +5,9 @@ var http = require('http').Server(expressServer);
 var io = require('socket.io')(http);
 var comm = require('../../lib/comm.js');
 var model = require('../../lib/model.js');
-//var mongo = require('mongodb').MongoClient;
 require('../../lib/rules/rule.js');
 require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
-
-//expressServer.set('port', process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port);
-//expressServer.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 /**
  * Backgammon server.
@@ -68,9 +64,6 @@ function Server() {
     var self = this;
 
     expressServer.use(express.static(path.join(__dirname, '../browser')));
-    //express.get('/', function (req, res) {
-    //  res.sendFile('index.html', {'root': './app/browser/'});
-    //});
 
     io.on('connection', function (socket) {
       console.log('Client connected');
@@ -119,7 +112,9 @@ function Server() {
 
     });
 
-    http.listen(process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1', function () {
+    var host = process.env.OPENSHIFT_NODEJS_IP || 'localhost';
+    var port = process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port;
+    http.listen(port, host, function () {
       console.log('listening on *:' + comm.Protocol.Port);
     });
   };
@@ -910,18 +905,4 @@ function Server() {
 }
 
 var server = new Server();
-var db = null;
-
-/*
-mongo.connect('mongodb://127.0.0.1:27017/backgammon', function(err, database) {
-  if(err) throw err;
-
-  db = database;
-
-  // Start server if connected to database
-  server.run();
-});
-*/
-
-// TODO: Do not start server, if database was not connected to
 server.run();

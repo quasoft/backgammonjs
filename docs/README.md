@@ -187,9 +187,9 @@ The project uses a typical client/server architecture with several layers of res
 
 ### Environment layer
 
-The environment layer contains external systems and frameworks the project depends on, like `Node.js`, `Socket.IO` and `MongoDB`.
+The environment layer contains external systems and frameworks the project depends on, like `Node.js` and `Socket.IO`.
 
-Foundation of project is laid on `node.js`. Network connectivity is implemented via `Socket.IO` and database storage of objects is performed by `MongoDB`.
+Foundation of project is laid on `node.js`. Network connectivity is implemented via `Socket.IO`. Storage of objects will be performed by `MongoDB`, but database layer has not been integrated yet, so everything is reset when the server application is restarted.
 
 ### Module layer
 
@@ -285,7 +285,6 @@ Directory structure of code follows project architecture:
 - Node.js
 - Express
 - Socket.IO
-- MongoDB
 - jQuery
 
 ## License

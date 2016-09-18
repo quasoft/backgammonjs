@@ -4,14 +4,13 @@
   "author": "quasoft <info@quasoft.net>",
   "description": "Backgammon.js Game",
   "license": "MIT",
-  "dependencies": {
-    "backgammon.js-lib": "*",
-    "backgammon.js-server": "*",
-    "backgammon.js-browser": "*"
-  },
   "scripts": {
-    "start:db": "mongod --dbpath ./app/server/db --port 27017",
-	"start:server": "node ./app/server/server.js",
-    "start": "npm run start:server"
+    "build:browser": "npm run --prefix=./app/browser build",
+    "build": "npm run build:browser",
+    "start:server": "node ./app/server/server.js",
+    "start": "npm run build:browser && npm run start:server",
+    "install:browser": "cd app/browser && npm install -dd && cd ..",
+    "install:server": "cd app/server && npm install -dd && cd ..",
+    "postinstall": "npm run install:browser && npm run install:server"
   }
 }
