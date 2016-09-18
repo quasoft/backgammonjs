@@ -11,7 +11,7 @@
     "start": "npm run build:browser && npm run start:server",
     "install:browser": "cd app/browser && npm install -dd && cd ..",
     "install:server": "cd app/server && npm install -dd && cd ..",
-	"install": "npm run install:browser && npm run install:server",
-    "postinstall": "npm run install && npm run build"
+	"installall": "npm run install:browser && npm run install:server",
+    "postinstall": "npm run installall && npm run build"
   }
 }
