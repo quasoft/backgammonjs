@@ -1,24 +1,21 @@
-# Use LTS version
-FROM node:argon
+# Using alpine image, because it is super slim
+FROM alpine
 
-# Update aptitude
-RUN apt-get update
+# Install only bash and nodejs, then remove cached package data
+RUN apk add --update bash && apk add --update nodejs && rm -rf /var/cache/apk/*
 
-# Install software 
-RUN apt-get install -y git
-
-# Create app directory
+# Create app directory. This is where source code will be copied to
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# Checkout source code
-RUN git clone https://github.com/quasoft/backgammonjs.git /usr/src/app
-
-# Install app dependencies
-RUN npm install
-
-# Bundle app source
+# Copy source from host to directory in container
 COPY . /usr/src/app
 
-EXPOSE 80
+# Install application and all its dependencies
+RUN npm install
+
+# Expose 8080 port. Client should connect at http://IP_OF_CONTAINER:8080
+EXPOSE 8080
+
+# Start application
 CMD [ "npm", "start" ]
