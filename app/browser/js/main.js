@@ -48,11 +48,7 @@ $(document).ready(function() {
   new clipboard('.btn-copy');
 
   // Prepare client config
-  var config = {
-    'containerID': 'backgammon',
-    'boardUI': '../app/browser/js/SimpleBoardUI.js'
-    //'boardUI': 'SimpleBoardUI'
-  };
+  var config = require('./config');
   
   // Initialize the overlay showing game results
   $('#game-result-overlay').click(function () {
