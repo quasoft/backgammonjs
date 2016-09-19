@@ -22,33 +22,24 @@ Should work on any linux/unix OS that can run `git` and `node.js`.
 
 2. Install git
 
-        ```bash
         sudo apt-get update
         sudo apt-get install git
-        ```
        
 4. Create an empty directory where to put source code:
 
-        ```bash
         mkdir -p ~/backgammonjs
         cd ~/backgammonjs
-        ```
 
 3. Clone game repository:
 
-        ```bash
         git clone https://github.com/quasoft/backgammonjs.git .
-        ```
 
 4. Install the game and its dependencies:
 
-        ```bash
         npm install
-        ```
        
    If this fails, you can also try to install the client and server separately:
    
-        ```bash
         cd app/browser
         npm install
         npm build
@@ -57,22 +48,17 @@ Should work on any linux/unix OS that can run `git` and `node.js`.
         npm install
        
         cd ../..
-        ```
     
 5. Start the game
 
    Make sure that port 8080 is not in use on your system and start the game:
     
-        ```bash
         npm start
-        ```
 
    If this fails, try to manually start the server:
    
-        ```bash
         cd app/server
         node server.js
-        ```
     
 6. To test, open http://localhost:8080 in your browser and you should see the game home page.
 
@@ -85,27 +71,20 @@ Tested to work on *Windows 10 Professional 64-bit*.
 2. Install [Git for Windows](https://git-scm.com/download/win).
 4. Create an empty directory where to put source code:
 
-        ```batch
         mkdir c:\backgammonjs
         c:
         cd c:\backgammonjs
-        ```
 
 3. Clone game repository:
 
-        ```batch
         git clone https://github.com/quasoft/backgammonjs.git .
-        ```
 
 4. Install the game and its dependencies:
 
-        ```batch
         npm install
-        ```
 
    If this fails, you can also try to install the client and server separately:
 
-        ```batch
         cd app/browser
         npm install
         npm build
@@ -114,19 +93,15 @@ Tested to work on *Windows 10 Professional 64-bit*.
         npm install
        
         cd ../..
-        ```
 
 5. Start the game
 
    Make sure that port 8080 is not in use on your system and start the game:
     
-        ```batch
         npm start
-        ```
 
    If this fails, try to manually start the server:
 
-        ```batch
         cd app/server
         node server.js
     
@@ -140,44 +115,32 @@ Has been tested with Docker version 1.12.1 under Ubuntu 16.04 host (64-bit).
 
 2. Install git
 
-        ```bash
         sudo apt-get update
         sudo apt-get install git
-        ```
 
 3. Create an empty directory where to put source code:
 
-        ```bash
         mkdir -p ~/backgammonjs
         cd ~/backgammonjs
-        ```
 
 4. Clone game repository:
 
-        ```bash
         git clone https://github.com/quasoft/backgammonjs.git .
-        ```
 
 5. Build docker image
 
-        ```bash
         sudo docker build -t yourself/backgammonjs .
-        ```
 
 6. Start docker container
 
-        ```bash
         sudo docker run -p 8080:8080 -d yourself/backgammonjs
-        ```
        
    In command above port redirection is used from container to host (the `-p 8080:8080` part).
    If you omit that part, you will still be able to connect to the container, but will have to use the IP of the container, instead of the IP of the host (eg. http://172.17.0.2:8080).
 
 7. Test
 
-        ```bash
         curl -i http://localhost:8080
-        ```
        
    or
    

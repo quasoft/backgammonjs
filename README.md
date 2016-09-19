@@ -43,10 +43,8 @@ The universal way to install the server is:
 2. Change working directory to the local copy of the repository
 3. Run:
 
-        ```bash
         npm install
         npm start
-        ```
 
 The game server has been tested to work on the following platforms:
 
