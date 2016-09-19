@@ -603,7 +603,7 @@ function SimpleBoardUI(client) {
     var id = '#die' + index;
     
     // Set text
-    $(id).html(dice.values[index]);
+    $(id).text(dice.values[index]);
     
     // Change image
     $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black played');
