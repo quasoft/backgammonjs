@@ -73,7 +73,7 @@ $(document).ready(function() {
   });
 
   $('#btn-create-match').click(function (e) {
-    client.reqCreateMatch('RuleBgCasual');
+    client.reqCreateMatch(config.defaultRule);
   });
 
   $('#btn-join-match').click(function (e) {
@@ -83,7 +83,7 @@ $(document).ready(function() {
   $('#btn-play-random').click(function (e) {
     app.setIsWaiting(true);
     app.updateView();
-    client.reqPlayRandom('RuleBgCasual');
+    client.reqPlayRandom(config.defaultRule);
   });
   
   $(window).resize(function () {
