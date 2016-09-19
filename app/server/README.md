@@ -1,3 +1,3 @@
 # backgammon.js-server
 
-See [`project README`](../README.md)
+See [`project README`](../../README.md)

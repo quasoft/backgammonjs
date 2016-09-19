@@ -26,4 +26,4 @@ npm build:docs
 ## Other documents:
 
 - [`Project README`](../README.md)
-- [`Detailed documentation`](../doc/README.md)
+- [`Detailed documentation`](../docs/README.md)
