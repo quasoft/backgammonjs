@@ -151,6 +151,6 @@ Has been tested with Docker version 1.12.1 under Ubuntu 16.04 host (64-bit).
 Has been tested to work with free tier of OpenShift Online.
 The demo is currently running there with *small gear* and *node-latest* cartridge.
 
-*More detailed instructions for deployment to OpenShift Online, comming soon...*
+*More detailed instructions for deployment to OpenShift Online, coming soon...*
 
 TODO: add detailed intructions on using OpenShift

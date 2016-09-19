@@ -53,7 +53,7 @@ The game server has been tested to work on the following platforms:
 - [Docker](docs/INSTALL.md#docker)
 - [OpenShift Online](docs/INSTALL.md#openshift-online)
 
-Follow the links above for more detailed installation isntructions on those platforms.
+Follow the links above for more detailed installation instructions on those platforms.
 
 ## How to change default rule
 
@@ -82,7 +82,7 @@ Filename of rules should start with prefix `Rule`, followed by `ISO 3166-1 alpha
 
 ## Documentation:
 
-- [Installation isntructions](docs/INSTALL.md)
+- [Installation instructions](docs/INSTALL.md)
 - [Detailed documentation](docs/README.md)
 
 ## Screenshots
