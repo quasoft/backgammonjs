@@ -1,4 +1,4 @@
-# [backgammon.js](../README.md) :: Documentation
+# [backgammon.js](../README.md) :: Detailed documentation
 
 ## Contents:
 

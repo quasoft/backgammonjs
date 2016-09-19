@@ -1,6 +1,10 @@
-# backgammon.js: Extensible multiplayer backgammon game written in JavaScript
+# backgammon.js [![Build Status](https://travis-ci.org/quasoft/backgammonjs.svg?branch=master)](https://travis-ci.org/quasoft/backgammonjs)
 
-**Note: The game is still work in progress and is NOT playable yet.**
+### Extensible multiplayer backgammon game written in JavaScript
+
+NEW: Alpha version 0.2 released ([DEMO](http://bg-quasoft.rhcloud.com/)).
+
+*Note: The game is playable, but is still being developed. The [demo](http://bg-quasoft.rhcloud.com/) is missing some features like resigning from game, undoing a move, or challenging a friend.*
 
 ## Features:
 
@@ -13,29 +17,72 @@
 - Lightweight - playable on any device, even old ones - anything that can run a modern browser;
 - Works in browser @ PC & Mobile;
 
-If you want to lean more about the project see [Project Documentation](docs/README.md).
-
-## Teaser (not ready for demo yet)
-
-![Landing page](docs/images/progress-landing-page.jpg)
-
-![Prototype](docs/images/progress-gameplay.jpg)
+If you want to lean more about the project see [Detailed documentation](docs/README.md).
 
 ## Demo
-Comming soon...
+[![Landing page](docs/images/progress-landing-page.jpg)](http://bg-quasoft.rhcloud.com/)
+
+[Playable DEMO of backgammon.js](http://bg-quasoft.rhcloud.com/) - *the game is still alpha version, so it lacks some features like resigning, undoing a move, or challenging a friend.*
+
+The demo is using a free hosting service, so it might be down from time to time.
+
+You are free to host the game at your own server.
 
 ## How to install
-Comming soon...
 
-## How to build
-Comming soon...
+To host the game on your own server or test it locally for development, you need to install the main backgammon.js package.
+It includes both the backgammon.js server and client.
+
+There is no need to install the client separately, as it is served automatically from the server via HTTP.
+Client should work in *modern* browsers of both desktop PCs and mobile devices.
+
+The universal way to install the server is:
+
+1. Clone repository locally
+2. Change working directory to the local copy of the repository
+3. Run:
+
+       npm install
+       npm start
+
+The game server has been tested to work on the following platforms:
+
+- [Ubuntu](docs/INSTALL.md#ubuntu)
+- [Windows](docs/INSTALL.md#windows)
+- [Docker](docs/INSTALL.md#docker)
+- [OpenShift Online](docs/INSTALL.md#openshift-online)
+
+Follow the links above for more detailed installation isntructions on those platforms.
+
+## How to change default rule
+
+By default the game server runs with the classical backgammon rule (popular worldwide).
+
+To make the server run another rule, edit file [`app/browser/config.js`](app/browser/config.js), by changing `RuleBgCasual` with the name of the rule that you want:
+
+    config.defaultRule = 'RuleBgCasual';
+
+Currently two rules have been implemented, both popular in Bulgaria:
+ 
+- [`RuleBgCasual`](lib/rules/RuleBgCasual.js) - Standard rules, but without doubling cube (Rules: [Standard/Обикновена](https://en.wikipedia.org/wiki/Backgammon#Rules))
+- [`RuleBgGulbara`](lib/rules/RuleBgGulbara.js) - `Gul bara`, also called `Rosespring` or `Crazy Narde` (Rules: [Gul bara/Гюлбара](https://en.wikipedia.org/wiki/Gul_bara))
+
+In next release, the game client will allow the player to choose the rule himself/herself.
 
 ## How to add new rules (variants)
-Instructions on adding new variants of backgammon to the game can be found at [Creating rules for `backgammon.js`](docs/rules.md).
+
+Instructions on adding new rules to the game are comming soon: [Creating rules for `backgammon.js`](docs/rules.md).
+
+Meanwhile, you can look how built-in rules have been implemented in the following directory:
+
+- [`lib/rules/`](lib/rules/)
+
+Filename of rules should start with prefix `Rule`, followed by `ISO 3166-1 alpha-2` country code (the country where this variant of the game is popular  - eg. `Bg` for `Bulgaria`) and the name of the rule. Don't use spaces or punctuation/special characters in the filename.
 
 ## Documentation:
 
-- [Project Architecture](docs/README.md)
-- Client application: [`backgammon.js-client`](app/browser/README.md)
-- Server application: [`backgammon.js-server`](app/server/README.md)
-- Common Library: [`backgammon.js-lib`](lib/README.md)
+- [Installation isntructions](docs/INSTALL.md)
+- [Detailed documentation](docs/README.md)
+
+## Screenshots
+![Prototype](docs/images/progress-gameplay.jpg)
