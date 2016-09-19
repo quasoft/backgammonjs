@@ -72,7 +72,7 @@ In next release, the game client will allow the player to choose the rule himsel
 
 ## How to add new rules (variants)
 
-Instructions on adding new rules to the game are comming soon: [Creating rules for `backgammon.js`](docs/rules.md).
+Instructions on adding new rules to the game are coming soon: [Creating rules for `backgammon.js`](docs/rules.md).
 
 Meanwhile, you can look how built-in rules have been implemented in the following directory:
 
