@@ -9,3 +9,4 @@ bower_components
 nbproject
 /docs/backgammon.js-lib
 /app/server/db
+npm-debug.log
