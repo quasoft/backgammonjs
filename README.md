@@ -43,8 +43,10 @@ The universal way to install the server is:
 2. Change working directory to the local copy of the repository
 3. Run:
 
-       npm install
-       npm start
+        ```bash
+        npm install
+        npm start
+        ```
 
 The game server has been tested to work on the following platforms:
 
@@ -59,7 +61,7 @@ Follow the links above for more detailed installation isntructions on those plat
 
 By default the game server runs with the classical backgammon rule (popular worldwide).
 
-To make the server run another rule, edit file [`app/browser/config.js`](app/browser/config.js), by changing `RuleBgCasual` with the name of the rule that you want:
+To make the server run another rule, edit file [`app/browser/config.js`](app/browser/js/config.js), by changing `RuleBgCasual` with the name of the rule that you want:
 
     config.defaultRule = 'RuleBgCasual';
 
