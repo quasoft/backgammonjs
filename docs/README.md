@@ -266,7 +266,7 @@ Directory structure of code follows project architecture:
 
 ## Credits
 
-- OpenShift Online - free tier of service used for running the demo
+- Heroku - free tier of service used for running the demo
 
 ### Tools used:
 

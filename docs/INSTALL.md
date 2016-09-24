@@ -5,6 +5,7 @@ The game server has been tested to work on the following platforms:
 - [Ubuntu 16.04 64-bit](#ubuntu)
 - [Windows 10 Professional 64-bit](#windows)
 - [Docker](#docker)
+- [Heroku](#heroku)
 - [OpenShift Online](#openshift-online)
 
 Client is served automatically by server via HTTP, so after you install the server, all you need to access the game is the URL to the server (by default http://localhost:8080) and a *modern* browser.
@@ -146,11 +147,16 @@ Has been tested with Docker version 1.12.1 under Ubuntu 16.04 host (64-bit).
    
    Open http://localhost:8080 in web browser
 
+## Heroku
+
+Has been tested to work with free tier of Heroku.
+
+The demo is currently running there.
+
+TODO: add detailed intructions on using Heroku
+
 ## OpenShift Online
 
-Has been tested to work with free tier of OpenShift Online.
-The demo is currently running there with *small gear* and *node-latest* cartridge.
-
-*More detailed instructions for deployment to OpenShift Online, coming soon...*
+Has been tested to work with free tier of OpenShift Online - *small gear* and *node-latest* cartridge.
 
 TODO: add detailed intructions on using OpenShift
