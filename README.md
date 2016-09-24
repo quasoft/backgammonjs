@@ -25,7 +25,6 @@ If you want to lean more about the project see [Detailed documentation](docs/REA
 [Playable DEMO of backgammon.js](https://backgammonjs.herokuapp.com/) - *the game is still alpha version, so it lacks some features like resigning, undoing a move, or challenging a friend.*
 
 The demo is using the [free tier of Heroku](https://www.heroku.com/).
-Thank you, Red Hat!
 
 You are free to host the game at your own server.
 
