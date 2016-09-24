@@ -113,9 +113,9 @@ function Server() {
     });
 
     var host = process.env.OPENSHIFT_NODEJS_IP || comm.Protocol.BindAddress;
-    var port = process.env.OPENSHIFT_NODEJS_PORT || comm.Protocol.Port;
+    var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || comm.Protocol.Port;
     http.listen(port, host, function () {
-      console.log('listening on *:' + comm.Protocol.Port);
+      console.log('listening on *:' + port);
     });
   };
   
