@@ -153,7 +153,7 @@ Has been tested to work with free tier of Heroku.
 
 The demo is currently running there.
 
-TODO: add detailed intructions on using Heroku
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/quasoft/backgammonjs/tree/heroku)
 
 ## OpenShift Online
 
