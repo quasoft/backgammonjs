@@ -110,6 +110,10 @@ function Server() {
         self.handleRequest(comm.Message.CONFIRM_MOVES, socket, params);
       });
 
+      socket.on(comm.Message.UNDO_MOVES, function (params) {
+        self.handleRequest(comm.Message.UNDO_MOVES, socket, params);
+      });
+
     });
 
     var host = process.env.OPENSHIFT_NODEJS_IP || comm.Protocol.BindAddress;
@@ -302,6 +306,9 @@ function Server() {
     }
     else if (msg === comm.Message.CONFIRM_MOVES) {
       reply.result = this.handleConfirmMoves(socket, params, reply);
+    }
+    else if (msg === comm.Message.UNDO_MOVES) {
+      reply.result = this.handleUndoMoves(socket, params, reply);
     }
     else {
       console.log('Unknown message!');
@@ -688,6 +695,8 @@ function Server() {
     var dice = rule.rollDice(game);
     game.turnDice = dice;
 
+    model.Game.snapshotState(match.currentGame);
+
     reply.player = game.turnPlayer;
     reply.dice = dice;
 
@@ -879,6 +888,41 @@ function Server() {
         }
       );
     }
+
+    return true;
+  };
+
+  /**
+   * Handle client's request to undo moves made
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.handleUndoMoves = function (socket, params, reply) {
+    console.log('Undo moves', params);
+
+    var match = this.getSocketMatch(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
+
+    if (!rule.validateUndo(match.currentGame, player)) {
+      reply.errorMessage = 'Undo moves is not allowed!';
+      return false;
+    }
+
+    var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
+
+    model.Game.restoreState(match.currentGame);
+
+    this.sendMatchMessage(
+      match,
+      comm.Message.EVENT_UNDO_MOVES,
+      {
+        'match': match
+      }
+    );
 
     return true;
   };

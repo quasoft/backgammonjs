@@ -129,6 +129,17 @@ function SimpleBoardUI(client) {
       self.client.reqConfirmMoves();
     });
     
+    $('#btn-undo').unbind('click');
+    $('#btn-undo').click(function (e) {
+      self.client.reqUndoMoves();
+    });
+    
+    $('#menu-undo').unbind('click');
+    $('#menu-undo').click(function (e) {
+      $('.navbar').collapse('hide');
+      self.client.reqUndoMoves();
+    });
+    
     console.log('mm1', this.match);
     if ((!this.match) || (!this.match.currentGame) || (!this.client.player)) {
       return;
