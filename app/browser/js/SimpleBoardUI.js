@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var model = require('../../../lib/model.js');
+var ohsnap = require('../bower_components/oh-snap/ohsnap.js');
 
 /**
  * Contains graphical user interface and functionality for moving pieces
@@ -27,6 +28,7 @@ function SimpleBoardUI(client) {
   this.init = function () {
     this.container = $('#' + this.client.config.containerID);
     this.container.append($('#tmpl-board').html());
+    this.container.append($('<div id="ohsnap"></div>'));
     
     this.board = $('#board');
     this.fields = [];
@@ -53,6 +55,18 @@ function SimpleBoardUI(client) {
     var n = number - Math.pow(10, -digits)/2;
     n += n / Math.pow(2, 53); // added 1360765523: 17.56.toFixedDown(2) === "17.56"
     return n.toFixed(digits);
+  };
+  
+  this.notifyInfo = function (message) {
+    ohSnap(message, {color: 'blue', duration: 1500});
+  };
+  
+  this.notifyPositive = function (message) {
+    ohSnap(message, {color: 'green', duration: 1500});
+  };
+  
+  this.notifyNegative = function (message) {
+    ohSnap(message, {color: 'red', duration: 1500});
   };
 
   this.getPointElem = function (pos) {
@@ -177,7 +191,7 @@ function SimpleBoardUI(client) {
         var position = $(this).data('position');
         var piece = self.getTopPiece(position);
         if (piece) {
-          self.client.reqMove(piece, steps);  
+          self.client.reqMove(piece, steps);
         }
 
         e.preventDefault();
@@ -487,6 +501,10 @@ function SimpleBoardUI(client) {
   
   this.handleTurnStart = function () {
     this.randomizeDiceRotation();
+  };
+  
+  this.handleEventUndoMoves = function () {
+    this.notifyInfo('Player undid last move.');
   };
   
   this.randomizeDiceRotation = function () {
