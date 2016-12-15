@@ -323,14 +323,13 @@ function SimpleBoardUI(client) {
     }
   };
 
-  this.createPiece = function (pos, piece, count) {
+  this.createPiece = function (parentElem, piece, count) {
     var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
     var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">&nbsp;</div></div>');
     pieceElem.data('piece', piece);
 
-    var pointElem = this.getPointElem(pos);
-    pointElem.append(pieceElem);
+    parentElem.append(pieceElem);
   };
   
   /**
@@ -340,8 +339,9 @@ function SimpleBoardUI(client) {
     for (var i = 0; i < 24; i++) {
       this.compactPosition(i);
     }
-    this.compactElement(this.getBarElem(model.PieceType.WHITE));
-    this.compactElement(this.getBarElem(model.PieceType.BLACK));
+    this.compactElement(this.getBarElem(model.PieceType.WHITE), this.client.player.currentPieceType === model.PieceType.WHITE ? 'top' : 'bottom');
+    this.compactElement(this.getBarElem(model.PieceType.BLACK), this.client.player.currentPieceType === model.PieceType.BLACK ? 'top' : 'bottom');
+    
   }
   
   /**
@@ -419,13 +419,26 @@ function SimpleBoardUI(client) {
 
   this.createPieces = function () {
     var game = this.match.currentGame;
+    var i, pos;
+    var b;
     
-    for (var pos = 0; pos < game.state.points.length; pos++) {
+    for (pos = 0; pos < game.state.points.length; pos++) {
       var point = game.state.points[pos];
-      for (var i = 0; i < point.length; i++) {
-        this.createPiece(pos, point[i], 0);
+      for (i = 0; i < point.length; i++) {
+        var pointElem = this.getPointElem(pos);
+        this.createPiece(pointElem, point[i], 0);
       }
       this.compactPosition(pos);
+    }
+    
+    
+    for (b = 0; b < game.state.bar.length; b++) {
+      var bar = game.state.bar[b];
+      for (i = 0; i < bar.length; i++) {
+        var piece = bar[i];
+        var barElem = this.getBarElem(piece.type);
+        this.createPiece(barElem, piece, 0);
+      }
     }
   };
 
@@ -468,6 +481,8 @@ function SimpleBoardUI(client) {
     this.assignActions();
     this.updateControls();
     this.updateScoreboard();
+    
+    this.compactAllPositions();
   };
   
   this.handleTurnStart = function () {
