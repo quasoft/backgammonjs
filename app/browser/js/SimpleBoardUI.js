@@ -57,16 +57,16 @@ function SimpleBoardUI(client) {
     return n.toFixed(digits);
   };
   
-  this.notifyInfo = function (message) {
-    ohSnap(message, {color: 'blue', duration: 1500});
+  this.notifyInfo = function (message, timeout = 1500) {
+    ohSnap(message, {color: 'blue', duration: timeout});
   };
   
-  this.notifyPositive = function (message) {
-    ohSnap(message, {color: 'green', duration: 1500});
+  this.notifyPositive = function (message, timeout = 1500) {
+    ohSnap(message, {color: 'green', duration: timeout});
   };
   
-  this.notifyNegative = function (message) {
-    ohSnap(message, {color: 'red', duration: 1500});
+  this.notifyNegative = function (message, timeout = 1500) {
+    ohSnap(message, {color: 'red', duration: timeout});
   };
 
   this.getPointElem = function (pos) {
@@ -507,6 +507,22 @@ function SimpleBoardUI(client) {
     this.notifyInfo('Player undid last move.');
   };
   
+  this.handleEventGameRestart = function () {
+    var yourscore = this.match.score[this.client.player.currentPieceType];
+    var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
+    var message = 'Match result: <b>You ' + yourscore + '</b> / ' + oppscore + ' Opponent';
+    var timeout = 5000;
+    if (yourscore > oppscore) {
+      this.notifyPositive(message, timeout);
+    }
+    else if (yourscore < oppscore) {
+      this.notifyNegative(message, timeout);
+    }
+    else {
+      this.notifyInfo(message, timeout);
+    }
+  };
+
   this.randomizeDiceRotation = function () {
     this.rotationAngle = [];
     for (var i = 0; i < 10; i++) {
