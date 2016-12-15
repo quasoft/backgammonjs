@@ -68,6 +68,14 @@ function SimpleBoardUI(client) {
   this.notifyNegative = function (message, timeout = 1500) {
     ohSnap(message, {color: 'red', duration: timeout});
   };
+  
+  this.notifySuccess = function (message, timeout = 1500) {
+    ohSnap(message, {color: 'green', duration: timeout});
+  };
+  
+  this.notifyError = function (message, timeout = 1500) {
+    ohSnap(message, {color: 'red', duration: timeout});
+  };
 
   this.getPointElem = function (pos) {
     return $('#point' + pos);
