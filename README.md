@@ -4,7 +4,7 @@
 
 NEW: Alpha version 0.2 released ([DEMO](https://backgammonjs.herokuapp.com/)).
 
-*Note: The game is playable, but is still being developed. The [demo](https://backgammonjs.herokuapp.com/) is missing some features like resigning from game, undoing a move, or challenging a friend.*
+*Note: The game is playable, but is still being developed. The [demo](https://backgammonjs.herokuapp.com/) is missing some features like resigning from game or challenging a friend.*
 
 ## Features:
 
@@ -22,7 +22,7 @@ If you want to lean more about the project see [Detailed documentation](docs/REA
 ## Demo
 [![Landing page](docs/images/progress-landing-page.jpg)](https://backgammonjs.herokuapp.com/)
 
-[Playable DEMO of backgammon.js](https://backgammonjs.herokuapp.com/) - *the game is still alpha version, so it lacks some features like resigning, undoing a move, or challenging a friend.*
+[Playable DEMO of backgammon.js](https://backgammonjs.herokuapp.com/) - *the game is still alpha version, so it lacks some features like resigning or challenging a friend.*
 
 The demo is using the [free tier of Heroku](https://www.heroku.com/).
 
