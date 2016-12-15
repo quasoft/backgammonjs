@@ -443,6 +443,9 @@ function SimpleBoardUI(client) {
       var pointElem = this.getPointElem(pos);
       pointElem.empty();
     }
+    
+    this.getBarElem(model.PieceType.BLACK).empty();
+    this.getBarElem(model.PieceType.WHITE).empty();
   };
 
   /**
@@ -454,6 +457,7 @@ function SimpleBoardUI(client) {
     this.match = match;
     this.rule = rule;
 
+    this.removePieces();
     this.removePoints();
 
     this.createPoints();
