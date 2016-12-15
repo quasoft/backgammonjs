@@ -741,7 +741,12 @@ function Server() {
       reply.errorMessage = 'Match created, but current game is null!';
       return false;
     }
-    
+
+    if (params.moveSequence < match.currentGame.moveSequence) {
+      reply.errorMessage = 'This move has already been played!';
+      return false;
+    }
+
     // First, check status of the game: if game was started, if it is player's turn, etc.
     if (!rule.validateMove(match.currentGame, player, params.piece, params.steps)) {
       reply.errorMessage = 'Requested move is not valid!';
@@ -757,6 +762,8 @@ function Server() {
     try {
       rule.applyMoveActions(match.currentGame.state, actionList);
       rule.markAsPlayed(match.currentGame, params.steps);
+      
+      match.currentGame.moveSequence++;
       
       reply.piece = params.piece;
       reply.type = params.type;
