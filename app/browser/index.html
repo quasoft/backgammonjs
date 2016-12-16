@@ -56,6 +56,12 @@
     </div>
   </script>
   
+  <script type="text/x-mustache" id="tmpl-rule-selector-item">
+    <label class="btn btn-default btn-lg {{active}}">
+      <input type="radio" name="rule-selected" value="{{name}}" autocomplete="off" {{checked}}> {{title}}
+    </label>
+  </script>
+  
 </head>
 <body id="page-index">
 
@@ -68,6 +74,12 @@
         <div class="row">
           <h1 class="text-center">Backgammon.js<br><small>Extensible multiplayer game</small></h1>
           <div class="container-fluid">
+            <div class="row">
+              <div class="col col-xs-12 text-center">
+                <div id="rule-selector" class="btn-group" data-toggle="buttons">
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col col-ts-12 col-xs-6 text-right">
                 <button id="btn-play-random" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>Play random game</button>
