@@ -2,7 +2,7 @@
 
 ### Extensible multiplayer backgammon game written in JavaScript
 
-NEW: Alpha version 0.2 released ([DEMO](https://backgammonjs.herokuapp.com/)).
+NEW: Beta version 0.4 released ([DEMO](https://backgammonjs.herokuapp.com/)).
 
 *Note: The game is playable, but is still being developed. The [demo](https://backgammonjs.herokuapp.com/) is missing some features like resigning from game or challenging a friend.*
 
