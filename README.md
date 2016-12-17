@@ -81,4 +81,7 @@ Filename of rules should start with prefix `Rule`, followed by `ISO 3166-1 alpha
 - [Detailed documentation](docs/README.md)
 
 ## Screenshots
-![Prototype](docs/images/progress-gameplay.jpg)
+### Classic rule:
+![Classic rule](docs/images/progress-gameplay.jpg)
+### Gul bara rule:
+![Gul-bara rule](docs/images/progress-gameplay-2.jpg)
