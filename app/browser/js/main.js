@@ -77,7 +77,7 @@ function App() {
     for (i = 0; i < this._config.selectableRules.length; i++) {
       var ruleName = this._config.selectableRules[i];
       var rule = app.loadRule('../../../lib/rules/', ruleName);
-      var isSelected = (i == 0);
+      var isSelected = false;
       var isActive = isSelected ? 'active' : '';
       var isChecked = isSelected ? 'checked' : '';
 
@@ -134,6 +134,7 @@ function App() {
     $('#btn-play-random').click(function (e) {
       self.setIsWaiting(true);
       self.updateView();
+      // TODO: Store selected rule in cookie
       client.reqPlayRandom(self.getSelectedRuleName());
     });
 

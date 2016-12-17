@@ -5,6 +5,7 @@ var http = require('http').Server(expressServer);
 var io = require('socket.io')(http);
 var comm = require('../../lib/comm.js');
 var model = require('../../lib/model.js');
+var queue_manager = require('./queue_manager.js');
 require('../../lib/rules/rule.js');
 require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
@@ -41,19 +42,23 @@ function Server() {
    * @type {Game[]}
    */
   this.games = [];
-  
+
   /**
-   * List of players waiting for starting a random queue
-   * @type {Player[]}
+   * Responsible for management of queues with players waiting to play
+   * @type {QueueManager}
    */
-  this.randomPlayerQueue = [];
+  this.queueManager = new queue_manager.QueueManager();
 
   /**
    * Server's default config object
    * @type {{rulePath: string}}
    */
   this.config = {
-    'rulePath': './rules/'
+    'rulePath': './rules/',
+    'enabledRules': [
+      'RuleBgCasual',
+      'RuleBgGulbara'
+    ]
   };
   
   /**
@@ -258,7 +263,7 @@ function Server() {
         return;
     }
     
-    model.Utils.removeItem(this.randomPlayerQueue, player);
+    this.queueManager.removeFromAll(player);
   };
 
   /**
@@ -442,6 +447,7 @@ function Server() {
    */
   this.handlePlayRandom = function (socket, params, reply) {
     console.log('Play random match');
+    console.log(params);
     
     var player = this.getSocketPlayer(socket);
     if (!player) {
@@ -449,11 +455,27 @@ function Server() {
         return false;
     }
 
-    var otherPlayer = this.randomPlayerQueue.pop();
+    var otherPlayer = null;
+    if (params.ruleName === '*') {
+      params.ruleName = '.*';
+    }
+    var popResult = this.queueManager.popFromRandom(params.ruleName);
+    
+    otherPlayer = popResult.player;
     // TODO: Make sure otherPlayer has not disconnected while waiting.
     //       If that is the case, pop another player from the queue.
     
     if (otherPlayer != null) {
+      if (params.ruleName === '.*')
+      {
+        params.ruleName = popResult.ruleName;
+      }
+      
+      if (params.ruleName === '.*')
+      {
+        params.ruleName = model.Utils.getRandomElement(this.config.enabledRules);
+      }
+      
       // Start a new match with this other player
       var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
       var match = model.Match.createNew(rule);
@@ -483,8 +505,8 @@ function Server() {
       this.setSocketRule(otherSocket, rule);
       
       // Remove players from waiting queue
-      model.Utils.removeItem(this.randomPlayerQueue, player);
-      model.Utils.removeItem(this.randomPlayerQueue, otherPlayer);
+      this.queueManager.remove(player);
+      this.queueManager.remove(otherPlayer);
 
       // Prepare reply
       reply.host = otherPlayer;
@@ -506,7 +528,8 @@ function Server() {
     }
     else {
       // Put player in queue, and wait for another player
-      this.randomPlayerQueue.push(player);
+      console.log('RULE:', params.ruleName);
+      this.queueManager.addToRandom(player, params.ruleName);
       
       reply.isWaiting = true;
       return true;
