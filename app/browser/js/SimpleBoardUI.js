@@ -134,11 +134,6 @@ function SimpleBoardUI(client) {
     var self = this;
     
     // Game actions
-    $('#btn-start').unbind('click');
-    $('#btn-start').click(function (e) {
-      self.client.reqStartMatch();
-    });
-
     $('#btn-roll').unbind('click');
     $('#btn-roll').click(function (e) {
       self.client.reqRollDice();
@@ -174,7 +169,8 @@ function SimpleBoardUI(client) {
       var pointElem = this.getPointElem(pos);
 
       $(document).on('contextmenu', pointElem, function(e){
-         // Block browser menu
+        // Block browser menu
+        return false;
       });
       
       pointElem.unbind('mousedown');
@@ -214,8 +210,9 @@ function SimpleBoardUI(client) {
       var barElem = this.getBarElem(pieceType);
       console.log(barElem);
       
-      $(document).on("contextmenu", barElem, function(e){
-         // Block browser menu
+      $(document).on('contextmenu', barElem, function(e){
+        // Block browser menu
+        return false;
       });
       
       /*
@@ -541,7 +538,6 @@ function SimpleBoardUI(client) {
   this.updateControls = function () {
 
     if ((!this.match) || (!this.match.currentGame)) {
-      $('#btn-start').hide();
       $('#btn-roll').hide();
       $('#btn-confirm').hide();
       $('#btn-undo').hide();
@@ -550,13 +546,7 @@ function SimpleBoardUI(client) {
       return;
     }
     
-    var game = this.match.currentGame;    
-
-    $('#btn-start').toggle(
-      model.Match.isHost(this.match, this.client.player)
-      &&
-      (!game.hasStarted)
-    );
+    var game = this.match.currentGame;
 
     $('#btn-roll').toggle(
       game.hasStarted && (!game.isOver)
@@ -629,10 +619,15 @@ function SimpleBoardUI(client) {
     $('#match-state').attr('title', matchTextTitle);
     
     var yourscore = this.match.score[this.client.player.currentPieceType];
-    var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
-    
     $('#yourscore').text(yourscore);
-    $('#oppscore').text(oppscore);
+
+    if (this.client.otherPlayer) {
+      var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
+      $('#oppscore').text(oppscore);
+    }
+    else {
+      $('#oppscore').text('');
+    }
   };
   
   this.showGameEndMessage = function (winner) {

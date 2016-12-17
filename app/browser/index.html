@@ -48,7 +48,6 @@
     </div>
     <div id="frame-bottom" class="frame"></div>
     <div class="action-panel">
-      <button id="btn-start" class="btn btn-primary btn-lg action" style="display: none" title="Start game">Start</button>
       <button id="btn-roll" class="btn btn-primary btn-lg action" style="display: none" title="Roll dice">Roll</button>
       <button id="btn-confirm" class="btn btn-primary btn-lg action" style="display: none" title="Confirm moves made">Confirm</button>
       <button id="btn-undo" class="btn btn-default btn-lg action" style="display: none" title="Undo moves made">Undo</button>
@@ -88,21 +87,10 @@
                 <button id="btn-play-random" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>Random player</button>
               </div>
               <div class="col col-ts-12 col-xs-6 text-left">
-                <button id="btn-challenge-friend" class="btn btn-default btn-lg" disabled="disabled"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Challenge friend</button>
+                <button id="btn-challenge-friend" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Challenge friend</button>
               </div>
             </div>
-            <!--
-            <div class="row centered">
-              <div class="input-group input-group-lg">
-                <input id="foo" type="text" class="form-control" value="test1234">
-                <span class="input-group-btn">
-                  <button class="btn btn-default btn-copy" type="button" data-clipboard-target="#foo">Copy</button>
-                </span>
-              </div>
-            </div>
-            -->
           </div>
-
         </div>
       </div>
     </td>
@@ -144,7 +132,18 @@
   </div>
   
   <div id="waiting-overlay" class="waiting overlay" style="display: none">
-    <div class="loader"><span>Waiting another player...</br><img src="images/loader.gif"></span></div>
+    <div class="loader"><div class="inner"><span>Waiting another player...</span><br><img src="images/loader.gif"><br>
+        <br>
+        <div class="challenge" style="display: none">
+          <span>Send <span class="hidden-xs">the</span> link <span class="hidden-xs">below</span> to friend:</span>
+          <div class="input-group input-group-lg">
+            <input id="challenge-link" type="text" class="form-control" value="test1234">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-copy" type="button" data-clipboard-target="#challenge-link">Copy</button>
+            </span>
+          </div>
+        </div>
+    </div></div>
   </div>
   
   <div id="messages">

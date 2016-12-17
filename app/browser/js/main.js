@@ -17,17 +17,28 @@ require('../../../lib/rules/RuleBgTapa.js');
 function App() {
   this._config = {};
   this._isWaiting = false;
+  this._isChallenging = false;
   this._currentView = 'index';
   
   this.setIsWaiting = function (value) {
     this._isWaiting = value;
   }
   
+  this.setIsChallenging = function (value) {
+    this._isChallenging = value;
+  }
+
   this.setCurrentView = function (name) {
     this._currentView = name;
   }
   
   this.updateView = function () {
+    if (this._isChallenging) {
+      $('#waiting-overlay .challenge').show();
+    } else {
+      $('#waiting-overlay .challenge').hide();
+    }
+
     if (this._isWaiting) {
       $('#waiting-overlay').show();
     } else {
@@ -45,7 +56,7 @@ function App() {
       $('#game-view').show();
     }
   }
-  
+
   /**
    * Get name of rule selected by player
    * @returns {string} - Name of selected rule.
@@ -108,7 +119,7 @@ function App() {
     });
 
     // Initialize game client
-    var client = new cl.Client(config);
+    var client = new cl.Client(this._config);
 
     // Subscribe to events used on landing page
     client.subscribe(comm.Message.EVENT_MATCH_START, function (msg, params) {
@@ -124,19 +135,68 @@ function App() {
       self.updateView();
     });
 
-    $('#btn-create-match').click(function (e) {
-      client.reqCreateMatch(config.defaultRule);
+    client.subscribe(comm.Message.EVENT_PLAYER_JOINED, function (msg, params) {
+      self.setIsWaiting(false);
+      self.setCurrentView('game');
+      self.updateView();
+      client.resizeUI();
     });
 
-    $('#btn-join-match').click(function (e) {
-      client.reqJoinMatch(null);
+    client.subscribe(comm.Message.JOIN_MATCH, function (msg, params) {
+      if (!params.result) {
+        return;
+      }
+      self.setIsWaiting(false);
+      self.setCurrentView('game');
+      self.updateView();
+      client.resizeUI();
+    });
+
+    client.subscribe(comm.Message.CREATE_GUEST, function (msg, params) {
+      if (typeof params['reconnected'] === "undefined" || !params.reconnected) {
+        // Get matchID from query string (?join=123456)
+        var matchID = parseInt((location.search.split('join=')[1] || '').split('&')[0], 10);
+
+        // Join game
+        client.reqJoinMatch(matchID);
+
+        // Remove query string from URL
+        if (history.pushState) {
+          history.pushState(null, '', '/');
+        }
+      }
     });
 
     $('#btn-play-random').click(function (e) {
+      self.setIsChallenging(false);
       self.setIsWaiting(true);
       self.updateView();
       // TODO: Store selected rule in cookie
       client.reqPlayRandom(self.getSelectedRuleName());
+    });
+
+    $('#btn-challenge-friend').click(function (e) {
+      self.setIsChallenging(false);
+      self.setIsWaiting(true);
+      self.updateView();
+
+      // TODO: Store selected rule in cookie
+      client.reqCreateMatch(self.getSelectedRuleName(), function (msg, clientMsgSeq, reply) {
+        if (!reply.result) {
+          self.setIsChallenging(false);
+          self.setIsWaiting(false);
+          self.updateView();
+          return;
+        }
+
+        var serverURL = self._config.serverURL;
+        if (!serverURL) {
+          serverURL = window.location.protocol + '//' + window.location.host + '/';
+        }
+        $('#challenge-link').val(serverURL + '?join=' + reply.matchID);
+        self.setIsChallenging(true);
+        self.updateView();
+      });
     });
 
     $(window).resize(function () {

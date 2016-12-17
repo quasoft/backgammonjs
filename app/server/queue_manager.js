@@ -6,7 +6,7 @@ var model = require('../../lib/model.js');
 
 
 /**
- * There are two types of queues: random queues and challange queues.
+ * There are two types of queues: random queues and challenge queues.
  * @readonly
  * @enum {number}
  */
@@ -14,30 +14,30 @@ var QueueType = {
   /** Queue for playing with random players */
   RANDOM : 0,
   /** Queue for playing with a friend */
-  CHALLANGE : 1
+  CHALLENGE : 1
 };
 
 
 /**
  * Represents a queue with players waiting to play for a game with
- * random player (random queue) or a friend (challange queue).
+ * random player (random queue) or a friend (challenge queue).
  *
  * @constructor
  * @param {string} id - Unique id of this queue
- * @param {QueueType} type - Type of queue - RANDOM or CHALLANGE
+ * @param {QueueType} type - Type of queue - RANDOM or CHALLENGE
  * @param {ruleName} ruleName - Name of rule. Value can be a regex pattern.
  */
 function Queue(id, type, ruleName) {
   /**
    * For random queues the id matches the name of the rule (eg. RuleBgCasual).
-   * The id of challange queues is a unique id, that should be known only by
+   * The id of challenge queues is a unique id, that should be known only by
    * two players.
    * @type {string}
    */
   this.id = id;
   
   /**
-   * Type of queue - RANDOM or CHALLANGE.
+   * Type of queue - RANDOM or CHALLENGE.
    * @type {QueueType}
    */
   this.type = type;
@@ -97,7 +97,7 @@ Queue.prototype.matchRuleName = function (ruleName) {
 
 /**
  * QueueManager is a singleton keeps track of multiple queues with waiting players
- * (one for each game rule and one for each challange) and performs the addition/removal
+ * (one for each game rule and one for each challenge) and performs the addition/removal
  * of players to/from those queues.
  *
  * Queues are created on demand, when a player should be added to one.
@@ -114,7 +114,7 @@ function QueueManager() {
   /**
    * Creates a new queue with specified id and rule name
    * @param {string} id - Unique id of queue
-   * @param {QueueType} type - Type of queue - RANDOM or CHALLANGE
+   * @param {QueueType} type - Type of queue - RANDOM or CHALLENGE
    * @param {ruleName} ruleName - Name of rule. Value can be a regex pattern.
    * @returns {Queue} - Created queue object
    */
@@ -151,18 +151,18 @@ function QueueManager() {
   };
   
   /**
-   * Add player to a challange queue, storing the name of the rule the player wants to play.
+   * Add player to a challenge queue, storing the name of the rule the player wants to play.
    * If no queue is found that matches given id, a new one is created.
    * @param {Player} player - Player object to add
    * @param {ruleName} ruleName - Name of rule. Value can be a regex pattern.
    * @param {string} queueID - Unique id of queue   
    * @returns {Queue} - The queue object to which player was added.
    */
-  this.addToChallange = function (player, ruleName, queueID) {
-    // Note: ID of challange queues is some unique number
+  this.addToChallenge = function (player, ruleName, queueID) {
+    // Note: ID of challenge queues is some unique number
     var queue = this.getQueue(queueID);
     if (!queue) {
-      queue = this.createQueue(queueID, QueueType.CHALLANGE, ruleName);
+      queue = this.createQueue(queueID, QueueType.CHALLENGE, ruleName);
     }
     queue.addPlayer(player);
     return queue;
@@ -197,11 +197,11 @@ function QueueManager() {
   };
   
   /**
-   * Pop a player from challange queue
+   * Pop a player from challenge queue
    * @param {string} queueID - ID of queue
    * @returns {{player: Player, ruleName: string}}  - Result object containing player object and rule name
    */
-  this.popFromChallange = function (queueID) {
+  this.popFromChallenge = function (queueID) {
     var
       result = {'player': null, 'ruleName': ''},
       queue;

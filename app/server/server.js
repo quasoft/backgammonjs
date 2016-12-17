@@ -93,16 +93,12 @@ function Server() {
         self.handleRequest(comm.Message.PLAY_RANDOM, socket, params);
       });
 
-      socket.on(comm.Message.CREATE_GAME, function (params) {
-        self.handleRequest(comm.Message.CREATE_GAME, socket, params);
+      socket.on(comm.Message.CREATE_MATCH, function (params) {
+        self.handleRequest(comm.Message.CREATE_MATCH, socket, params);
       });
 
-      socket.on(comm.Message.JOIN_GAME, function (params) {
-        self.handleRequest(comm.Message.JOIN_GAME, socket, params);
-      });
-
-      socket.on(comm.Message.START_GAME, function (params) {
-        self.handleRequest(comm.Message.START_GAME, socket, params);
+      socket.on(comm.Message.JOIN_MATCH, function (params) {
+        self.handleRequest(comm.Message.JOIN_MATCH, socket, params);
       });
 
       socket.on(comm.Message.ROLL_DICE, function (params) {
@@ -296,14 +292,11 @@ function Server() {
     else if (msg === comm.Message.PLAY_RANDOM) {
       reply.result = this.handlePlayRandom(socket, params, reply);
     }
-    else if (msg === comm.Message.CREATE_GAME) {
-      reply.result = this.handleCreateGame(socket, params, reply);
+    else if (msg === comm.Message.CREATE_MATCH) {
+      reply.result = this.handleCreateMatch(socket, params, reply);
     }
-    else if (msg === comm.Message.JOIN_GAME) {
-      reply.result = this.handleJoinGame(socket, params, reply);
-    }
-    else if (msg === comm.Message.START_GAME) {
-      reply.result = this.handleStartGame(socket, params, reply);
+    else if (msg === comm.Message.JOIN_MATCH) {
+      reply.result = this.handleJoinMatch(socket, params, reply);
     }
     else if (msg === comm.Message.ROLL_DICE) {
       reply.result = this.handleRollDice(socket, params, reply);
@@ -392,6 +385,7 @@ function Server() {
         };
         
         reply.player = player;
+        reply.reconnected = true;
 
         return true;        
       }
@@ -449,7 +443,6 @@ function Server() {
    */
   this.handlePlayRandom = function (socket, params, reply) {
     console.log('Play random match');
-    console.log(params);
     
     var player = this.getSocketPlayer(socket);
     if (!player) {
@@ -461,6 +454,7 @@ function Server() {
     if (params.ruleName === '*') {
       params.ruleName = '.*';
     }
+
     var popResult = this.queueManager.popFromRandom(params.ruleName);
     
     otherPlayer = popResult.player;
@@ -530,7 +524,6 @@ function Server() {
     }
     else {
       // Put player in queue, and wait for another player
-      console.log('RULE:', params.ruleName);
       this.queueManager.addToRandom(player, params.ruleName);
       
       reply.isWaiting = true;
@@ -556,6 +549,12 @@ function Server() {
         return false;
     }
 
+    // If player has chosen `Any` as rule
+    if (params.ruleName === '*') {
+      // Choose random rule
+      params.ruleName = model.Utils.getRandomElement(this.config.enabledRules);
+    }
+
     var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
 
     var match = model.Match.createNew(rule);
@@ -572,6 +571,7 @@ function Server() {
 
     reply.player = player;
     reply.ruleName = params.ruleName;
+    reply.matchID = match.id;
 
     return true;
   };
@@ -617,65 +617,28 @@ function Server() {
     guestPlayer.currentMatch = match.id;
     guestPlayer.currentPieceType = model.PieceType.BLACK;
 
+    // Directly start match
+    match.currentGame.hasStarted = true;
+    match.currentGame.turnPlayer = match.host;
+    match.currentGame.turnNumber = 1;
+
+    var self = this;
+    reply.sendAfter = function () {
+      self.sendMatchMessage(
+        match,
+        comm.Message.EVENT_MATCH_START,
+        {
+          'match': match
+        }
+      );
+    };
+
     this.setSocketMatch(socket, match);
     this.setSocketRule(socket, rule);
 
     reply.ruleName = match.ruleName;
     reply.host = match.host;
     reply.guest = guestPlayer;
-
-    this.sendOthersMessage(
-      match,
-      guestPlayer.id,
-      comm.Message.EVENT_PLAYER_JOINED,
-      {
-        'match': match,
-        'host': match.host,
-        'guest': guestPlayer
-      }
-    );
-
-    return true;
-  };
-
-  /**
-   * Handle client's request to start the game.
-   * The game is started, only if another player has joined the game
-   * @param {Socket} socket - Client socket
-   * @param {Object} params - Request parameters
-   * @param {Object} reply - Object to be send as reply
-   * @returns {boolean} - Returns true if message have been processed
-   *                      successfully and a reply should be sent.
-   */
-  this.handleStartGame = function (socket, params, reply) {
-    console.log('Starting game');
-
-    var match = this.getSocketMatch(socket);
-    var player = this.getSocketPlayer(socket);
-
-    if ((match.host == null) || (match.host.id != player.id)) {
-      reply.errorMessage = 'Match with ID ' + match.id + ' not owned by player with ID ' + player.id + '!';
-      return false;
-    }
-
-    if (!model.Match.hasGuestJoined(match)) {
-      reply.errorMessage = 'Match with ID ' + match.id + ' has no guest player!';
-      return false;
-    }
-
-    match.currentGame.hasStarted = true;
-    match.currentGame.turnPlayer = player;
-    match.currentGame.turnNumber = 1;
-
-    this.sendOthersMessage(
-      match,
-      player.id,
-      comm.Message.EVENT_GAME_START,
-      {
-        'match': match,
-        'game': match.currentGame
-      }
-    );
 
     return true;
   };

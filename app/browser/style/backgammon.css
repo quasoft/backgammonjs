@@ -342,13 +342,26 @@ body {
   margin-right: -0.25em;
 }
 
-#waiting-overlay .loader span {
-  display: inline-block;
-  vertical-align: middle;
-  width: 100%;
+#waiting-overlay span {
   font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 22px;
   color: #000000;
+}
+
+#waiting-overlay div.inner {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+}
+
+#waiting-overlay div.challenge {
+  width: 60%;
+  min-width: 250px;
+  margin: 0 auto;
+}
+
+#waiting-overlay div.challenge span {
+  font-size: 20px;
 }
 
 .game-result .text {
@@ -654,8 +667,7 @@ body {
     border-radius: 2px;
   }
   
-  #btn-roll,
-  #btn-start {
+  #btn-roll {
       margin-top: 25%;
   }
 
