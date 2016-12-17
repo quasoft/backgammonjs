@@ -59,19 +59,13 @@ Follow the links above for more detailed installation instructions on those plat
 
 ## How to change default rule
 
-By default the game server runs with the classical backgammon rule (popular worldwide).
-
-To make the server run another rule, edit file [`app/browser/config.js`](app/browser/js/config.js), by changing `RuleBgCasual` with the name of the rule that you want:
-
-    config.defaultRule = 'RuleBgCasual';
-
-Currently two rules have been implemented, both popular in Bulgaria:
+Currently three rules have been implemented (as known in Bulgaria):
  
 - [`RuleBgCasual`](lib/rules/RuleBgCasual.js) - Standard rules, but without doubling cube (Rules: [Standard/Обикновена](https://en.wikipedia.org/wiki/Backgammon#Rules))
 - [`RuleBgGulbara`](lib/rules/RuleBgGulbara.js) - `Gul bara`, also called `Rosespring` or `Crazy Narde` (Rules: [Gul bara/Гюлбара](https://en.wikipedia.org/wiki/Gul_bara))
-- [`RuleBgTapa`](lib/rules/RuleBgTapa.js) - `Tapa` (Rules: [Tapa/Тапа](https://en.wikipedia.org/wiki/Tapa_(game))
+- [`RuleBgTapa`](lib/rules/RuleBgTapa.js) - `Tapa` (Rules: [Tapa/Тапа](https://en.wikipedia.org/wiki/Tapa_(game)))
 
-In next release, the game client will allow the player to choose the rule himself/herself.
+The player can choose which rule to play before starting a new game.
 
 ## How to add new rules (variants)
 
