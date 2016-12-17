@@ -251,7 +251,8 @@ Directory structure of code follows project architecture:
 │  ├─ [rules]           - Rules describing different variants of the game
 │  │  ├─ rules\rule.js  - Base class for defining game rules
 │  │  ├─ rules\RuleBgCasual.js - Rule for most popular variant
-│  │  └─ rules\RuleBgGulBara.js - Example for another variant
+│  │  ├─ rules\RuleBgGulBara.js - Example for `Gul bara` variant
+│  │  └─ rules\RuleBgTapa.js - Example for `Tapa` variant
 │  ├─ client.js         - Messages exchanged on network layer
 │  ├─ comm.js           - Messages exchanged on network layer
 │  ├─ model.js          - Classes of the object oriented model

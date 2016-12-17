@@ -9,6 +9,7 @@ var queue_manager = require('./queue_manager.js');
 require('../../lib/rules/rule.js');
 require('../../lib/rules/RuleBgCasual.js');
 require('../../lib/rules/RuleBgGulbara.js');
+require('../../lib/rules/RuleBgTapa.js');
 
 /**
  * Backgammon server.
@@ -57,7 +58,8 @@ function Server() {
     'rulePath': './rules/',
     'enabledRules': [
       'RuleBgCasual',
-      'RuleBgGulbara'
+      'RuleBgGulbara',
+      'RuleBgTapa'
     ]
   };
   

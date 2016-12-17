@@ -12,6 +12,7 @@ var model = require('../../../lib/model.js');
 require('../../../lib/rules/rule.js');
 require('../../../lib/rules/RuleBgCasual.js');
 require('../../../lib/rules/RuleBgGulbara.js');
+require('../../../lib/rules/RuleBgTapa.js');
 
 function App() {
   this._config = {};

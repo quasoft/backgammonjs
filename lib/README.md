@@ -5,7 +5,7 @@ The `backgammon.js-lib` library, used by both `backgammon.js-client` and `backga
 - Object oriented model of classes modeling real-world and objects and abstract notions ([model.js](model.js) file);
 - Message IDs shared by client and server communication objects ([comm.js](comm.js) file);
 - Base `Rule` class describing a variant of the game ([rules/rule.js](rules/rule.js) file);
-- Sample rules for two variants of the game: [rules/RuleBgCasual.js](rules/RuleBgCasual.js) and [rules/RuleBgGulbara.js](rules/RuleBgGulbara.js).
+- Sample rules for three variants of the game: [rules/RuleBgCasual.js](rules/RuleBgCasual.js), [rules/RuleBgGulbara.js](rules/RuleBgGulbara.js) and [rules/RuleBgTapa.js](rules/RuleBgTapa.js).
 
 ## The whole picture
 

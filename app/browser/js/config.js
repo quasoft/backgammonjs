@@ -5,7 +5,8 @@ config.boardUI = '../app/browser/js/SimpleBoardUI.js';
 config.defaultRule = 'RuleBgCasual';
 config.selectableRules = [
   'RuleBgCasual',
-  'RuleBgGulbara'
+  'RuleBgGulbara',
+  'RuleBgTapa'
 ];
 
 module.exports = config;
