@@ -25,35 +25,35 @@ Want a rule where every second dice is 6:6, well, nothing prevents you from crea
    - Open file `app/server/config.js`
    - Add the name of the new rule to the `enabledRules` array:
 
-         var config = {
-           'rulePath': '../../lib/rules/',
-           'enabledRules': [
-             'RuleBgCasual',
-             'RuleBgGulbara',
-             'RuleBgTapa',
-             'RuleCCYourRule'  // <- Added a rule with country
-                               //    code `CC` and class name RuleCCYourRule.
-           ]
-         };
+             var config = {
+               'rulePath': '../../lib/rules/',
+               'enabledRules': [
+                 'RuleBgCasual',
+                 'RuleBgGulbara',
+                 'RuleBgTapa',
+                 'RuleCCYourRule'  // <- Added a rule with country
+                                   //    code `CC` and class name RuleCCYourRule.
+               ]
+             };
 
    To enable the new rule in client:
 
    - Open file `app/browser/js/config.js`
    - Add the name of the new rule to the `selectableRules` array:
-   
-         var config = {
-           'containerID': 'backgammon',
-           'boardUI': '../app/browser/js/SimpleBoardUI.js',
-           'defaultRule': 'RuleBgCasual',
-           'selectableRules': [
-             'RuleBgCasual',
-             'RuleBgGulbara',
-             'RuleBgTapa',
-             'RuleCCYourRule'  // <- Added a rule with country
-                               //    code `CC` and class name RuleCCYourRule.
-           ]
-         };
-       
+
+             var config = {
+               'containerID': 'backgammon',
+               'boardUI': '../app/browser/js/SimpleBoardUI.js',
+               'defaultRule': 'RuleBgCasual',
+               'selectableRules': [
+                 'RuleBgCasual',
+                 'RuleBgGulbara',
+                 'RuleBgTapa',
+                 'RuleCCYourRule'  // <- Added a rule with country
+                                   //    code `CC` and class name RuleCCYourRule.
+               ]
+             };
+
    - Open file `app/browser/js/main.js` and add a new require after others:
      
      `require('../../../lib/rules/RuleCCYourRule.js');`
