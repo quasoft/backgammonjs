@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var express = require('express');
 var expressServer = express();
@@ -7,9 +9,6 @@ var comm = require('../../lib/comm.js');
 var model = require('../../lib/model.js');
 var queue_manager = require('./queue_manager.js');
 require('../../lib/rules/rule.js');
-require('../../lib/rules/RuleBgCasual.js');
-require('../../lib/rules/RuleBgGulbara.js');
-require('../../lib/rules/RuleBgTapa.js');
 
 /**
  * Backgammon server.
@@ -55,7 +54,7 @@ function Server() {
    * @type {{rulePath: string}}
    */
   this.config = {
-    'rulePath': './rules/',
+    'rulePath': '../../lib/rules/',
     'enabledRules': [
       'RuleBgCasual',
       'RuleBgGulbara',
@@ -64,11 +63,23 @@ function Server() {
   };
   
   /**
+   * Load enabled rules
+   */
+  this.loadRules = function () {
+    for (var i = 0; i < this.config.enabledRules.length; i++) {
+      var ruleName = this.config.enabledRules[i];
+      require(this.config.rulePath + ruleName + '.js');
+    }
+  };
+  
+  /**
    * Run server instance
    */
   this.run = function () {
     /** Reference to server instance */
     var self = this;
+    
+    this.loadRules();
 
     expressServer.use(express.static(path.join(__dirname, '../browser')));
 
@@ -132,7 +143,7 @@ function Server() {
    * @returns {Match} - Match object associated with this socket
    */
   this.getSocketMatch = function (socket) {
-    return socket['match'];
+    return socket.match;
   };
 
   /**
@@ -141,7 +152,7 @@ function Server() {
    * @returns {Game} - Game object associated with this socket
    */
   this.getSocketGame = function (socket) {
-    return socket['game'];
+    return socket.game;
   };
 
   /**
@@ -150,7 +161,7 @@ function Server() {
    * @returns {Player} - Player object associated with this socket
    */
   this.getSocketPlayer = function (socket) {
-    return socket['player'];
+    return socket.player;
   };
 
   /**
@@ -159,7 +170,7 @@ function Server() {
    * @returns {Rule} - Rule object associated with this socket
    */
   this.getSocketRule = function (socket) {
-    return socket['rule'];
+    return socket.rule;
   };
   
   /**
@@ -168,7 +179,7 @@ function Server() {
    * @param {Match} match - Match object to associate
    */
   this.setSocketMatch = function (socket, match) {
-    socket['match'] = match;
+    socket.match = match;
   };
 
   /**
@@ -177,7 +188,7 @@ function Server() {
    * @param {Game} game - Game object to associate
    */
   this.setSocketGame = function (socket, game) {
-    socket['game'] = game;
+    socket.game = game;
   };
 
   /**
@@ -186,7 +197,7 @@ function Server() {
    * @param {Player} player - Player object to associate
    */
   this.setSocketPlayer = function (socket, player) {
-    socket['player'] = player;
+    socket.player = player;
   };
 
   /**
@@ -195,7 +206,7 @@ function Server() {
    * @param {Rule} rule - Rule object to associate
    */
   this.setSocketRule = function (socket, rule) {
-    socket['rule'] = rule;
+    socket.rule = rule;
   };
 
   /**
@@ -316,7 +327,7 @@ function Server() {
     }
 
     var match = this.getSocketMatch(socket);
-    if (match != null) {
+    if (match) {
       reply.match = match;
     }
 
@@ -351,14 +362,15 @@ function Server() {
   this.handleCreateGuest = function (socket, params, reply) {
     console.log('Creating guest player');
     
+    var player = null;
     var cookie = socket.handshake.headers.cookie;
     if (cookie) {
-      var match = cookie.match(/\bplayer_id=([0-9]+)/);
-      var playerID = match ? match[1] : null;
+      var m = cookie.match(/\bplayer_id=([0-9]+)/);
+      var playerID = m ? m[1] : null;
+      player = this.getPlayerByID(playerID);
       console.log('Player ID found in cookie: ' + playerID);
     }
     
-    var player = this.getPlayerByID(playerID);
     if (player) {
       // Player already exists, but has been disconnected
       var match = this.getMatchByID(player.currentMatch);
@@ -367,7 +379,7 @@ function Server() {
       // else create a new player object
       if (match && !match.isOver)
       {
-        var rule = model.Utils.loadRule(this.config.rulePath, match.ruleName);
+        var rule = model.Utils.loadRule(match.ruleName);
         player.socketID = socket.id;
         this.setSocketPlayer(socket, player);
         this.setSocketMatch(socket, match);
@@ -392,7 +404,7 @@ function Server() {
     }
     
     // New player will be created
-    var player = model.Player.createNew();
+    player = model.Player.createNew();
     player.name = 'Player ' + player.id;
     this.players.push(player);
     console.log('New player ID: ' + player.id);
@@ -461,7 +473,7 @@ function Server() {
     // TODO: Make sure otherPlayer has not disconnected while waiting.
     //       If that is the case, pop another player from the queue.
     
-    if (otherPlayer != null) {
+    if (otherPlayer) {
       if (params.ruleName === '.*')
       {
         params.ruleName = popResult.ruleName;
@@ -473,7 +485,7 @@ function Server() {
       }
       
       // Start a new match with this other player
-      var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
+      var rule = model.Utils.loadRule(params.ruleName);
       var match = model.Match.createNew(rule);
       
       otherPlayer.currentMatch = match.id;
@@ -555,7 +567,7 @@ function Server() {
       params.ruleName = model.Utils.getRandomElement(this.config.enabledRules);
     }
 
-    var rule = model.Utils.loadRule(this.config.rulePath, params.ruleName);
+    var rule = model.Utils.loadRule(params.ruleName);
 
     var match = model.Match.createNew(rule);
     model.Match.addHostPlayer(match, player);
@@ -599,7 +611,7 @@ function Server() {
       return false;
     }
 
-    if (match.guest != null) {
+    if (match.guest) {
       reply.errorMessage = 'Match with ID ' + match.id + ' is full!';
       return false;
     }
@@ -610,7 +622,7 @@ function Server() {
       return false;
     }
 
-    var rule = model.Utils.loadRule(this.config.rulePath, match.ruleName);
+    var rule = model.Utils.loadRule(match.ruleName);
 
     model.Match.addGuestPlayer(match, guestPlayer);
 
@@ -670,7 +682,7 @@ function Server() {
       return false;
     }
 
-    if ((game.turnPlayer == null) || (game.turnPlayer.id != player.id)) {
+    if ((!game.turnPlayer) || (game.turnPlayer.id !== player.id)) {
       reply.errorMessage = 'Cannot roll dice it isn\'t player ' + player.id + ' turn!';
       return false;
     }
@@ -720,7 +732,7 @@ function Server() {
     
     console.log('Piece:', params.piece);
     
-    if (params.piece == null) {
+    if (!params.piece) {
       reply.errorMessage = 'No piece selected!';
       return false;
     }
@@ -742,7 +754,7 @@ function Server() {
     }
 
     var actionList = rule.getMoveActions(match.currentGame.state, params.piece, params.steps);
-    if (actionList.length == 0) {
+    if (actionList.length === 0) {
       reply.errorMessage = 'Requested move is not allowed!';
       return false;
     }
@@ -794,6 +806,8 @@ function Server() {
    */
   this.handleConfirmMoves = function (socket, params, reply) {
     console.log('Confirming piece movement', params);
+    
+    var self = this;
 
     var match = this.getSocketMatch(socket);
     var player = this.getSocketPlayer(socket);
@@ -829,7 +843,6 @@ function Server() {
       
       if (match.isOver) {
         // 3. End match
-        var self = this;
         reply.sendAfter = function () {
           self.sendMatchMessage(
             match,
@@ -850,7 +863,6 @@ function Server() {
         game.turnPlayer = otherPlayer;
         game.turnNumber = 1;
         
-        var self = this;
         reply.sendAfter = function () {
           self.sendMatchMessage(
             match,
@@ -931,7 +943,7 @@ function Server() {
     console.log('Length:' + this.players.length);
     for (var i = 0; i < this.players.length; i++) {
       console.log(this.players[i]);
-      if (this.players[i].id == id) {
+      if (this.players[i].id === id) {
         return this.players[i];
       }
     }
@@ -945,7 +957,7 @@ function Server() {
    */
   this.getMatchByID = function (id) {
     for (var i = 0; i < this.matches.length; i++) {
-      if (this.matches[i].id == id) {
+      if (this.matches[i].id === id) {
         return this.matches[i];
       }
     }

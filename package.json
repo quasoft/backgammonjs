@@ -11,8 +11,11 @@
     "start": "npm run build:browser && npm run start:server",
     "install:browser": "cd app/browser && npm install -dd && cd ..",
     "install:server": "cd app/server && npm install -dd && cd ..",
-	"installall": "npm run install:browser && npm run install:server",
+    "installall": "npm run install:browser && npm run install:server",
     "postinstall": "npm run installall && npm run build",
     "lint": "jshint ."
+  },
+  "devDependencies": {
+    "jshint": "^2.9.4"
   }
 }

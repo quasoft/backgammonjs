@@ -1,3 +1,8 @@
+'use strict';
+/*jslint browser: true */
+/*global fitText: false */
+/*global ohSnap: false */
+
 var $ = require('jquery');
 var fittext = require('jquery-fittext');
 var cookie = require('js-cookie');
@@ -22,15 +27,15 @@ function App() {
   
   this.setIsWaiting = function (value) {
     this._isWaiting = value;
-  }
+  };
   
   this.setIsChallenging = function (value) {
     this._isChallenging = value;
-  }
+  };
 
   this.setCurrentView = function (name) {
     this._currentView = name;
-  }
+  };
   
   this.updateView = function () {
     if (this._isChallenging) {
@@ -48,14 +53,14 @@ function App() {
     $('#game-view').hide();
     $('#index-view').hide();
     $('#github-ribbon').hide();
-    if (this._currentView == 'index') {
+    if (this._currentView === 'index') {
       $('#index-view').show();
       $('#github-ribbon').show();
     }
-    else if (this._currentView == 'game') {
+    else if (this._currentView === 'game') {
       $('#game-view').show();
     }
-  }
+  };
 
   /**
    * Get name of rule selected by player
@@ -71,7 +76,8 @@ function App() {
    * @param {string} ruleName - Rule's name, equal to rule's class name (eg. RuleBgCasual)
    * @returns {Rule} - Corresponding rule object
    */
-  this.loadRule = function (rulePath, ruleName) {
+  this.loadRule = function (ruleName) {
+    var rulePath = '../../../lib/rules/';
     var fileName = model.Utils.sanitizeName(ruleName);
     var file = rulePath + fileName + '.js';
     var rule = require(file);
@@ -84,11 +90,11 @@ function App() {
    */
   this.initRuleSelector = function () {
     // Init rule selector
-    selector = $('#rule-selector');
+    var selector = $('#rule-selector');
     var i;
     for (i = 0; i < this._config.selectableRules.length; i++) {
       var ruleName = this._config.selectableRules[i];
-      var rule = app.loadRule('../../../lib/rules/', ruleName);
+      var rule = this.loadRule(ruleName);
       var isSelected = false;
       var isActive = isSelected ? 'active' : '';
       var isChecked = isSelected ? 'checked' : '';
@@ -153,7 +159,7 @@ function App() {
     });
 
     client.subscribe(comm.Message.CREATE_GUEST, function (msg, params) {
-      if (typeof params['reconnected'] === "undefined" || !params.reconnected) {
+      if (!params.reconnected) {
         // Get matchID from query string (?join=123456)
         var matchID = parseInt((location.search.split('join=')[1] || '').split('&')[0], 10);
 
@@ -203,7 +209,7 @@ function App() {
       client.resizeUI();
     });
   };
-};
+}
 
 var app = new App();
 

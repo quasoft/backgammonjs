@@ -1,3 +1,4 @@
+node_modules/*
 app/browser/bower_components/*
 app/browser/node_modules/*
 app/browser/js/bundle.js

@@ -1,5 +1,3 @@
-/*jslint node: true */
-/*jslint nomen: true*/
 'use strict';
 
 var model = require('../../lib/model.js');
@@ -89,9 +87,9 @@ Queue.prototype.matchRuleName = function (ruleName) {
   var thisRegex = new RegExp(this.ruleName, "i");
   var otherRegex = new RegExp(ruleName, "i");
   
-  return (this.ruleName === ruleName)
-    || (this.ruleName.match(otherRegex))
-    || (ruleName.match(thisRegex));
+  return (this.ruleName === ruleName) ||
+    (this.ruleName.match(otherRegex)) ||
+    (ruleName.match(thisRegex));
 };
 
 

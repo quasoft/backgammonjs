@@ -43,15 +43,134 @@ var PieceType = {
 };
 
 /**
- * Denotes direction of piece movement relative to initial position.
- * @readonly
- * @enum {number}
+ * Common utilities
+ * @constructor
  */
-var Direction = {
-  /** LEFT: from initial position to left (then to right on opposite side of board) */
-  LEFT : 0,
-  /** RIGHT: from initial position to right (then to left on opposite side of board) */
-  RIGHT : 1
+function Utils() {
+
+}
+
+/**
+ * Generate unique ID for an object in model
+ * @returns {number}
+ */
+Utils.generateID = function () {
+  // TODO: Use a better approach - eg. a database ObjectID?
+  return Math.floor(Math.random() * 99999999);
+};
+
+/**
+ * Sanitize rule's name so that it is safe to use as a filename
+ * @param {string} name - Rule's name to sanitize (eg. 'RuleBgCasual')
+ * @returns {string}
+ */
+Utils.sanitizeName = function (name) {
+  return name.replace(/[^-_A-Za-z0-9]/gi, "");
+};
+
+/**
+ * Load rule object by path and class name
+ * @param {string} path - Path where rule files are stored ('../../lib/rules/' in browser sample)
+ * @param {string} ruleName - Name of rule - equal to rule's class name (eg. 'RuleBgCasual')
+ * @returns {Rule} - Rule object
+ */
+Utils.loadRule = function (ruleName) {
+  var path = './rules/';
+  var fileName = Utils.sanitizeName(ruleName);
+  var file = path + fileName + '.js';
+  console.log('Loading rule in file ' + file);
+  var rule = require(file);
+  rule.name = fileName;
+  console.log(rule);
+  return rule;
+};
+
+/**
+ * Extract item object from array
+ * @param {Array} array - Array of elements
+ * @param {Object} item - Element to remove from array
+ * @returns {} - The element removed from array or null, if not found
+ */
+Utils.extractItem = function (array, item) {
+  for (var i = 0; i &lt; array.length; i++) {
+    if (array[i] === item) {
+      array.splice(i, 1);
+      return;
+    }
+  }
+};
+
+/**
+ * Remove item from array
+ * @param {Array} array - Array of elements
+ * @param {Object} item - Element to remove from array
+ */
+Utils.removeItem = function (array, item) {
+  Utils.extractItem(array, item);
+};
+
+/**
+ * Rotate array elements left.
+ *
+ * Example:
+ * [6, 4, 1] becomes [4, 1, 6]
+ * 
+ * @param {Array} array - Array of elements
+ */
+Utils.rotateLeft = function (array) {
+  array.unshift(array.pop());
+};
+
+/**
+ * Create shallow copy of object.
+ * 
+ * @param {Object} oldObj - Object to copy
+ * @returns {Object} - Shallow copy of object
+ */
+Utils.shallowCopy = function (oldObj) {
+  var newObj = {};
+  for(var i in oldObj) {
+    if(oldObj.hasOwnProperty(i)) {
+      newObj[i] = oldObj[i];
+    }
+  }
+  return newObj;
+};
+
+/**
+ * Create deep copy of a value object.
+ * The object should have no functions/methods.
+ * 
+ * @param {Object} oldObj - Object to copy
+ * @returns {Object} - Deep copy of object
+ */
+Utils.deepCopy = function (oldObj) {
+  return JSON.parse(JSON.stringify(oldObj));
+};
+
+/**
+ * Simulate server load/hosting throttling
+ *
+ * @param {Object} oldObj - Object to copy
+ * @returns {Object} - Deep copy of object
+ */
+Utils.simulateServerLoad = function () {
+  for (var i = 0; i &lt; 100000; i++) {
+    for (var k = 1; k &lt; 1000; k++) {
+      var q = Math.sqrt(1000000007);
+    }
+  }
+};
+
+/**
+ * Get random element from an array
+ *
+ * @param {Array} arr - Array to choose element from
+ * @returns {Object} - Random element in array
+ */
+Utils.getRandomElement = function (arr) {
+  var idx = Math.floor(Math.random() * arr.length);
+  return arr[idx];
 };
 
 /**
@@ -172,7 +291,7 @@ Dice.markAsPlayed = function (dice, move) {
  * @returns {boolean} - True if dice object has dobule values, false otherwise
  */
 Dice.isDouble = function (dice) {
-  return dice.values[0] == dice.values[1];
+  return dice.values[0] === dice.values[1];
 };
 
 /**
@@ -342,7 +461,7 @@ State.checkTopPieceType = function(state, position, type) {
 State.getTopPiece = function(state, position) {
   var point = state.points[position];
   //console.log(state, position);
-  if (point.length == 0) {
+  if (point.length === 0) {
     return null;
   }
   return point[point.length - 1];
@@ -357,7 +476,7 @@ State.getTopPiece = function(state, position) {
 State.getTopPieceType = function(state, position) {
   var point = state.points[position];
   //console.log(state, position);
-  if (point.length == 0) {
+  if (point.length === 0) {
     return null;
   }
   return point[point.length - 1].type;
@@ -413,7 +532,7 @@ State.isPieceOutside = function(state, piece) {
  */
 State.getBarTopPiece = function(state, type) {
   var point = state.bar[type];
-  if (point.length == 0) {
+  if (point.length === 0) {
     return null;
   }
   return point[point.length - 1];
@@ -435,7 +554,7 @@ State.getPiecePos = function (state, piece) {
     }
   }
   return null;
-}
+};
 
 /**
  * Creates a deep copy of state object
@@ -451,7 +570,7 @@ State.clone = function (state) {
   newState.whitePieces = newState.pieces[PieceType.WHITE];
   newState.blackPieces = newState.pieces[PieceType.BLACK];
   return newState;
-}
+};
 
 /**
  * Player's statistics
@@ -643,9 +762,9 @@ Game.init = function (game, rule) {
  * @returns {boolean} - True if it is specified player's turn
  */
 Game.isPlayerTurn = function (game, player) {
-  return (game.turnPlayer != null)
-    &amp;&amp; (player != null)
-    &amp;&amp; (game.turnPlayer.id == player.id);
+  return (game.turnPlayer) &amp;&amp;
+    (player) &amp;&amp;
+    (game.turnPlayer.id === player.id);
 };
 
 /**
@@ -655,8 +774,8 @@ Game.isPlayerTurn = function (game, player) {
  * @returns {boolean} - True if it is specified player's turn
  */
 Game.isTypeTurn = function (game, type) {
-  return (game.turnPlayer != null)
-    &amp;&amp; (game.turnPlayer.currentPieceType === type);
+  return (game.turnPlayer) &amp;&amp;
+    (game.turnPlayer.currentPieceType === type);
 };
 
 /**
@@ -674,8 +793,8 @@ Game.diceWasRolled = function (game) {
  * @returns {boolean} - True if there are any moves left to make
  */
 Game.hasMoreMoves = function (game) {
-  return (game.turnDice != null)
-    &amp;&amp; (game.turnDice.movesLeft.length > 0);
+  return (game.turnDice) &amp;&amp;
+    (game.turnDice.movesLeft.length > 0);
 };
 
 /**
@@ -685,8 +804,8 @@ Game.hasMoreMoves = function (game) {
  * @returns {boolean} - True if specified move value is available
  */
 Game.hasMove = function (game, value) {
-  return (game.turnDice != null)
-    &amp;&amp; (game.turnDice.movesLeft.indexOf(value) > -1);
+  return (game.turnDice) &amp;&amp;
+    (game.turnDice.movesLeft.indexOf(value) > -1);
 };
 
 /**
@@ -801,7 +920,7 @@ Match.createNewGame = function(match, rule) {
  * @throws Throws error if the match already has a host player
  */
 Match.addHostPlayer = function (match, player) {
-  if (match.host != null)
+  if (match.host)
   {
     throw new Error("Match already has a host player!");
   }
@@ -817,7 +936,7 @@ Match.addHostPlayer = function (match, player) {
  * @throws Throws error if the match already has a guest player
  */
 Match.addGuestPlayer = function (match, player) {
-  if (match.guest != null)
+  if (match.guest)
   {
     throw new Error("Match already has a guest player!");
   }
@@ -833,9 +952,9 @@ Match.addGuestPlayer = function (match, player) {
  * @returns {boolean} - True if there is a host player and their ID matches that of the player parameter
  */
 Match.isHost = function (match, player) {
-  return (match.host != null)
-    &amp;&amp; (player != null)
-    &amp;&amp; (match.host.id == player.id);
+  return (match.host) &amp;&amp;
+    (player) &amp;&amp;
+    (match.host.id === player.id);
 };
 
 /**
@@ -878,139 +997,9 @@ function MoveAction() {
   this.type = '';
 }
 
-/**
- * Common utilities
- * @constructor
- */
-function Utils() {
-
-}
-
-/**
- * Generate unique ID for an object in model
- * @returns {number}
- */
-Utils.generateID = function () {
-  // TODO: Use a better approach - eg. a database ObjectID?
-  return Math.floor(Math.random() * 99999999);
-};
-
-/**
- * Sanitize rule's name so that it is safe to use as a filename
- * @param {string} name - Rule's name to sanitize (eg. 'RuleBgCasual')
- * @returns {string}
- */
-Utils.sanitizeName = function (name) {
-  return name.replace(/[^-_A-Za-z0-9]/gi, "");
-};
-
-/**
- * Load rule object by path and class name
- * @param {string} path - Path where rule files are stored ('../../lib/rules/' in browser sample)
- * @param {string} ruleName - Name of rule - equal to rule's class name (eg. 'RuleBgCasual')
- * @returns {Rule} - Rule object
- */
-Utils.loadRule = function (path, ruleName) {
-  var fileName = Utils.sanitizeName(ruleName);
-  var file = path + fileName + '.js';
-  console.log('Loading rule in file ' + file);
-  var rule = require(file);
-  rule.name = fileName;
-  console.log(rule);
-  return rule;
-};
-
-/**
- * Extract item object from array
- * @param {Array} array - Array of elements
- * @param {Object} item - Element to remove from array
- * @returns {} - The element removed from array or null, if not found
- */
-Utils.extractItem = function (array, item) {
-  for (var i = 0; i &lt; array.length; i++) {
-    if (array[i] === item) {
-      array.splice(i, 1);
-      return;
-    }
-  }
-}
-
-/**
- * Remove item from array
- * @param {Array} array - Array of elements
- * @param {Object} item - Element to remove from array
- */
-Utils.removeItem = function (array, item) {
-  Utils.extractItem(array, item);
-}
-
-/**
- * Rotate array elements left.
- *
- * Example:
- * [6, 4, 1] becomes [4, 1, 6]
- * 
- * @param {Array} array - Array of elements
- */
-Utils.rotateLeft = function (array) {
-  array.unshift(array.pop());
-}
-
-/**
- * Create shallow copy of object.
- * 
- * @param {Object} oldObj - Object to copy
- * @returns {Object} - Shallow copy of object
- */
-Utils.shallowCopy = function (oldObj) {
-  var newObj = {};
-  for(var i in oldObj) {
-    if(oldObj.hasOwnProperty(i)) {
-      newObj[i] = oldObj[i];
-    }
-  }
-  return newObj;
-}
-
-/**
- * Create deep copy of a value object.
- * The object should have no functions/methods.
- * 
- * @param {Object} oldObj - Object to copy
- * @returns {Object} - Deep copy of object
- */
-Utils.deepCopy = function (oldObj) {
-  return JSON.parse(JSON.stringify(oldObj));
-}
-
-/**
- * Simulate server load/hosting throttling
- *
- * @param {Object} oldObj - Object to copy
- * @returns {Object} - Deep copy of object
- */
-Utils.simulateServerLoad = function () {
-  for (var i = 0; i &lt; 100000; i++) {
-    for (var k = 1; k &lt; 1000; k++) {
-      var q = Math.sqrt(1000000007);
-    }
-  }
-};
-
-/**
- * Get random element from an array
- *
- * @param {Array} arr - Array to choose element from
- * @returns {Object} - Random element in array
- */
-Utils.getRandomElement = function (arr) {
-  idx = Math.floor(Math.random() * arr.length);
-  return arr[idx];
-}
-
 module.exports = {
   'PieceType': PieceType,
-  'Direction': Direction,
+  'Utils': Utils,
   'Random': Random,
   'Piece': Piece,
   'Dice': Dice,
@@ -1020,8 +1009,7 @@ module.exports = {
   'Game': Game,
   'Match': Match,
   'MoveActionType': MoveActionType,
-  'MoveAction': MoveAction,
-  'Utils': Utils
+  'MoveAction': MoveAction
 };
 </code></pre>
         </article>
@@ -1033,13 +1021,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Game.html">Game</a></li><li><a href="Match.html">Match</a></li><li><a href="MoveAction.html">MoveAction</a></li><li><a href="Piece.html">Piece</a></li><li><a href="Player.html">Player</a></li><li><a href="PlayerStats.html">PlayerStats</a></li><li><a href="Random.html">Random</a></li><li><a href="Rule.html">Rule</a></li><li><a href="RuleBgCasual.html">RuleBgCasual</a></li><li><a href="RuleBgGulbara.html">RuleBgGulbara</a></li><li><a href="RuleBgTapa.html">RuleBgTapa</a></li><li><a href="State.html">State</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Direction">Direction</a></li><li><a href="global.html#Message">Message</a></li><li><a href="global.html#MoveActionType">MoveActionType</a></li><li><a href="global.html#PieceType">PieceType</a></li><li><a href="global.html#Protocol">Protocol</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Game.html">Game</a></li><li><a href="Match.html">Match</a></li><li><a href="MoveAction.html">MoveAction</a></li><li><a href="Piece.html">Piece</a></li><li><a href="Player.html">Player</a></li><li><a href="PlayerStats.html">PlayerStats</a></li><li><a href="Random.html">Random</a></li><li><a href="Rule.html">Rule</a></li><li><a href="RuleBgCasual.html">RuleBgCasual</a></li><li><a href="RuleBgGulbara.html">RuleBgGulbara</a></li><li><a href="RuleBgTapa.html">RuleBgTapa</a></li><li><a href="State.html">State</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Message">Message</a></li><li><a href="global.html#MoveActionType">MoveActionType</a></li><li><a href="global.html#PieceType">PieceType</a></li><li><a href="global.html#Protocol">Protocol</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Dec 18 2016 14:25:27 GMT+0200 (FLE Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Dec 18 2016 20:10:05 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>

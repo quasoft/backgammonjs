@@ -147,85 +147,6 @@ and methods for:
 
         
             
-<h4 class="name" id="blackDirection"><span class="type-signature"></span>blackDirection<span class="type-signature"> :<a href="global.html#Direction">Direction</a></span></h4>
-
-
-
-
-<div class="description">
-    Denotes direction of piece movement for black player, relative to initial position.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><a href="global.html#Direction">Direction</a></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line79">line 79</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>{<a href="global.html#Direction">Direction</a>}</li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
 <h4 class="name" id="country"><span class="type-signature"></span>country<span class="type-signature"> :string</span></h4>
 
 
@@ -660,85 +581,6 @@ List codes in same order as countries in the field above.
 
 
         
-            
-<h4 class="name" id="whiteDirection"><span class="type-signature"></span>whiteDirection<span class="type-signature"> :<a href="global.html#Direction">Direction</a></span></h4>
-
-
-
-
-<div class="description">
-    Denotes direction of piece movement for white player, relative to initial position.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><a href="global.html#Direction">Direction</a></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line72">line 72</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>{<a href="global.html#Direction">Direction</a>}</li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
     
 
     
@@ -872,7 +714,7 @@ List codes in same order as countries in the field above.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line204">line 204</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line194">line 194</a>
     </li></ul></dd>
     
 
@@ -1049,7 +891,7 @@ Actions depend on rule and usually are `move`, `hit`, `recover` or `bear`.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line398">line 398</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line625">line 625</a>
     </li></ul></dd>
     
 
@@ -1203,7 +1045,7 @@ Actions depend on rule and usually are `move`, `hit`, `recover` or `bear`.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line452">line 452</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line679">line 679</a>
     </li></ul></dd>
     
 
@@ -1238,6 +1080,254 @@ Actions depend on rule and usually are `move`, `hit`, `recover` or `bear`.
     
 
 
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calculateMoveWeights"><span class="type-signature"></span>calculateMoveWeights<span class="signature">(state, movesLeft, pieceType, rootPiece, stopAtMax)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Recursively try out all combinations for the specified player (by piece type)
+and check the "weight" of each combination. Weight is the sum of all piece
+movements for a particular combination of moves (called "branch")
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="State.html">State</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">State</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>movesLeft</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Move values left</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pieceType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#PieceType">PieceType</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Type of piece (white/black)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rootPiece</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piece.html">Piece</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Check only branches starting from a specific piece</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stopAtMax</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stop calculation if a branch that allows all moves to be played has been found.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line368">line 368</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Map containing maximum weight for each branch, indexed by piece ID
+                    and total maximum weight for all branches, accessed with 'max' index
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1392,7 +1482,7 @@ Actions depend on rule and usually are `move`, `hit`, `recover` or `bear`.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line185">line 185</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line175">line 175</a>
     </li></ul></dd>
     
 
@@ -1454,6 +1544,10 @@ Actions depend on rule and usually are `move`, `hit`, `recover` or `bear`.
 <div class="description">
     Check game state and determine how much points the player
 should be awared for this state.
+
+If opponent player has not borne any pieces, award 2 points.
+If opponent has not borne any pieces, and still has pieces in home field of player, award 3 points.
+In all other cases award 1 point.
 </div>
 
 
@@ -1569,7 +1663,7 @@ should be awared for this state.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line553">line 553</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line788">line 788</a>
     </li></ul></dd>
     
 
@@ -1780,7 +1874,7 @@ in the same order.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line385">line 385</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line612">line 612</a>
     </li></ul></dd>
     
 
@@ -1965,7 +2059,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line539">line 539</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line766">line 766</a>
     </li></ul></dd>
     
 
@@ -2141,7 +2235,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line173">line 173</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line163">line 163</a>
     </li></ul></dd>
     
 
@@ -2317,7 +2411,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line477">line 477</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line704">line 704</a>
     </li></ul></dd>
     
 
@@ -2506,7 +2600,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line162">line 162</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line152">line 152</a>
     </li></ul></dd>
     
 
@@ -2659,7 +2753,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line92">line 92</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -2682,6 +2776,232 @@ and confirmed his move.
 
 
 
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="isMoveActionRestricted"><span class="type-signature"></span>isMoveActionRestricted<span class="signature">(state, movesLeft, piece, steps)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Checks if a specific move action is restricted. If there are any move combinations
+that would allow the player to use all dice values, then the player is obliged to
+use one of those combination. If playing both dice values are not possible and the
+player should choose which one of them to play, they must play the higher value
+(as long as it is possible).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="State.html">State</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">State</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>movesLeft</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Move values left</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>piece</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piece.html">Piece</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Piece to move</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>steps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Number of steps to move</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line570">line 570</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Returns true if move is restricted (not allowed).
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -2813,7 +3133,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line524">line 524</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line751">line 751</a>
     </li></ul></dd>
     
 
@@ -2990,7 +3310,7 @@ and confirmed his move.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line427">line 427</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line654">line 654</a>
     </li></ul></dd>
     
 
@@ -3138,7 +3458,7 @@ Start next turn:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line569">line 569</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line823">line 823</a>
     </li></ul></dd>
     
 
@@ -3338,7 +3658,7 @@ Start next turn:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line410">line 410</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line637">line 637</a>
     </li></ul></dd>
     
 
@@ -3515,7 +3835,7 @@ Start next turn:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line503">line 503</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line730">line 730</a>
     </li></ul></dd>
     
 
@@ -3658,7 +3978,7 @@ Start next turn:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line149">line 149</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line139">line 139</a>
     </li></ul></dd>
     
 
@@ -3838,7 +4158,7 @@ the allowed move values that correspond to a specific die combination (eg. doubl
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line117">line 117</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -4025,7 +4345,7 @@ according to the rule specifics.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line302">line 302</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line296">line 296</a>
     </li></ul></dd>
     
 
@@ -4257,7 +4577,7 @@ according to the rule specifics.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line260">line 260</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -4438,7 +4758,7 @@ checks like:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line221">line 221</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -4625,7 +4945,7 @@ according to the rule specifics.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line344">line 344</a>
+        <a href="rules_rule.js.html">rules/rule.js</a>, <a href="rules_rule.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -4689,13 +5009,13 @@ according to the rule specifics.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Game.html">Game</a></li><li><a href="Match.html">Match</a></li><li><a href="MoveAction.html">MoveAction</a></li><li><a href="Piece.html">Piece</a></li><li><a href="Player.html">Player</a></li><li><a href="PlayerStats.html">PlayerStats</a></li><li><a href="Random.html">Random</a></li><li><a href="Rule.html">Rule</a></li><li><a href="RuleBgCasual.html">RuleBgCasual</a></li><li><a href="RuleBgGulbara.html">RuleBgGulbara</a></li><li><a href="RuleBgTapa.html">RuleBgTapa</a></li><li><a href="State.html">State</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Direction">Direction</a></li><li><a href="global.html#Message">Message</a></li><li><a href="global.html#MoveActionType">MoveActionType</a></li><li><a href="global.html#PieceType">PieceType</a></li><li><a href="global.html#Protocol">Protocol</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Game.html">Game</a></li><li><a href="Match.html">Match</a></li><li><a href="MoveAction.html">MoveAction</a></li><li><a href="Piece.html">Piece</a></li><li><a href="Player.html">Player</a></li><li><a href="PlayerStats.html">PlayerStats</a></li><li><a href="Random.html">Random</a></li><li><a href="Rule.html">Rule</a></li><li><a href="RuleBgCasual.html">RuleBgCasual</a></li><li><a href="RuleBgGulbara.html">RuleBgGulbara</a></li><li><a href="RuleBgTapa.html">RuleBgTapa</a></li><li><a href="State.html">State</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Message">Message</a></li><li><a href="global.html#MoveActionType">MoveActionType</a></li><li><a href="global.html#PieceType">PieceType</a></li><li><a href="global.html#Protocol">Protocol</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Dec 18 2016 14:25:27 GMT+0200 (FLE Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Dec 18 2016 20:10:05 GMT+0200 (EET)
 </footer>
 
 <script> prettyPrint(); </script>
