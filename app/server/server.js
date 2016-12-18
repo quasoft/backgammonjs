@@ -51,16 +51,9 @@ function Server() {
 
   /**
    * Server's default config object
-   * @type {{rulePath: string}}
+   * @type {{rulePath: string, enabledRules: string[]}}
    */
-  this.config = {
-    'rulePath': '../../lib/rules/',
-    'enabledRules': [
-      'RuleBgCasual',
-      'RuleBgGulbara',
-      'RuleBgTapa'
-    ]
-  };
+  this.config = require('./config');
   
   /**
    * Load enabled rules
