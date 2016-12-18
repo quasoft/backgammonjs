@@ -125,7 +125,7 @@ These are business objectives that exactly match goals.
 
 > Extensible and modular engine that would allow the open source community to implement different variants of the game as known in different countries and different user interfaces (eg. themes)
 
-- [V] Allow writing custom rules
+- [X] Allow writing custom rules
 - [ ] Allow writing custom UI
 
 -----
@@ -133,7 +133,7 @@ These are business objectives that exactly match goals.
 > Lightweight - playable on any device, even old ones - anything that can run a modern browser
 > Works in browser @ PC & Mobile
 
-- [V] Make a lightweight client that works in both desktop and mobile browsers alike
+- [X] Make a lightweight client that works in both desktop and mobile browsers alike
 
 ### Mid-level:
 
