@@ -81,6 +81,7 @@ Filename of rules should start with prefix `Rule`, followed by `ISO 3166-1 alpha
 
 - [Installation instructions](docs/INSTALL.md)
 - [Detailed documentation](docs/README.md)
+- [JsDoc documentation of library](https://cdn.rawgit.com/quasoft/backgammonjs/master/docs/backgammon.js-lib/0.0.1/index.html)
 
 ## Screenshots
 ### Classic rule:
