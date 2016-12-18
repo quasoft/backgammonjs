@@ -98,6 +98,8 @@ Use cases for those actors complement the goals from users' perspective:
 
 ![Player's use cases](images/use-cases/player-goals.png)
 
+*Create custom game and Join game are not fully implemented yet.*
+
 ### Developer's use cases:
 
 ![Developer's use cases](images/use-cases/developer-goals.png)
@@ -111,19 +113,19 @@ These are business objectives that exactly match goals.
 > Allow anyone to challenge friends or play with strangers online with zero time to start the game - requires no registration or configuration
 
 - [X] Allow players to quickly start a random game;
-- [ ] Allow players to send invites by chat or E-mail;
+- [X] Allow players to send invites by chat or E-mail;
 
 -----
 
 > Fair gameplay that is as close to real game as possible
 
-- [ ] Use quality random generator
+- [X] Use quality random generator
 
 -----
 
 > Extensible and modular engine that would allow the open source community to implement different variants of the game as known in different countries and different user interfaces (eg. themes)
 
-- [ ] Allow writing custom rules
+- [V] Allow writing custom rules
 - [ ] Allow writing custom UI
 
 -----
@@ -131,7 +133,7 @@ These are business objectives that exactly match goals.
 > Lightweight - playable on any device, even old ones - anything that can run a modern browser
 > Works in browser @ PC & Mobile
 
-- [ ] Make a lightweight client that works in both desktop and mobile browsers alike
+- [V] Make a lightweight client that works in both desktop and mobile browsers alike
 
 ### Mid-level:
 
@@ -153,7 +155,7 @@ Coming soon...
 | Allow player to start random game           | :soon: Working                       |            |
 | Update board UI on game state change        | :construction: In Progress           |            |
 | Allow player to roll dice (at server)       | :white_check_mark: Completed         |            |
-| Use quality random generator                | :white_large_square: Not implemented |            |
+| Use quality random generator                | :white_check_mark: Completed         |            |
 | Always show player's pieces at bottom       | :white_check_mark: Completed         |            |
 | Play lowest die value on right click        | :white_check_mark: Completed         |            |
 | Reverse die values on click at dice         | :white_check_mark: Completed         |            |
@@ -166,13 +168,13 @@ Coming soon...
 | Show an offcanvas game menu                 | :soon: Working                       |            |
 | Show player names and match score in toolbar| :construction: In Progress           |            |
 | Show borne pieces                           | :white_large_square: Not implemented |            |
-| Allow player to resign from game/match      | :white_large_square: Not implemented |            |
-| Allow user to get "challenge" links         | :white_large_square: Not implemented |            |
+| Allow player to resign from game/match      | :white_large_square: Not implemented | Next       |
+| Allow user to get "challenge" links         | :white_check_mark: Completed         |            |
 | Allow user to see list of games             | :white_large_square: Not implemented |            |
 | Users can filter/sort games by rule         | :white_large_square: Not implemented |            |
 | Users can choose use of clock, cube and match length | :white_large_square: Not implemented |            |
 | Polish simple board UI                      | :white_large_square: Not implemented |            |
-| Allow user to choose game rule (variant)    | :white_large_square: Not implemented |            |
+| Allow user to choose game rule (variant)    | :white_check_mark: Completed         |            |
 
 
 *Possible states: :white_large_square: Not implemented, :construction: In progress, :soon: Working, :white_check_mark: Completed*
@@ -189,7 +191,7 @@ The project uses a typical client/server architecture with several layers of res
 
 The environment layer contains external systems and frameworks the project depends on, like `Node.js` and `Socket.IO`.
 
-Foundation of project is laid on `node.js`. Network connectivity is implemented via `Socket.IO`. Storage of objects will be performed by `MongoDB`, but database layer has not been integrated yet, so everything is reset when the server application is restarted.
+Foundation of project is laid on `node.js`. Network connectivity is implemented via `Socket.IO`. Storage of objects will be performed by `MongoDB`, but database layer has not been integrated yet, so everything is reset when the server application is restarted. Database will be required if we decide to allow players to register and save their game history.
 
 ### Module layer
 
@@ -227,31 +229,35 @@ Directory structure of code follows project architecture:
 │  │  ├─ [images]       
 │  │  ├─ [js]
 │  │  │  ├─ bundle.js   - browserify's output file (bundling all other scripts)
-│  │  │  ├─ main.js     - Main script file for client.html
+│  │  │  ├─ config.js   - Config script for client
+│  │  │  ├─ main.js     - Main script file for index.html
 │  │  │  └─ SimpleBoardUI.js - Sample user interface for game board
 │  │  │─ [style]
-│  │  │  └─ backgammon.css   - Main style file for client.html
+│  │  │  └─ backgammon.css   - Main style file for index.html
 │  │  ├─ bower.json     - Bower package file for web client
-│  │  ├─ client.html    - Home page of web client
+│  │  ├─ index.html     - Home page of web client
 │  │  ├─ package.json   - Node.js package file
 │  │  └─ README.md      - Instructions for client installation and development
 │  │
 │  └─ [server]          - Server application
 │     ├─ package.json   - Node.js package file
+│     ├─ queue_manager.js - Node.js package file
 │     ├─ README.md      - Instructions for server installation and development
 │     └─ server.js      - Server startup script
 │  
 ├─ [docs]
 │  ├─ [images]
 │  ├─ backgammon.js.uml
-│  ├─ README.md
+│  ├─ INSTALL.md		- Detailed installation instructions
+│  ├─ README.md			- This file
+│  ├─ rules.md			- Instructions on creating a new rule
 │  └─ use-cases.md
 │
 ├─ [lib]                - Common library shared by clients and server
 │  ├─ [rules]           - Rules describing different variants of the game
 │  │  ├─ rules\rule.js  - Base class for defining game rules
 │  │  ├─ rules\RuleBgCasual.js - Rule for most popular variant
-│  │  ├─ rules\RuleBgGulBara.js - Example for `Gul bara` variant
+│  │  ├─ rules\RuleBgGulbara.js - Example for `Gul bara` variant
 │  │  └─ rules\RuleBgTapa.js - Example for `Tapa` variant
 │  ├─ client.js         - Messages exchanged on network layer
 │  ├─ comm.js           - Messages exchanged on network layer
@@ -261,7 +267,10 @@ Directory structure of code follows project architecture:
 │
 ├─ .gitignore
 ├─ .tern-project        - Sample configuration for atom-tern.js plugin
+├─ CHANGELOG.md
+├─ Dockerfile
 ├─ LICENSE              - MIT License
+├─ package.json         - Main project package
 └─ README.md            - Project's readme with links to all documents
 ```
 
@@ -281,12 +290,17 @@ Directory structure of code follows project architecture:
 - Git
 - Paint.NET
 
-### Frameworks used:
+### Frameworks and libraries used:
 
 - Node.js
 - Express
 - Socket.IO
 - jQuery
+- Bootstrap
+- OhSnap!.js
+- Fittext.js
+- clipboard.js
+- js-cookie
 
 ## License
 
