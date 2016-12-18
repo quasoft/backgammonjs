@@ -1,12 +1,12 @@
-var config = {};
-
-config.containerID = 'backgammon';
-config.boardUI = '../app/browser/js/SimpleBoardUI.js';
-config.defaultRule = 'RuleBgCasual';
-config.selectableRules = [
-  'RuleBgCasual',
-  'RuleBgGulbara',
-  'RuleBgTapa'
-];
+var config = {
+  'containerID': 'backgammon',
+  'boardUI': '../app/browser/js/SimpleBoardUI.js',
+  'defaultRule': 'RuleBgCasual',
+  'selectableRules': [
+    'RuleBgCasual',
+    'RuleBgGulbara',
+    'RuleBgTapa'
+  ]
+};
 
 module.exports = config;
