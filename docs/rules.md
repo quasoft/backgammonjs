@@ -1,3 +1,3 @@
-# backgammon.js: Documentation :: Rules
+# [backgammon.js](../README.md) :: Creating rules for backgammon.js
 
 Coming soon...

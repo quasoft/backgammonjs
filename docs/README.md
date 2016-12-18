@@ -212,7 +212,7 @@ This package includes:
 
 ![Rules Class Diagram](images/class-diagrams/rules.png)
 
-Instructions on adding new variants of backgammon (rules) to the game can be found at [Creating rules for `backgammon.js`](docs/rules.md).
+Instructions on adding new variants of backgammon (rules) to the game can be found at [Creating rules for `backgammon.js`](rules.md).
 
 ### Application layer
 
