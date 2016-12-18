@@ -20,7 +20,7 @@ To recompile library reference, using [jsdoc](http://usejsdoc.org/), execute the
 
 ```
 cd lib
-npm build:docs
+npm run build:docs
 ```
 
 ## Other documents:

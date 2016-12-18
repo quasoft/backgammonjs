@@ -7,7 +7,6 @@ bower_components
 /nbproject/private/
 .idea
 nbproject
-/docs/backgammon.js-lib
 /app/server/db
 npm-debug.log*
 *.*~*
