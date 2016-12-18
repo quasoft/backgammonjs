@@ -69,13 +69,7 @@ The player can choose which rule to play before starting a new game.
 
 ## How to add new rules (variants)
 
-Instructions on adding new rules to the game are coming soon: [Creating rules for `backgammon.js`](docs/rules.md).
-
-Meanwhile, you can look how built-in rules have been implemented in the following directory:
-
-- [`lib/rules/`](lib/rules/)
-
-Filename of rules should start with prefix `Rule`, followed by `ISO 3166-1 alpha-2` country code (the country where this variant of the game is popular  - eg. `Bg` for `Bulgaria`) and the name of the rule. Don't use spaces or punctuation/special characters in the filename.
+Short instructions on how to add new rules are available here: [Creating rules for `backgammon.js`](docs/rules.md).
 
 ## Documentation:
 
