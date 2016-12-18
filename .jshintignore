@@ -1,0 +1,15 @@
+app/browser/bower_components/*
+app/browser/node_modules/*
+app/browser/js/bundle.js
+app/server/node_modules/*
+lib/node_modules/*
+docs/*
+dist/*
+.tmp/*
+.sass-cache/*
+nbproject/private/*
+.idea/*
+nbproject/*
+app/server/db/*
+npm-debug.log*
+*.*~*
