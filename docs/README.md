@@ -168,7 +168,7 @@ Coming soon...
 | Show an offcanvas game menu                 | :soon: Working                       |            |
 | Show player names and match score in toolbar| :construction: In Progress           |            |
 | Show borne pieces                           | :white_large_square: Not implemented |            |
-| Allow player to resign from game/match      | :white_large_square: Not implemented | Next       |
+| Allow player to resign from game/match      | :white_check_mark: Completed         |            |
 | Allow user to get "challenge" links         | :white_check_mark: Completed         |            |
 | Allow user to see list of games             | :white_large_square: Not implemented |            |
 | Users can filter/sort games by rule         | :white_large_square: Not implemented |            |

@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - None
 
+## [0.6] - 2016-01-15
+### Added
+- Allow player to resign from game/match;
+
 ## [0.5] - 2016-12-17
 ### Added
 - Implement challenge friends functionality - player can send a link for starting a private game with a friend;
@@ -33,5 +37,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - Fixed bug that caused a piece to move several times, if double-clicked;
 
 
+[0.6]: https://github.com/quasoft/backgammonjs/tree/0.6
 [0.5]: https://github.com/quasoft/backgammonjs/tree/0.5
 [0.4]: https://github.com/quasoft/backgammonjs/tree/0.4

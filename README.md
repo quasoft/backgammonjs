@@ -2,7 +2,7 @@
 
 ### Extensible multiplayer backgammon game written in JavaScript
 
-Current version: 0.5
+Current version: 0.6
 
 See [CHANGELOG](CHANGELOG.md) for recent changes.
 
