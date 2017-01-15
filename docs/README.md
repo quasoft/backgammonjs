@@ -175,6 +175,7 @@ Coming soon...
 | Users can choose use of clock, cube and match length | :white_large_square: Not implemented |            |
 | Polish simple board UI                      | :white_large_square: Not implemented |            |
 | Allow user to choose game rule (variant)    | :white_check_mark: Completed         |            |
+| End match if connection is broken for X mins| :white_check_mark: Not implemented   |    Next    |
 
 
 *Possible states: :white_large_square: Not implemented, :construction: In progress, :soon: Working, :white_check_mark: Completed*
