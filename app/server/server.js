@@ -84,42 +84,34 @@ function Server() {
       socket.on('disconnect', function(){
         self.handleDisconnect(socket);
       });
-
-      socket.on(comm.Message.CREATE_GUEST, function (params) {
-        self.handleRequest(comm.Message.CREATE_GUEST, socket, params);
-      });
-
-      socket.on(comm.Message.GET_MATCH_LIST, function (params) {
-        self.handleRequest(comm.Message.GET_MATCH_LIST, socket, params);
-      });
       
-      socket.on(comm.Message.PLAY_RANDOM, function (params) {
-        self.handleRequest(comm.Message.PLAY_RANDOM, socket, params);
-      });
+      // Subscribe for client requests:
+      var m = comm.Message;
+      var messages = [
+        m.CREATE_GUEST,
+        m.GET_MATCH_LIST,
+        m.PLAY_RANDOM,
+        m.CREATE_MATCH,
+        m.JOIN_MATCH,
+        m.ROLL_DICE,
+        m.MOVE_PIECE,
+        m.CONFIRM_MOVES,
+        m.UNDO_MOVES,
+        m.RESIGN_GAME,
+        m.RESIGN_MATCH
+      ];
 
-      socket.on(comm.Message.CREATE_MATCH, function (params) {
-        self.handleRequest(comm.Message.CREATE_MATCH, socket, params);
-      });
+      var createHandler = function(msg){
+        return function(params) {
+          self.handleRequest(msg, socket, params);
+        };
+      };
 
-      socket.on(comm.Message.JOIN_MATCH, function (params) {
-        self.handleRequest(comm.Message.JOIN_MATCH, socket, params);
-      });
-
-      socket.on(comm.Message.ROLL_DICE, function (params) {
-        self.handleRequest(comm.Message.ROLL_DICE, socket, params);
-      });
-
-      socket.on(comm.Message.MOVE_PIECE, function (params) {
-        self.handleRequest(comm.Message.MOVE_PIECE, socket, params);
-      });
-
-      socket.on(comm.Message.CONFIRM_MOVES, function (params) {
-        self.handleRequest(comm.Message.CONFIRM_MOVES, socket, params);
-      });
-
-      socket.on(comm.Message.UNDO_MOVES, function (params) {
-        self.handleRequest(comm.Message.UNDO_MOVES, socket, params);
-      });
+      var i;
+      for (i = 0; i < messages.length; i++) {
+        var msg = messages[i];
+        socket.on(msg, createHandler(msg));
+      }
 
     });
 
