@@ -587,6 +587,11 @@ body {
   background-color: #E9573F;
 }
 
+/* Resign dialog */
+.resign-dialog .modal-body {
+  display: none
+}
+
 /* Responsive variations */
 @media screen and (min-width: 1024px) {
   #index-view h1 {

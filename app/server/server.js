@@ -306,6 +306,12 @@ function Server() {
     else if (msg === comm.Message.UNDO_MOVES) {
       reply.result = this.handleUndoMoves(socket, params, reply);
     }
+    else if (msg === comm.Message.RESIGN_GAME) {
+      reply.result = this.handleResignGame(socket, params, reply);
+    }
+    else if (msg === comm.Message.RESIGN_MATCH) {
+      reply.result = this.handleResignMatch(socket, params, reply);
+    }
     else {
       console.log('Unknown message!');
       return;
@@ -862,6 +868,61 @@ function Server() {
 
     return true;
   };
+  
+  /**
+   * Handle client's request to resign from current game (game only, not whole match)
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.handleResignGame = function (socket, params, reply) {
+    console.log('Resign game', params);
+
+    var match = this.getSocketMatch(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
+    var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
+    
+    this.endGame(socket, otherPlayer, true, reply);
+    
+    return true;
+  };
+  
+  /**
+   * Handle client's request to resign from whole match
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.handleResignMatch = function (socket, params, reply) {
+    console.log('Resign match', params);
+
+    var match = this.getSocketMatch(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
+    var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
+    
+    var self = this;
+    
+    reply.sendAfter = function () {
+      self.sendMatchMessage(
+        match,
+        comm.Message.EVENT_MATCH_OVER,
+        {
+          'match': match,
+          'winner': otherPlayer,
+          'resigned': true
+        }
+      );
+    };
+    
+    return true;
+  };
+  
   /**
    * End game
    * @param {Socket} socket - Client socket

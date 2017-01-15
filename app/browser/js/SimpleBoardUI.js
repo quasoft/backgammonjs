@@ -6,6 +6,7 @@
 var $ = require('jquery');
 var model = require('../../../lib/model.js');
 require('../bower_components/oh-snap/ohsnap.js');
+var BootstrapDialog = require('../bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js');
 
 /**
  * Contains graphical user interface and functionality for moving pieces
@@ -221,6 +222,46 @@ function SimpleBoardUI(client) {
     $('#menu-undo').click(function (e) {
       $('.navbar').collapse('hide');
       self.client.reqUndoMoves();
+    });
+    
+    $('#menu-resign').unbind('click');
+    $('#menu-resign').click(function (e) {
+      // Ask player if they want to resign from current game only
+      // or abandon the whole match
+      $('.navbar').collapse('hide');
+      
+      BootstrapDialog.show({
+          title: 'Resign from game or match?',
+          type: BootstrapDialog.TYPE_DEFAULT,
+          closable: true,
+          cssClass: 'resign-dialog',
+          buttons: [
+            {
+              label: 'Game',
+              icon: 'glyphicon glyphicon-flag',
+              cssClass: 'btn-warning',
+              action: function(dialog) {
+                self.client.reqResignGame();
+                dialog.close();
+              }
+            },
+            {
+              label: 'Match',
+              icon: 'glyphicon glyphicon-remove-sign',
+              cssClass: 'btn-danger',
+              action: function(dialog) {
+                self.client.reqResignMatch();
+                dialog.close();
+              }
+            },
+            {
+              label: 'Cancel',
+              action: function(dialog) {
+                dialog.close();
+              }
+            }
+          ]
+      });
     });
     
     if ((!this.match) || (!this.match.currentGame) || (!this.client.player)) {
@@ -591,21 +632,26 @@ function SimpleBoardUI(client) {
     }
   };
   
-  this.showGameEndMessage = function (winner) {
+  this.showGameEndMessage = function (winner, resigned) {
     $('#game-result-overlay').show();
     
     var result = winner.id === this.client.player.id;
     var message;
     var matchState;
     
-    if (this.match.isOver) {
-      message = (result) ? 'You WON the match!' : 'You lost the match.';
-      matchState = 'Match result: ';
+    if (resigned) {
+      message = (result) ? 'Other player resigned!' : 'You resigned.';
     }
     else {
       message = (result) ? 'You WON!' : 'You lost.';
-      matchState = 'Match standing ';
     }
+    
+    matchState = 'Match standing&#160;';
+    if (this.match.isOver) {
+      message += message = ' Match is over.';
+      matchState = 'Match result&#160;';
+    }
+    
     var color = (result) ? 'green' : 'red';
     
     $('.game-result').css('color', color);
@@ -620,6 +666,10 @@ function SimpleBoardUI(client) {
     $('.game-result .text').each(function () {
       fitText($(this));
     });
+    
+    if (resigned) {
+      this.notifyInfo('Other player resigned from game');
+    }
   };
 
   /**
