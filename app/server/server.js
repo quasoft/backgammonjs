@@ -808,66 +808,10 @@ function Server() {
     console.log('CONFIRM MOVES');
     // Check if player has won
     if (rule.hasWon(match.currentGame.state, player)) {
-      
+
       // TODO: Move ending game logic to rule. Keep only calls
       //       sending messages to client.
-      
-      console.log('HAS NOW');
-      // Player has won the game
-      // 1. Update score
-      // 2. If score < match.length, start a new game
-      // 3. Else end match
-      
-      // 1. Update score
-      var score = rule.getGameScore(match.currentGame.state, player);
-      match.score[player.currentPieceType] += score;
-      
-      if (match.score[player.currentPieceType] >= match.length) {
-        match.isOver = true;
-      }
-      
-      if (match.isOver) {
-        // 3. End match
-        reply.sendAfter = function () {
-          self.sendMatchMessage(
-            match,
-            comm.Message.EVENT_MATCH_OVER,
-            {
-              'match': match,
-              'winner': player
-            }
-          );
-        };
-      }
-      else {
-        // 2. Start a new game
-        // NEXT: Start a new game
-        var game = model.Match.createNewGame(match, rule);
-        this.games.push(game);
-        game.hasStarted = true;
-        game.turnPlayer = otherPlayer;
-        game.turnNumber = 1;
-        
-        reply.sendAfter = function () {
-          self.sendMatchMessage(
-            match,
-            comm.Message.EVENT_GAME_OVER,
-            {
-              'match': match,
-              'winner': player
-            }
-          );
-          
-          self.sendMatchMessage(
-            match,
-            comm.Message.EVENT_GAME_RESTART,
-            {
-              'match': match,
-              'game': match.currentGame
-            }
-          );
-        };
-      }
+      this.endGame(socket, player, false, reply);
     }
     else {
       rule.nextTurn(match);
@@ -915,6 +859,78 @@ function Server() {
         'match': match
       }
     );
+
+    return true;
+  };
+  /**
+   * End game
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+  this.endGame = function (socket, winner, resigned, reply) {
+    var self = this;
+
+    var match = this.getSocketMatch(socket);
+    var player = this.getSocketPlayer(socket);
+    var rule = this.getSocketRule(socket);
+    var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
+    
+    // 1. Update score
+    var score = rule.getGameScore(match.currentGame.state, winner);
+    match.score[winner.currentPieceType] += score;
+
+    if (match.score[winner.currentPieceType] >= match.length) {
+      match.isOver = true;
+    }
+
+    if (match.isOver) {
+      // 3. End match
+      reply.sendAfter = function () {
+        self.sendMatchMessage(
+          match,
+          comm.Message.EVENT_MATCH_OVER,
+          {
+            'match': match,
+            'winner': winner,
+            'resigned': resigned
+          }
+        );
+      };
+    }
+    else {
+      // 2. Start a new game
+      // NEXT: Start a new game
+      var game = model.Match.createNewGame(match, rule);
+      this.games.push(game);
+      game.hasStarted = true;
+      game.turnPlayer = winner;
+      game.turnNumber = 1;
+
+      reply.sendAfter = function () {
+        self.sendMatchMessage(
+          match,
+          comm.Message.EVENT_GAME_OVER,
+          {
+            'match': match,
+            'winner': winner,
+            'resigned': resigned
+          }
+        );
+
+        self.sendMatchMessage(
+          match,
+          comm.Message.EVENT_GAME_RESTART,
+          {
+            'match': match,
+            'game': match.currentGame,
+            'resigned': resigned
+          }
+        );
+      };
+    }
 
     return true;
   };
