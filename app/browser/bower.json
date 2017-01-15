@@ -17,6 +17,7 @@
   "dependencies": {
     "jquery": "~2.1.3",
     "fittext": "*",
-    "oh-snap": "https://github.com/quasoft/ohSnap.git#modularized"
+    "oh-snap": "https://github.com/quasoft/ohSnap.git#modularized",
+    "bootstrap3-dialog": "^1.35.3"
   }
 }
