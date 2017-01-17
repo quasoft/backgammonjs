@@ -82,7 +82,12 @@ function Server() {
       self.clients[socket.id] = socket;
 
       socket.on('disconnect', function(){
-        self.handleDisconnect(socket);
+        try {
+          self.handleDisconnect(socket);
+        }
+        catch (e) {
+          console.log(e);
+        }
       });
       
       // Subscribe for client requests:
@@ -103,7 +108,12 @@ function Server() {
 
       var createHandler = function(msg){
         return function(params) {
-          self.handleRequest(msg, socket, params);
+          try {
+            self.handleRequest(msg, socket, params);
+          }
+          catch (e) {
+            console.log(e);
+          }
         };
       };
 
