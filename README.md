@@ -6,6 +6,8 @@ Current version: 0.6
 
 See [CHANGELOG](CHANGELOG.md) for recent changes.
 
+**Volunteer needed to host the DEMO.**
+
 ## Features:
 
 - Challenge friends or play with strangers online without registration and game setup process.
