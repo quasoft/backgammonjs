@@ -19,7 +19,7 @@ See [CHANGELOG](CHANGELOG.md) for recent changes.
 - Lightweight - playable on any device, even old ones - anything that can run a modern browser;
 - Works in browser @ PC & Mobile;
 
-If you want to lean more about the project see [Detailed documentation](docs/README.md).
+If you want to learn more about the project see [Detailed documentation](docs/README.md).
 
 ## Demo
 [![Landing page](docs/images/progress-landing-page.jpg)](https://backgammonjs.herokuapp.com/)
