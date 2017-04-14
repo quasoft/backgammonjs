@@ -4,8 +4,8 @@
 
 1. [Motivation/problem](#motivationproblem)
 2. [Goals](#goals)
-  - [Must have](#must-have)
-  - [Under consideration](#under-consideration)
+   - [Must have](#must-have)
+   - [Under consideration](#under-consideration)
 3. [Users/Actors](#usersactors)
 4. [Use cases](#use-cases)
   - [Player's use cases](Players-use-cases)
