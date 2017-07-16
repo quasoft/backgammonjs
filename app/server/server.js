@@ -38,12 +38,6 @@ function Server() {
   this.matches = [];
 
   /**
-   * List of all games
-   * @type {Game[]}
-   */
-  this.games = [];
-
-  /**
    * Responsible for management of queues with players waiting to play
    * @type {QueueManager}
    */
@@ -66,6 +60,78 @@ function Server() {
   };
   
   /**
+   * Save server state to database, in order to be able to resume active games later
+   */
+  this.snapshotServer = function () {
+    if (db) {
+      console.log("Saving server state...");
+    
+      var players = db.collection('players');
+      players.remove();
+      players.insert(this.players);
+
+      var matches = db.collection('matches');
+      matches.remove();
+      matches.insert(this.matches);
+
+      console.log("State saved.");
+    }
+  };
+  
+  /**
+   * Load saved server state from database
+   */
+  this.restoreServer = function () {
+    if (db) {
+      var self = this;
+      console.log("Restoring server state...");
+
+      var players = db.collection('players');
+      var matches = db.collection('matches');
+      if (!players || !matches) {
+        return;
+      }
+
+      var matchesCursor = matches.find();
+      matchesCursor.each(function(err, item) {
+        if(item == null) {
+          return;
+        }
+
+        if (item.currentGame && item.currentGame.state) {
+          model.State.rebuildRefs(item.currentGame.state);
+        }
+
+        self.matches.push(item);
+      });
+
+      var playersCursor = players.find();
+      playersCursor.each(function(err, item) {
+        if(item == null) {
+          return;
+        }
+
+        self.players.push(item);
+      });
+
+      var i;
+      for (i = 0; i < self.matches.length; i++) {
+        var match = self.matches[i];
+
+        if (match.host && match.host.id) {
+          match.host = self.getPlayerByID(match.host.id);
+        }
+
+        if (match.guest && match.guest.id) {
+          match.guest = self.getPlayerByID(match.guest.id);
+        }
+      }
+
+      console.log("State restored.");
+    }
+  };
+  
+  /**
    * Run server instance
    */
   this.run = function () {
@@ -73,6 +139,8 @@ function Server() {
     var self = this;
     
     this.loadRules();
+    
+    this.restoreServer();
 
     expressServer.use(express.static(path.join(__dirname, '../browser')));
 
@@ -234,7 +302,8 @@ function Server() {
    */
   this.sendMatchMessage = function (match, msg, params) {
     for (var i = 0; i < match.players.length; i++) {
-      this.sendPlayerMessage(match.players[i], msg, params);
+      var player = this.getPlayerByID(match.players[i]);
+      this.sendPlayerMessage(player, msg, params);
     }
   };
 
@@ -247,10 +316,11 @@ function Server() {
    */
   this.sendOthersMessage = function (match, exceptPlayerID, msg, params) {
     for (var i = 0; i < match.players.length; i++) {
-      if (match.players[i].id === exceptPlayerID) {
+      if (match.players[i] === exceptPlayerID) {
         continue;
       }
-      this.sendPlayerMessage(match.players[i], msg, params);
+      var player = this.getPlayerByID(match.players[i]);
+      this.sendPlayerMessage(player, msg, params);
     }
   };
 
@@ -350,6 +420,8 @@ function Server() {
       // Remove it from reply, it does not need to be sent to client
       delete reply.sendAfter;
     }
+    
+    this.snapshotServer();
   };
 
   /**
@@ -364,12 +436,21 @@ function Server() {
     console.log('Creating guest player');
     
     var player = null;
-    var cookie = socket.handshake.headers.cookie;
-    if (cookie) {
+    if (!this.getSocketPlayer(socket) && params && params.playerID) {
+      player = this.getPlayerByID(params.playerID);
+      console.log('Player ID found in list: ' + params.playerID);
+      console.log(player);
+      if (player) {
+        player.socketID = socket.id;
+      }
+    }
+    else if (socket.handshake.headers.cookie) {
+      var cookie = socket.handshake.headers.cookie;
       var m = cookie.match(/\bplayer_id=([0-9]+)/);
       var playerID = m ? m[1] : null;
       player = this.getPlayerByID(playerID);
       console.log('Player ID found in cookie: ' + playerID);
+      console.log(player);
     }
     
     if (player) {
@@ -399,6 +480,8 @@ function Server() {
         
         reply.player = player;
         reply.reconnected = true;
+        
+        console.log('Player: ', player);
 
         return true;        
       }
@@ -500,7 +583,6 @@ function Server() {
       this.matches.push(match);
       
       var game = model.Match.createNewGame(match, rule);
-      this.games.push(game);
       game.hasStarted = true;
       game.turnPlayer = otherPlayer;
       game.turnNumber = 1;
@@ -577,7 +659,6 @@ function Server() {
     this.matches.push(match);
     
     var game = model.Match.createNewGame(match, rule);
-    this.games.push(game);
 
     this.setSocketMatch(socket, match);
     this.setSocketRule(socket, rule);
@@ -791,7 +872,9 @@ function Server() {
       reply.steps = params.steps;
       reply.moveActionList = [];
 
-      //throw e;
+      if (process.env.DEBUG) {
+        throw e;
+      }
       
       return false;
     }
@@ -975,7 +1058,6 @@ function Server() {
       // 2. Start a new game
       // NEXT: Start a new game
       var game = model.Match.createNewGame(match, rule);
-      this.games.push(game);
       game.hasStarted = true;
       game.turnPlayer = winner;
       game.turnNumber = 1;
@@ -1015,7 +1097,8 @@ function Server() {
     console.log('Length:' + this.players.length);
     for (var i = 0; i < this.players.length; i++) {
       console.log(this.players[i]);
-      if (this.players[i].id === id) {
+      if (this.players[i].id == id) {
+        console.log('Found', this.players[i]);
         return this.players[i];
       }
     }
@@ -1029,7 +1112,7 @@ function Server() {
    */
   this.getMatchByID = function (id) {
     for (var i = 0; i < this.matches.length; i++) {
-      if (this.matches[i].id === id) {
+      if (this.matches[i].id == id) {
         return this.matches[i];
       }
     }
@@ -1039,4 +1122,29 @@ function Server() {
 }
 
 var server = new Server();
-server.run();
+
+var mongo = require('mongodb').MongoClient;
+var db = null;
+
+if (process.env.MONGODB_URI) {
+  // Start with database functionality
+  console.log("Connecting to DB");
+  mongo.connect(process.env.MONGODB_URI, function(err, database) {
+    if(err) {
+      if (process.env.DEBUG) {
+        throw err;
+      }
+      return;
+    }
+
+    db = database;
+    console.log("Connected to DB");
+
+    // Start server if connected to database
+    server.run();
+  });
+}
+else {
+  // Start without database functionality
+  server.run();
+}
