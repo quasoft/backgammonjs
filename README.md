@@ -6,7 +6,7 @@ Current version: 0.6
 
 See [CHANGELOG](CHANGELOG.md) for recent changes.
 
-**Volunteer needed to host the DEMO.**
+**Volunteer needed to host live DEMO.**
 
 ## Features:
 
@@ -21,14 +21,10 @@ See [CHANGELOG](CHANGELOG.md) for recent changes.
 
 If you want to learn more about the project see [Detailed documentation](docs/README.md).
 
-## Demo
-[![Landing page](docs/images/progress-landing-page.jpg)](https://backgammonjs.herokuapp.com/)
+## Screenshot
+![Landing page](docs/images/progress-landing-page.jpg)
 
-[Playable DEMO of backgammon.js](https://backgammonjs.herokuapp.com/)
-
-The demo is using the [free tier of Heroku](https://www.heroku.com/).
-
-You are free to host the game at your own server.
+You can try the game locally or deploy it to your own server.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/quasoft/backgammonjs/tree/heroku)
 
