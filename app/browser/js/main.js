@@ -9,7 +9,7 @@ var cookie = require('js-cookie');
 // TODO: Fix this hack. Makes bootstrap happy, but this should not be needed.
 window.jQuery = window.$ = $;
 
-var bootstrap = require('bootstrap');
+var bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 var clipboard = require('clipboard');
 var cl = require('../../../lib/client');
 var comm = require('../../../lib/comm.js');
