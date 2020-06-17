@@ -6,7 +6,7 @@ Current version: 0.6
 
 See [CHANGELOG](CHANGELOG.md) for recent changes.
 
-**Volunteer needed to host live DEMO.**
+**[DEMO](https://quasoft-backgammonjs.glitch.me/)**
 
 ## Features:
 
