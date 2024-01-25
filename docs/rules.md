@@ -58,7 +58,7 @@ Want a rule where every second dice is 6:6, well, nothing prevents you from crea
      
      `require('../../../lib/rules/RuleCCYourRule.js');`
      
-   - Open file and add a new require after others:
+   - Open file `lib/client.js` and add a new require after others:
      
      `require('./rules/RuleBgCasual.js');`
      
