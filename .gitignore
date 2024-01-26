@@ -10,3 +10,4 @@ nbproject
 /app/server/db
 npm-debug.log*
 *.*~*
+package-lock.json
