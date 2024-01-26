@@ -835,7 +835,7 @@ function Server() {
     }
 
     // First, check status of the game: if game was started, if it is player's turn, etc.
-    if (!rule.validateMove(match.currentGame, player, params.piece, params.steps)) {
+    if (!rule.validateMove(match.currentGame, player, params.piece, params.steps, model.MoveActionType.MOVE)) {
       reply.errorMessage = 'Requested move is not valid!';
       return false;
     }
