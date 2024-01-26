@@ -30,7 +30,7 @@ function Server() {
    * @type {Player[]}
    */
   this.players = [];
-  
+
   /**
    * List of all matches
    * @type {Match[]}
@@ -48,7 +48,7 @@ function Server() {
    * @type {{rulePath: string, enabledRules: string[]}}
    */
   this.config = require('./config');
-  
+
   /**
    * Load enabled rules
    */
@@ -58,14 +58,14 @@ function Server() {
       require(this.config.rulePath + ruleName + '.js');
     }
   };
-  
+
   /**
    * Save server state to database, in order to be able to resume active games later
    */
   this.snapshotServer = function () {
     if (db) {
       console.log("Saving server state...");
-    
+
       var players = db.collection('players');
       players.remove();
       players.insert(this.players);
@@ -77,7 +77,7 @@ function Server() {
       console.log("State saved.");
     }
   };
-  
+
   /**
    * Load saved server state from database
    */
@@ -130,16 +130,16 @@ function Server() {
       console.log("State restored.");
     }
   };
-  
+
   /**
    * Run server instance
    */
   this.run = function () {
     /** Reference to server instance */
     var self = this;
-    
+
     this.loadRules();
-    
+
     this.restoreServer();
 
     expressServer.use(express.static(path.join(__dirname, '../browser')));
@@ -157,7 +157,7 @@ function Server() {
           console.log(e);
         }
       });
-      
+
       // Subscribe for client requests:
       var m = comm.Message;
       var messages = [
@@ -168,6 +168,7 @@ function Server() {
         m.JOIN_MATCH,
         m.ROLL_DICE,
         m.MOVE_PIECE,
+        m.UP_PIECE,
         m.CONFIRM_MOVES,
         m.UNDO_MOVES,
         m.RESIGN_GAME,
@@ -199,7 +200,7 @@ function Server() {
       console.log('listening on *:' + port);
     });
   };
-  
+
   /**
    * Get match object associated with a socket
    * @param {Socket} socket - Client's socket
@@ -235,7 +236,7 @@ function Server() {
   this.getSocketRule = function (socket) {
     return socket.rule;
   };
-  
+
   /**
    * Associate match object with socket
    * @param {Socket} socket - Client's socket
@@ -279,7 +280,8 @@ function Server() {
    * @param {Object} params - Object map with message parameters
    */
   this.sendMessage = function (socket, msg, params) {
-    console.log('Sending message ' + msg + ' to client ' + socket.id);
+    const timestamp = new Date().toTimeString();
+    console.log('Sending message ' + msg + ' to client ' + socket.id + ' @ ' + timestamp);
     socket.emit(msg, params);
   };
 
@@ -330,13 +332,13 @@ function Server() {
    */
   this.handleDisconnect = function (socket) {
     console.log('Client disconnected');
-    
+
     // DONE: remove this client from the waiting queue
     var player = this.getSocketPlayer(socket);
     if (!player) {
         return;
     }
-    
+
     this.queueManager.removeFromAll(player);
   };
 
@@ -352,7 +354,7 @@ function Server() {
     var reply = {
       'result': false
     };
-    
+
     // Return client's sequence number back. Client uses this number
     // to find the right callback that should be executed on message reply.
     if (params.clientMsgSeq) {
@@ -379,6 +381,9 @@ function Server() {
     }
     else if (msg === comm.Message.MOVE_PIECE) {
       reply.result = this.handleMovePiece(socket, params, reply);
+    }
+    else if (msg === comm.Message.UP_PIECE) {
+      reply.result = this.handleUpPiece(socket, params, reply);
     }
     else if (msg === comm.Message.CONFIRM_MOVES) {
       reply.result = this.handleConfirmMoves(socket, params, reply);
@@ -408,7 +413,7 @@ function Server() {
 
     // First send reply
     this.sendMessage(socket, msg, reply);
-    
+
     // After that execute provided sendAfter callback. The callback
     // allows any additional events to be sent after the reply
     // has been sent.
@@ -416,11 +421,11 @@ function Server() {
     {
       // Execute provided callback
       reply.sendAfter();
-      
+
       // Remove it from reply, it does not need to be sent to client
       delete reply.sendAfter;
     }
-    
+
     this.snapshotServer();
   };
 
@@ -434,7 +439,7 @@ function Server() {
    */
   this.handleCreateGuest = function (socket, params, reply) {
     console.log('Creating guest player');
-    
+
     var player = null;
     if (!this.getSocketPlayer(socket) && params && params.playerID) {
       player = this.getPlayerByID(params.playerID);
@@ -452,11 +457,11 @@ function Server() {
       console.log('Player ID found in cookie: ' + playerID);
       console.log(player);
     }
-    
+
     if (player) {
       // Player already exists, but has been disconnected
       var match = this.getMatchByID(player.currentMatch);
-      
+
       // If there is a pending match, use existing player,
       // else create a new player object
       if (match && !match.isOver)
@@ -477,16 +482,16 @@ function Server() {
             }
           );
         };
-        
+
         reply.player = player;
         reply.reconnected = true;
-        
+
         console.log('Player: ', player);
 
-        return true;        
+        return true;
       }
     }
-    
+
     // New player will be created
     player = model.Player.createNew();
     player.name = 'Player ' + player.id;
@@ -524,7 +529,7 @@ function Server() {
 
     return true;
   };
-  
+
   /**
    * Handle client's request to play a random match.
    * If there is another player waiting in queue, start a match
@@ -539,7 +544,7 @@ function Server() {
    */
   this.handlePlayRandom = function (socket, params, reply) {
     console.log('Play random match');
-    
+
     var player = this.getSocketPlayer(socket);
     if (!player) {
         reply.errorMessage = 'Player not found!';
@@ -552,36 +557,36 @@ function Server() {
     }
 
     var popResult = this.queueManager.popFromRandom(params.ruleName);
-    
+
     otherPlayer = popResult.player;
     // TODO: Make sure otherPlayer has not disconnected while waiting.
     //       If that is the case, pop another player from the queue.
-    
+
     if (otherPlayer) {
       if (params.ruleName === '.*')
       {
         params.ruleName = popResult.ruleName;
       }
-      
+
       if (params.ruleName === '.*')
       {
         params.ruleName = model.Utils.getRandomElement(this.config.enabledRules);
       }
-      
+
       // Start a new match with this other player
       var rule = model.Utils.loadRule(params.ruleName);
       var match = model.Match.createNew(rule);
-      
+
       otherPlayer.currentMatch = match.id;
       otherPlayer.currentPieceType = model.PieceType.WHITE;
       model.Match.addHostPlayer(match, otherPlayer);
-      
+
       player.currentMatch = match.id;
       player.currentPieceType = model.PieceType.BLACK;
       model.Match.addGuestPlayer(match, player);
-      
+
       this.matches.push(match);
-      
+
       var game = model.Match.createNewGame(match, rule);
       game.hasStarted = true;
       game.turnPlayer = otherPlayer;
@@ -590,11 +595,11 @@ function Server() {
       // Assign match and rule objects to sockets of both players
       this.setSocketMatch(socket, match);
       this.setSocketRule(socket, rule);
-      
+
       var otherSocket = this.clients[otherPlayer.socketID];
       this.setSocketMatch(otherSocket, match);
       this.setSocketRule(otherSocket, rule);
-      
+
       // Remove players from waiting queue
       this.queueManager.remove(player);
       this.queueManager.remove(otherPlayer);
@@ -603,7 +608,7 @@ function Server() {
       reply.host = otherPlayer;
       reply.guest = player;
       reply.ruleName = params.ruleName;
-      
+
       var self = this;
       reply.sendAfter = function () {
         self.sendMatchMessage(
@@ -614,13 +619,13 @@ function Server() {
           }
         );
       };
-      
+
       return true;
     }
     else {
       // Put player in queue, and wait for another player
       this.queueManager.addToRandom(player, params.ruleName);
-      
+
       reply.isWaiting = true;
       return true;
     }
@@ -657,7 +662,7 @@ function Server() {
     player.currentMatch = match.id;
     player.currentPieceType = model.PieceType.WHITE;
     this.matches.push(match);
-    
+
     var game = model.Match.createNewGame(match, rule);
 
     this.setSocketMatch(socket, match);
@@ -686,7 +691,7 @@ function Server() {
       reply.errorMessage = 'Match with ID ' + params.matchID + ' not found!';
       return false;
     }
-    
+
     var match = this.getMatchByID(params.matchID);
     if (!match) {
       reply.errorMessage = 'Match with ID ' + params.matchID + ' not found!';
@@ -751,9 +756,9 @@ function Server() {
     var match = this.getSocketMatch(socket);
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
-    
+
     var game = match.currentGame;
-    
+
     if (!game) {
       reply.errorMessage = 'Match with ID ' + match.id + ' has no current game!';
       return false;
@@ -811,14 +816,14 @@ function Server() {
     var match = this.getSocketMatch(socket);
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
-    
+
     console.log('Piece:', params.piece);
-    
+
     if (!params.piece) {
       reply.errorMessage = 'No piece selected!';
       return false;
     }
-    
+
     if (!match.currentGame) {
       reply.errorMessage = 'Match created, but current game is null!';
       return false;
@@ -844,9 +849,9 @@ function Server() {
     try {
       rule.applyMoveActions(match.currentGame.state, actionList);
       rule.markAsPlayed(match.currentGame, params.steps);
-      
+
       match.currentGame.moveSequence++;
-      
+
       reply.piece = params.piece;
       reply.type = params.type;
       reply.steps = params.steps;
@@ -864,7 +869,7 @@ function Server() {
         }
       );
 
-      return true;      
+      return true;
     }
     catch (e) {
       reply.piece = params.piece;
@@ -875,10 +880,98 @@ function Server() {
       if (process.env.DEBUG) {
         throw e;
       }
-      
+
       return false;
     }
   };
+
+/**
+   * Handle client's request to UP a piece.
+   * @param {Socket} socket - Client socket
+   * @param {Object} params - Request parameters
+   * @param {number} params.piece - Piece to move
+   * @param {number} params.height - Number of steps to move in height
+   * @param {PieceType} params.type - Type of piece
+   * @param {Object} reply - Object to be send as reply
+   * @returns {boolean} - Returns true if message have been processed
+   *                      successfully and a reply should be sent.
+   */
+this.handleUpPiece = function (socket, params, reply) {
+  console.log('Moving UP a piece', params);
+
+  var match = this.getSocketMatch(socket);
+  var player = this.getSocketPlayer(socket);
+  var rule = this.getSocketRule(socket);
+
+  console.log('Piece:', params.piece);
+
+  if (!params.piece) {
+    reply.errorMessage = 'No piece selected!';
+    return false;
+  }
+
+  if (!match.currentGame) {
+    reply.errorMessage = 'Match created, but current game is null!';
+    return false;
+  }
+
+  if (params.moveSequence < match.currentGame.moveSequence) {
+    reply.errorMessage = 'This move has already been played!';
+    return false;
+  }
+
+  // First, check status of the game: if game was started, if it is player's turn, etc.
+  if (!rule.validateUpMove(match.currentGame, player, params.piece, params.height)) {
+    reply.errorMessage = 'Requested UP move is not valid!';
+    return false;
+  }
+
+  var actionList = rule.getMoveActions(match.currentGame.state, params.piece, params.height, model.MoveActionType.UP);
+  if (actionList.length === 0) {
+    reply.errorMessage = 'Requested move is not allowed!';
+    return false;
+  }
+
+  try {
+    rule.applyMoveActions(match.currentGame.state, actionList);
+    rule.markAsPlayed(match.currentGame, params.height);
+
+    match.currentGame.moveSequence++;
+
+    reply.piece = params.piece;
+    reply.type = params.type;
+    reply.steps = params.steps;
+    reply.height = params.height;
+    reply.moveActionList = actionList;
+
+    this.sendMatchMessage(
+      match,
+      comm.Message.EVENT_PIECE_UP,
+      {
+        'match': match,
+        'piece': params.piece,
+        'type': params.type,
+        'steps': params.steps,
+        'height': params.steps,
+        'moveActionList': actionList
+      }
+    );
+
+    return true;
+  }
+  catch (e) {
+    reply.piece = params.piece;
+    reply.type = params.type;
+    reply.steps = params.steps;
+    reply.moveActionList = [];
+
+    if (process.env.DEBUG) {
+      throw e;
+    }
+
+    return false;
+  }
+};
 
   /**
    * Handle client's request to confirm moves made in current turn
@@ -890,7 +983,7 @@ function Server() {
    */
   this.handleConfirmMoves = function (socket, params, reply) {
     console.log('Confirming piece movement', params);
-    
+
     var self = this;
 
     var match = this.getSocketMatch(socket);
@@ -901,9 +994,9 @@ function Server() {
       reply.errorMessage = 'Confirming moves is not allowed!';
       return false;
     }
-    
+
     var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
-    
+
     console.log('CONFIRM MOVES');
     // Check if player has won
     if (rule.hasWon(match.currentGame.state, player)) {
@@ -961,7 +1054,7 @@ function Server() {
 
     return true;
   };
-  
+
   /**
    * Handle client's request to resign from current game (game only, not whole match)
    * @param {Socket} socket - Client socket
@@ -977,12 +1070,12 @@ function Server() {
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
     var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
-    
+
     this.endGame(socket, otherPlayer, true, reply);
-    
+
     return true;
   };
-  
+
   /**
    * Handle client's request to resign from whole match
    * @param {Socket} socket - Client socket
@@ -998,9 +1091,9 @@ function Server() {
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
     var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
-    
+
     var self = this;
-    
+
     reply.sendAfter = function () {
       self.sendMatchMessage(
         match,
@@ -1012,10 +1105,10 @@ function Server() {
         }
       );
     };
-    
+
     return true;
   };
-  
+
   /**
    * End game
    * @param {Socket} socket - Client socket
@@ -1031,7 +1124,7 @@ function Server() {
     var player = this.getSocketPlayer(socket);
     var rule = this.getSocketRule(socket);
     var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
-    
+
     // 1. Update score
     var score = rule.getGameScore(match.currentGame.state, winner);
     match.score[winner.currentPieceType] += score;

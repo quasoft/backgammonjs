@@ -137,6 +137,7 @@ function SimpleBoardUI(client) {
 
   /**
    * Handles clicking on a point (position)
+   * Add [SHIFT] to move UP
    */
   this.handlePointClick = function (e) {
     var self = e.data;
@@ -160,13 +161,18 @@ function SimpleBoardUI(client) {
     var position = $(e.currentTarget).data('position');
     var piece = self.getTopPiece(position);
     if (piece) {
-      self.client.reqMove(piece, steps);
+      // If shift key was pressed, move UP by height=steps
+      if (e.shiftKey === true) {
+        self.client.reqUp(piece, steps);
+      } else {
+        self.client.reqMove(piece, steps);
+      }
     }
     e.preventDefault();
   };
 
   /**
-   * Handles clicking on a point (position)
+   * Handles clicking on bar
    */
   this.handleBarClick = function (e) {
     var self = e.data;
@@ -419,6 +425,14 @@ function SimpleBoardUI(client) {
         var marginPercent = ratio * i;
         var negAlignment = (alignment === 'top') ? 'bottom' : 'top';
 
+        // push up last piece if height override is set
+        if (i === itemCount - 1) {
+          const height = $(this).data('height');
+          if (height) {
+            marginPercent = ratio * (i + height);
+          }
+          $(this).removeData('height');
+        }
         $(this).css(alignment, "0");
         $(this).css("margin-" + alignment, self.toFixedDown(marginPercent, 2) + "%");
 
@@ -753,6 +767,9 @@ function SimpleBoardUI(client) {
       else if (action.type === model.MoveActionType.BEAR) {
         this.playBearAction(action);
       }
+      else if (action.type === model.MoveActionType.UP) {
+        this.playUpAction(action);
+      }
 
       // TODO: Make sure actions are played back slow enough for player to see
       // all of them comfortly
@@ -816,6 +833,18 @@ function SimpleBoardUI(client) {
     var srcPointElem = pieceElem.parent();
 
     pieceElem.detach();
+
+    this.compactPosition(srcPointElem.data('position'));
+  };
+
+  this.playUpAction = function (action) {
+    if (!action.piece) {
+      throw new Error('No piece!');
+    }
+
+    var pieceElem = this.getPieceElem(action.piece);
+    var srcPointElem = pieceElem.parent();
+    pieceElem.data('height', action.to);
 
     this.compactPosition(srcPointElem.data('position'));
   };
