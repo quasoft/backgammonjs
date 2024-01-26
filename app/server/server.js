@@ -281,7 +281,7 @@ function Server() {
    */
   this.sendMessage = function (socket, msg, params) {
     const timestamp = new Date().toTimeString();
-    console.log('Sending message ' + msg + ' to client ' + socket.id + ' @ ' + timestamp);
+    console.log(timestamp + ' - Sending message ' + msg + ' to client ' + socket.id);
     socket.emit(msg, params);
   };
 
