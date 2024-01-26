@@ -429,9 +429,9 @@ function SimpleBoardUI(client) {
         if (i === itemCount - 1) {
           const height = $(this).data('height');
           if (height) {
-            marginPercent = ratio * (i + (height - 1));
+            marginPercent = ratio * (i + height);
           }
-          $(this).removeData('height');
+          // $(this).removeData('height');
         }
         $(this).css(alignment, "0");
         $(this).css("margin-" + alignment, self.toFixedDown(marginPercent, 2) + "%");
