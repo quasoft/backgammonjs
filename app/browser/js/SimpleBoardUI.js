@@ -33,6 +33,7 @@ function SimpleBoardUI(client) {
     this.container = $('#' + this.client.config.containerID);
     this.container.append($('#tmpl-board').html());
     this.container.append($('<div id="ohsnap"></div>'));
+    this.displayPieceId = true;
 
     this.board = $('#board');
     this.fields = [];
@@ -372,7 +373,15 @@ function SimpleBoardUI(client) {
   this.createPiece = function (parentElem, piece, count) {
     var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
-    var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">&nbsp;</div></div>');
+    var pieceElem = $(
+        '<div id="piece' +
+            piece.id +
+            '" class="piece ' +
+            pieceTypeClass +
+            '"><div class="image">' +
+            (this.displayPieceId ? piece.id : "&nbsp;") +
+            "</div></div>"
+    );
     pieceElem.data('piece', piece);
 
     parentElem.append(pieceElem);
