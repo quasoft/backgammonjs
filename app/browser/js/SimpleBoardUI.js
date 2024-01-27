@@ -18,7 +18,7 @@ function SimpleBoardUI(client) {
    * @type {Client}
    */
   this.client = client;
-  
+
   /**
    * @type {Match}
    */
@@ -33,7 +33,8 @@ function SimpleBoardUI(client) {
     this.container = $('#' + this.client.config.containerID);
     this.container.append($('#tmpl-board').html());
     this.container.append($('<div id="ohsnap"></div>'));
-    
+    this.displayPieceId = true;
+
     this.board = $('#board');
     this.fields = [];
     for (var i = 0; i < 4; i++) {
@@ -58,30 +59,30 @@ function SimpleBoardUI(client) {
     n += n / Math.pow(2, 53); // added 1360765523: 17.56.toFixedDown(2) === "17.56"
     return n.toFixed(digits);
   };
-  
+
   this.notifyOhSnap = function (message, params) {
     if (!params.duration) {
       params.duration = 1500;
     }
     ohSnap(message, params);
   };
-  
+
   this.notifyInfo = function (message, timeout) {
     this.notifyOhSnap(message, {color: 'blue', duration: timeout});
   };
-  
+
   this.notifyPositive = function (message, timeout) {
     this.notifyOhSnap(message, {color: 'green', duration: timeout});
   };
-  
+
   this.notifyNegative = function (message, timeout) {
     this.notifyOhSnap(message, {color: 'red', duration: timeout});
   };
-  
+
   this.notifySuccess = function (message, timeout) {
     this.notifyOhSnap(message, {color: 'green', duration: timeout});
   };
-  
+
   this.notifyError = function (message, timeout) {
     this.notifyOhSnap(message, {color: 'red', duration: timeout});
   };
@@ -89,7 +90,7 @@ function SimpleBoardUI(client) {
   this.getPointElem = function (pos) {
     return $('#point' + pos);
   };
-  
+
   this.getPieceElem = function (piece) {
     return $('#piece' + piece.id);
   };
@@ -109,7 +110,7 @@ function SimpleBoardUI(client) {
     }
     return null;
   };
-  
+
   this.getBarElem = function (type) {
     var barID = (type === this.client.player.currentPieceType) ? 'top-bar' : 'bottom-bar';
     var bar = $('#' + barID);
@@ -119,10 +120,10 @@ function SimpleBoardUI(client) {
   this.getBarTopPieceElem = function (type) {
     var barElem = this.getBarElem(type);
     var pieceElem = barElem.find('div.piece').last();
-    
+
     return pieceElem;
   };
-  
+
   this.getBarTopPiece = function (type) {
     var pieceElem = this.getBarTopPieceElem(type);
     if (pieceElem) {
@@ -134,14 +135,15 @@ function SimpleBoardUI(client) {
   this.getPieceByID = function (id) {
     return $('#piece' + id);
   };
-  
+
   /**
    * Handles clicking on a point (position)
+   * Add [SHIFT] to move UP
    */
   this.handlePointClick = function (e) {
     var self = e.data;
     var game = self.match.currentGame;
-        
+
     console.log('mousedown click', game);
     if (!model.Game.hasMoreMoves(game)) {
       return;
@@ -160,13 +162,18 @@ function SimpleBoardUI(client) {
     var position = $(e.currentTarget).data('position');
     var piece = self.getTopPiece(position);
     if (piece) {
-      self.client.reqMove(piece, steps);
+      // If shift key was pressed, move UP by height=steps
+      if (e.shiftKey === true) {
+        self.client.reqUp(piece, steps);
+      } else {
+        self.client.reqMove(piece, steps);
+      }
     }
     e.preventDefault();
   };
-  
+
   /**
-   * Handles clicking on a point (position)
+   * Handles clicking on bar
    */
   this.handleBarClick = function (e) {
     var self = e.data;
@@ -189,17 +196,17 @@ function SimpleBoardUI(client) {
     var pieceElem = $(e.currentTarget).find('div.piece').last();
     var piece = pieceElem.data('piece');
     if (piece) {
-      self.client.reqMove(piece, steps);  
+      self.client.reqMove(piece, steps);
     }
     e.preventDefault();
   };
-  
+
   /**
    * Assign actions to DOM elements
    */
   this.assignActions = function () {
     var self = this;
-    
+
     // Game actions
     $('#btn-roll').unbind('click');
     $('#btn-roll').click(function (e) {
@@ -212,24 +219,24 @@ function SimpleBoardUI(client) {
     $('#btn-confirm').click(function (e) {
       self.client.reqConfirmMoves();
     });
-    
+
     $('#btn-undo').unbind('click');
     $('#btn-undo').click(function (e) {
       self.client.reqUndoMoves();
     });
-    
+
     $('#menu-undo').unbind('click');
     $('#menu-undo').click(function (e) {
       $('.navbar').collapse('hide');
       self.client.reqUndoMoves();
     });
-    
+
     $('#menu-resign').unbind('click');
     $('#menu-resign').click(function (e) {
       // Ask player if they want to resign from current game only
       // or abandon the whole match
       $('.navbar').collapse('hide');
-      
+
       BootstrapDialog.show({
           title: 'Resign from game or match?',
           type: BootstrapDialog.TYPE_DEFAULT,
@@ -263,34 +270,34 @@ function SimpleBoardUI(client) {
           ]
       });
     });
-    
+
     if ((!this.match) || (!this.match.currentGame) || (!this.client.player)) {
       return;
     }
-    
+
     // Actions for points
     for (var pos = 0; pos < 24; pos++) {
       var pointElem = this.getPointElem(pos);
 
       $(document).on('contextmenu', pointElem, function(e){
         // Block browser menu
-        return false;
+        // return false;
       });
       pointElem.unbind('mousedown');
       pointElem.mousedown(self, self.handlePointClick);
     }
-    
+
     // Actions for bar
     for (var pieceType = 0; pieceType <= model.PieceType.BLACK; pieceType++) {
       console.log('pieceType', pieceType);
       var barElem = this.getBarElem(pieceType);
       console.log(barElem);
-      
+
       $(document).on('contextmenu', barElem, function(e){
         // Block browser menu
-        return false;
+        // return false;
       });
-      
+
       barElem.unbind('mousedown');
       barElem.mousedown(self, self.handleBarClick);
     }
@@ -310,9 +317,9 @@ function SimpleBoardUI(client) {
       - Field 1 - bottom left
       - Field 2 - top right
       - Field 3 - bottom right
-      
+
       Fields are arrange on the board in the following way:
-      
+
       +12-13-14-15-16-17------18-19-20-21-22-23-+
       |                  |   |                  |
       |      Field 0     |   |      Field 2     |
@@ -326,38 +333,38 @@ function SimpleBoardUI(client) {
       |      Field 1     |   |      Field 3     |
       |                  |   |                  |
       +11-10--9--8--7--6-------5--4--3--2--1--0-+ -1
-      
+
     */
-    
+
     var pieceType = this.client.player.currentPieceType;
     var i;
     var k;
     var typeClass;
-    
+
     for (i = 12; i < 18; i++) {
       typeClass = i % 2 === 0 ? 'even' : 'odd';
-      
+
       k = (pieceType === model.PieceType.BLACK) ? i - 12 : i;
       this.createPoint(this.fields[0], k, typeClass);
     }
 
     for (i = 11; i >= 6; i--) {
       typeClass = i % 2 === 0 ? 'even' : 'odd';
-      
+
       k = (pieceType === model.PieceType.BLACK) ? i + 12 : i;
       this.createPoint(this.fields[1], k, typeClass);
     }
 
     for (i = 18; i < 24; i++) {
       typeClass = i % 2 === 0 ? 'even' : 'odd';
-      
+
       k = (pieceType === model.PieceType.BLACK) ? i - 12 : i;
       this.createPoint(this.fields[2], k, typeClass);
     }
 
     for (i = 5; i >= 0; i--) {
       typeClass = i % 2 === 0 ? 'even' : 'odd';
-      
+
       k = (pieceType === model.PieceType.BLACK) ? i + 12 : i;
       this.createPoint(this.fields[3], k, typeClass);
     }
@@ -366,12 +373,20 @@ function SimpleBoardUI(client) {
   this.createPiece = function (parentElem, piece, count) {
     var pieceTypeClass = piece.type === model.PieceType.WHITE ? 'white' : 'black';
 
-    var pieceElem = $('<div id="piece' + piece.id + '" class="piece ' + pieceTypeClass + '"><div class="image">&nbsp;</div></div>');
+    var pieceElem = $(
+        '<div id="piece' +
+            piece.id +
+            '" class="piece ' +
+            pieceTypeClass +
+            '"><div class="image">' +
+            (this.displayPieceId ? piece.id : "&nbsp;") +
+            "</div></div>"
+    );
     pieceElem.data('piece', piece);
 
     parentElem.append(pieceElem);
   };
-  
+
   /**
    * Compact pieces in all positions
    */
@@ -382,7 +397,7 @@ function SimpleBoardUI(client) {
     this.compactElement(this.getBarElem(model.PieceType.WHITE), this.client.player.currentPieceType === model.PieceType.WHITE ? 'top' : 'bottom');
     this.compactElement(this.getBarElem(model.PieceType.BLACK), this.client.player.currentPieceType === model.PieceType.BLACK ? 'top' : 'bottom');
   };
-  
+
   /**
    * Compact pieces in specific DOM element to make them fit vertically.
    * @param {number} pos - Position of point
@@ -406,19 +421,27 @@ function SimpleBoardUI(client) {
         // margin in percent = 100 - ((8 / 88) * 100)
         ratio = 100 - (((overflow / (itemCount - 1)) / itemHeight) * 100);
       }
-      
+
       if (ratio > 100) {
         ratio = 100;
       }
       if (ratio <= 0) {
         ratio = 1;
       }
-      
+
       var self = this;
       element.children().each(function(i) {
         var marginPercent = ratio * i;
         var negAlignment = (alignment === 'top') ? 'bottom' : 'top';
-        
+
+        // push up last piece if height override is set
+        if (i === itemCount - 1) {
+          const height = $(this).data('height');
+          if (height) {
+            marginPercent = ratio * (i + height);
+          }
+          // $(this).removeData('height');
+        }
         $(this).css(alignment, "0");
         $(this).css("margin-" + alignment, self.toFixedDown(marginPercent, 2) + "%");
 
@@ -435,14 +458,14 @@ function SimpleBoardUI(client) {
   this.compactPosition = function (pos) {
     var pointElement = this.getPointElem(pos);
     var alignment;
-    
+
     if (this.client.player.currentPieceType === model.PieceType.BLACK) {
       alignment = ((pos >= 0) && (pos <= 11)) ? 'top' : 'bottom';
     }
     else {
       alignment = ((pos >= 12) && (pos <= 23)) ? 'top' : 'bottom';
     }
-    
+
     this.compactElement(pointElement, alignment);
   };
 
@@ -450,7 +473,7 @@ function SimpleBoardUI(client) {
     var game = this.match.currentGame;
     var i, pos;
     var b;
-    
+
     for (pos = 0; pos < game.state.points.length; pos++) {
       var point = game.state.points[pos];
       for (i = 0; i < point.length; i++) {
@@ -459,8 +482,8 @@ function SimpleBoardUI(client) {
       }
       this.compactPosition(pos);
     }
-    
-    
+
+
     for (b = 0; b < game.state.bar.length; b++) {
       var bar = game.state.bar[b];
       for (i = 0; i < bar.length; i++) {
@@ -479,13 +502,13 @@ function SimpleBoardUI(client) {
 
   this.removePieces = function () {
     var game = this.match.currentGame;
-    
+
     for (var pos = 0; pos < game.state.points.length; pos++) {
       var point = game.state.points[pos];
       var pointElem = this.getPointElem(pos);
       pointElem.empty();
     }
-    
+
     this.getBarElem(model.PieceType.BLACK).empty();
     this.getBarElem(model.PieceType.WHITE).empty();
   };
@@ -504,24 +527,24 @@ function SimpleBoardUI(client) {
 
     this.createPoints();
     this.createPieces();
-    
+
     this.randomizeDiceRotation();
-    
+
     this.assignActions();
     this.updateControls();
     this.updateScoreboard();
-    
+
     this.compactAllPositions();
   };
-  
+
   this.handleTurnStart = function () {
     this.randomizeDiceRotation();
   };
-  
+
   this.handleEventUndoMoves = function () {
     this.notifyInfo('Player undid last move.');
   };
-  
+
   this.handleEventGameRestart = function () {
     var yourscore = this.match.score[this.client.player.currentPieceType];
     var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
@@ -541,7 +564,7 @@ function SimpleBoardUI(client) {
   this.randomizeDiceRotation = function () {
     this.rotationAngle = [];
     for (var i = 0; i < 10; i++) {
-      this.rotationAngle[i] = Math.random() * 30 - 15;  
+      this.rotationAngle[i] = Math.random() * 30 - 15;
     }
   };
 
@@ -555,7 +578,7 @@ function SimpleBoardUI(client) {
       $('#menu-undo').hide();
       return;
     }
-    
+
     var game = this.match.currentGame;
 
     $('#btn-roll').toggle(
@@ -565,7 +588,7 @@ function SimpleBoardUI(client) {
       (!model.Game.diceWasRolled(game)) &&
       (!game.turnConfirmed)
     );
-    
+
     var canConfirmMove =
       game.hasStarted &&
       (!game.isOver) &&
@@ -580,10 +603,10 @@ function SimpleBoardUI(client) {
       model.Game.isPlayerTurn(game, this.client.player) &&
       model.Game.diceWasRolled(game) &&
       (!game.turnConfirmed);
-    
+
     $('#btn-confirm').toggle(canConfirmMove);
     $('#btn-undo').toggle(canConfirmMove);
-    
+
     $('#menu-resign').toggle(game.hasStarted && (!game.isOver));
     $('#menu-undo').toggle(canUndoMove);
 
@@ -602,12 +625,12 @@ function SimpleBoardUI(client) {
     console.log('Game:', game);
     console.log('Player:', this.client.player);
   };
-  
+
   this.updateScoreboard = function () {
     if ((!this.match) || (!this.match.currentGame)) {
       return;
     }
-    
+
     var isInMatch = (this.match.currentGame);
     var matchText = (isInMatch) ?
       'Match "' + this.rule.title + '", ' + this.match.length + '/' + this.match.length
@@ -619,7 +642,7 @@ function SimpleBoardUI(client) {
       'Match has not been started';
     $('#match-state').text(matchText);
     $('#match-state').attr('title', matchTextTitle);
-    
+
     var yourscore = this.match.score[this.client.player.currentPieceType];
     $('#yourscore').text(yourscore);
 
@@ -631,42 +654,42 @@ function SimpleBoardUI(client) {
       $('#oppscore').text('');
     }
   };
-  
+
   this.showGameEndMessage = function (winner, resigned) {
     $('#game-result-overlay').show();
-    
+
     var result = winner.id === this.client.player.id;
     var message;
     var matchState;
-    
+
     if (resigned) {
       message = (result) ? 'Other player resigned!' : 'You resigned.';
     }
     else {
       message = (result) ? 'You WON!' : 'You lost.';
     }
-    
+
     matchState = 'Match standing&#160;';
     if (this.match.isOver) {
       message += message = ' Match is over.';
       matchState = 'Match result&#160;';
     }
-    
+
     var color = (result) ? 'green' : 'red';
-    
+
     $('.game-result').css('color', color);
     $('.game-result .message').html(message);
     $('.game-result .state').html(matchState);
-    
+
     var yourscore = this.match.score[this.client.player.currentPieceType];
     var oppscore = this.match.score[this.client.otherPlayer.currentPieceType];
     $('.game-result .yourscore').text(yourscore);
     $('.game-result .oppscore').text(oppscore);
-    
+
     $('.game-result .text').each(function () {
       fitText($(this));
     });
-    
+
     if (resigned) {
       this.notifyInfo('Other player resigned from game');
     }
@@ -682,24 +705,24 @@ function SimpleBoardUI(client) {
   this.updateDie = function (dice, index, type) {
     var color = (type === model.PieceType.BLACK) ? 'black' : 'white';
     var id = '#die' + index;
-    
+
     // Set text
     $(id).text(dice.values[index]);
-    
+
     // Change image
     $(id).removeClass('digit-1-white digit-2-white digit-3-white digit-4-white digit-5-white digit-6-white digit-1-black digit-2-black digit-3-black digit-4-black digit-5-black digit-6-black played');
     $(id).addClass('digit-' + dice.values[index] + '-' + color);
     if (dice.movesLeft.length === 0) {
       $(id).addClass('played');
     }
-    
+
     var angle = this.rotationAngle[index];
     $(id).css('transform', 'rotate(' + angle + 'deg)');
   };
 
   /**
    * Recreate DOM elements representing dice and render them in dice container.
-   * Player's dice are shown in right pane. Other player's dice are shown in 
+   * Player's dice are shown in right pane. Other player's dice are shown in
    * left pane.
    * @param {Dice} dice - Dice to render
    * @param {number} index - Index of dice value in array
@@ -719,12 +742,12 @@ function SimpleBoardUI(client) {
     else {
       diceElem = $('#dice-left');
     }
-                    
+
     for (var i = 0; i < dice.values.length; i++) {
       diceElem.append('<span id="die' + i + '" class="die"></span>');
       this.updateDie(dice, i, type);
     }
-    
+
     var self = this;
     $('.dice .die').unbind('click');
     $('.dice .die').click(function (e) {
@@ -753,12 +776,15 @@ function SimpleBoardUI(client) {
       else if (action.type === model.MoveActionType.BEAR) {
         this.playBearAction(action);
       }
+      else if (action.type === model.MoveActionType.UP) {
+        this.playUpAction(action);
+      }
 
       // TODO: Make sure actions are played back slow enough for player to see
       // all of them comfortly
     }
   };
-  
+
   this.playMoveAction = function (action) {
     if (!action.piece) {
       throw new Error('No piece!');
@@ -774,7 +800,7 @@ function SimpleBoardUI(client) {
     this.compactPosition(srcPointElem.data('position'));
     this.compactPosition(dstPointElem.data('position'));
   };
-  
+
   this.playRecoverAction = function (action) {
     if (!action.piece) {
       throw new Error('No piece!');
@@ -790,7 +816,7 @@ function SimpleBoardUI(client) {
     this.compactElement(srcPointElem, action.piece.type === this.client.player.currentPieceType ? 'top' : 'bottom');
     this.compactPosition(dstPointElem.data('position'));
   };
-  
+
   this.playHitAction = function (action) {
     if (!action.piece) {
       throw new Error('No piece!');
@@ -806,7 +832,7 @@ function SimpleBoardUI(client) {
     this.compactPosition(srcPointElem.data('position'));
     this.compactElement(dstPointElem, action.piece.type === this.client.player.currentPieceType ? 'top' : 'bottom');
   };
-  
+
   this.playBearAction = function (action) {
     if (!action.piece) {
       throw new Error('No piece!');
@@ -819,7 +845,19 @@ function SimpleBoardUI(client) {
 
     this.compactPosition(srcPointElem.data('position'));
   };
-  
+
+  this.playUpAction = function (action) {
+    if (!action.piece) {
+      throw new Error('No piece!');
+    }
+
+    var pieceElem = this.getPieceElem(action.piece);
+    var srcPointElem = pieceElem.parent();
+    pieceElem.data('height', action.to);
+
+    this.compactPosition(srcPointElem.data('position'));
+  };
+
   /**
    * Compact pieces after UI was resized
    */

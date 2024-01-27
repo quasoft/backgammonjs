@@ -3,9 +3,9 @@ var config = {
   'boardUI': '../app/browser/js/SimpleBoardUI.js',
   'defaultRule': 'RuleBgCasual',
   'selectableRules': [
-    'RuleBgCasual',
-    'RuleBgGulbara',
-    'RuleBgTapa'
+	'RuleUsUpgammon',
+    'RuleBgCasual'
+
   ]
 };
 

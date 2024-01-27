@@ -18,6 +18,7 @@ require('../../../lib/rules/rule.js');
 require('../../../lib/rules/RuleBgCasual.js');
 require('../../../lib/rules/RuleBgGulbara.js');
 require('../../../lib/rules/RuleBgTapa.js');
+require('../../../lib/rules/RuleUsUpgammon.js');
 
 function App() {
   this._config = {};
