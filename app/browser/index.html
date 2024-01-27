@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
-  <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,700" rel="stylesheet" type="text/css">
   <link rel="stylesheet" type="text/css" href="style/backgammon.css">
   <link rel="stylesheet" type="text/css" href="style/ribbons.css">
   <script src="js/bundle.js"></script>
-  
+
   <script type="text/x-mustache" id="tmpl-board">
     <div id="frame-top" class="frame"></div>
     <div class="board cf">
@@ -54,13 +54,13 @@
       <div id="dice" style="display: none"></div>
     </div>
   </script>
-  
+
   <script type="text/x-mustache" id="tmpl-rule-selector-item">
     <label class="btn btn-default btn-lg {{active}}">
       <input type="radio" name="rule-selected" value="{{name}}" autocomplete="off" {{checked}}> {{title}}
     </label>
   </script>
-  
+
 </head>
 <body id="page-index">
 
@@ -98,7 +98,7 @@
     </td>
   </tr>
   </table>
-  
+
   <!-- Game menu -->
   <nav class="navbar navbar-default collapse">
     <div class="container-fluid">
@@ -109,7 +109,7 @@
       <div class="navbar-collapse">
         <button type="button" class="btn btn-primary navbar-btn yourself" title="Your score in current match"><span id="yourself" class="player">Yourself</span><span id="yourscore" class="score badge">3</span></button>
         <button type="button" class="btn btn-default navbar-btn opponent" title="Opponent's score in current match"><span id="oppscore" class="score badge left">3</span><span id="opponent" class="player">Opponent</span></button>
-        
+
         <ul class="nav navbar-nav navbar-right">
           <li><a id="menu-resign" href="#" title="Resign from current game"><span class="glyphicon glyphicon-flag"></span>Resign</a></li>
           <li><a id="menu-undo" href="#" title="Undo moves made"><span class="glyphicon glyphicon-repeat"></span>Undo</a></li>
@@ -118,7 +118,7 @@
       </div>
     </div>
   </nav>
-  
+
   <!-- Game board -->
   <table id="game-view" width="100%" height="100%" style="display: none">
   <tr>
@@ -127,12 +127,12 @@
     </td>
   </tr>
   </table>
-  
+
   <div id="game-result-overlay" class="game-result overlay" style="display: none">
     <div class="text message">Message</div>
     <div class="text score"><span class="state">State</span><br><strong><span class="yourscore">0</span>&nbsp;:&nbsp;<span class="oppscore">0</span></strong></div>
   </div>
-  
+
   <div id="waiting-overlay" class="waiting overlay" style="display: none">
     <div class="loader"><div class="inner"><span>Waiting another player...</span><br><img src="images/loader.gif"><br>
         <br>
@@ -147,7 +147,7 @@
         </div>
     </div></div>
   </div>
-  
+
   <div id="messages">
   </div>
 </body>
