@@ -7,7 +7,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.10.2",
-    "mongodb": "^2.2.30",
+    "mongodb": "^3.6.1",
     "socket.io": "^1.4.5"
   }
 }
