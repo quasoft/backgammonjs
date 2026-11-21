@@ -1032,8 +1032,8 @@ function Server() {
     var rule = this.getSocketRule(socket);
     var otherPlayer = (model.Match.isHost(match, player)) ? match.guest : match.host;
     
-    // 1. Update score
-    var score = rule.getGameScore(match.currentGame.state, winner);
+    // 1. Update score. Resigning a game concedes only one point.
+    var score = resigned ? 1 : rule.getGameScore(match.currentGame.state, winner);
     match.score[winner.currentPieceType] += score;
 
     if (match.score[winner.currentPieceType] >= match.length) {
